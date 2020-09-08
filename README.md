@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/guidospadavecchia/SteamBuddy/blob/master/resources/images/sb-logo-title.png" width="250px" height="250px">
+  <img src="https://github.com/guidospadavecchia/SteamBuddy/blob/master/resources/images/sb-logo-title.png">
 </p>
 
 ## Description

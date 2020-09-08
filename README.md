@@ -13,7 +13,7 @@ Report any bugs or suggestions [here](https://github.com/guidospadavecchia/Steam
 If you enjoy Steam Buddy, [buy me beer](https://paypal.me/guidospadavecchia).
 
 ## License
-[MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
+SteamBuddy is licensed under the [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
 
 ## 
 <p align="center">

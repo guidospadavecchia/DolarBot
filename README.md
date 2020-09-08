@@ -6,8 +6,7 @@
 A Steam bot for Discord aimed at Steam Community Market features.
 
 ## Contributors
-Report any bugs or suggestions [here](https://github.com/guidospadavecchia/SteamBuddy/issues), or contact me at:
-- Guido Spadavecchia - guido.spadavecchia@gmail.com
+Report any bugs or suggestions [here](https://github.com/guidospadavecchia/SteamBuddy/issues), or contact me at guido.spadavecchia@gmail.com
 
 If you enjoy Steam Buddy, [buy me beer](https://paypal.me/guidospadavecchia).
 

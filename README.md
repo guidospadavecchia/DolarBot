@@ -1,7 +1,6 @@
 <p align="center">
   <img src="https://github.com/guidospadavecchia/SteamBuddy/blob/master/resources/images/sb-logo-title.png">
 </p>
-
 <i>A Steam bot for Discord aimed at Steam Community Market features.</i>
 
 ## Contributors

@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
 using System;
@@ -10,10 +11,10 @@ namespace SteamBuddy.Modules.Handlers
     {
         private const string COMMAND_PREFIX = "-";
 
-        private readonly ILog logger;
         private readonly DiscordSocketClient client;
         private readonly CommandService commands;
         private readonly IServiceProvider services;
+        private readonly ILog logger;
 
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services, ILog logger = null)
         {
@@ -37,13 +38,26 @@ namespace SteamBuddy.Modules.Handlers
             if (message.HasStringPrefix(COMMAND_PREFIX, ref argPos))
             {
                 IResult result = await commands.ExecuteAsync(context, argPos, services);
-                if (!result.IsSuccess)
+                if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
-                    await context.Channel.SendMessageAsync(result.ErrorReason);
-                    if (logger != null)
+                    string commandName = Format.Bold(commands.Search(context, argPos).Text);
+                    switch (result.Error)
                     {
-                        logger.Error(result.ErrorReason); 
+                        case CommandError.BadArgCount:
+                            await context.Channel.SendMessageAsync($"Syntax error for {commandName} command. Check parameters within {Format.Bold("-help")}.");
+                            break;
+                        case CommandError.Exception:
+                        case CommandError.Unsuccessful:
+                        case CommandError.ParseFailed:
+                            if (logger != null)
+                            {
+                                logger.Error($"Error executing command: {result.ErrorReason}");
+                            }
+                            break;
+                        default:
+                            break;
                     }
+
                 }
             }
         }

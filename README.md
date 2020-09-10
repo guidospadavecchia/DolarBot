@@ -9,11 +9,10 @@
 ***
  
 ## Contribuciones
-<b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
+- <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
 
-Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).
-
-Si te gustó DolarBot, [pagame un café](https://paypal.me/guidospadavecchia).
+Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
+Si te gustó DolarBot, podés [pagarme un café](https://paypal.me/guidospadavecchia).
 
 ## Licencia
 DolarBot está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)

@@ -5,7 +5,9 @@
 <p align="center">
 <i>El bot de Discord argentino para las cotizaciones del dólar y riesgo país.</i>
 </p>
-
+  
+***
+ 
 ## Contribuciones
 <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
 

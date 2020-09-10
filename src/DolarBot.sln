@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30406.217
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamBuddy", "SteamBuddy\SteamBuddy.csproj", "{BA49DF19-9927-4E67-A79A-CD86E3FF0E89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot", "DolarBot\DolarBot.csproj", "{BA49DF19-9927-4E67-A79A-CD86E3FF0E89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamBuddy.Modules", "SteamBuddy.Modules\SteamBuddy.Modules.csproj", "{89A0BA01-977A-474B-8BE6-D8CDB46204CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.Modules", "DolarBot.Modules\DolarBot.Modules.csproj", "{89A0BA01-977A-474B-8BE6-D8CDB46204CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

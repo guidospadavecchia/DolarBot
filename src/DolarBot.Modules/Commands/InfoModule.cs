@@ -5,44 +5,44 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SteamBuddy.Modules.Commands
+namespace DolarBot.Modules.Commands
 {
     public class InfoModule : ModuleBase<SocketCommandContext>
     {
         private readonly Color infoEmbedColor = new Color(23, 99, 154);
 
-        [Command("date")]
-        [Summary("Displays current bot's date and time.")]
+        [Command("date")]        
+        [Summary("Muestra la fecha y hora del servidor donde se encuentra hosteado el bot.")]
         public async Task GetDateAsync()
         {
             string timestamp = Format.Bold(DateTime.Now.ToString("yyyy/MM/dd - HH:mm:ss"));
             EmbedBuilder embed = new EmbedBuilder()
-                                 .WithTitle("Bot's Server Date")
+                                 .WithTitle("Fecha y Hora")
                                  .WithColor(infoEmbedColor)
-                                 .WithDescription($"Current date and time for bot's server is {timestamp}");
+                                 .WithDescription($"La fecha y hora del servidor es {timestamp}");
 
             await ReplyAsync(embed: embed.Build());
         }
 
         [Command("sid")]
-        [Summary("Displays the current server Discord ID")]
+        [Summary("Muestra el ID del servidor de Discord actual.")]
         public async Task GetServerId()
         {
             string sid = Format.Bold(Context.Guild.Id.ToString());
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Server ID")
                                  .WithColor(infoEmbedColor)
-                                 .WithDescription($"The current server ID is {sid}");
+                                 .WithDescription($"El ID del servidor es {sid}");
 
             await ReplyAsync(embed: embed.Build());
         }
 
         [Command("ping")]
-        [Summary("Pings the bot showing the estimated round-trip latency to the gateway server.")]
+        [Summary("Muestra la latencia de un mensaje y de la puerta de enlace del servidor de Discord.")]
         public async Task Ping()
         {
             EmbedBuilder embed = new EmbedBuilder()
-                                 .WithTitle("Pinging...")
+                                 .WithTitle("Procesando...")
                                  .WithColor(infoEmbedColor);
 
             Stopwatch sw = new Stopwatch();
@@ -54,11 +54,11 @@ namespace SteamBuddy.Modules.Commands
             string latency = Format.Bold($"{sw.ElapsedMilliseconds} ms");
             await message.ModifyAsync(x =>
             {
-                embed.WithTitle("Ping Result")
+                embed.WithTitle("Resultado del Ping")
                      .WithDescription(
                         new StringBuilder()
-                        .AppendLine($"Response time: {responseTime}")
-                        .AppendLine($"Gateway latency: {latency}")
+                        .AppendLine($"Tiempo de respuesta del bot: {responseTime}")
+                        .AppendLine($"Latencia de la puerta de enlace: {latency}")
                         .ToString()
                      );
                 x.Embed = embed.Build();

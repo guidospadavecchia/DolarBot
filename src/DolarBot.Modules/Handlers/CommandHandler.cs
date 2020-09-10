@@ -5,11 +5,11 @@ using log4net;
 using System;
 using System.Threading.Tasks;
 
-namespace SteamBuddy.Modules.Handlers
+namespace DolarBot.Modules.Handlers
 {
     public class CommandHandler
     {
-        private const string COMMAND_PREFIX = "-";
+        private const string COMMAND_PREFIX = "$";
 
         private readonly DiscordSocketClient client;
         private readonly CommandService commands;
@@ -44,20 +44,33 @@ namespace SteamBuddy.Modules.Handlers
                     switch (result.Error)
                     {
                         case CommandError.BadArgCount:
-                            await context.Channel.SendMessageAsync($"Syntax error for {commandName} command. Check parameters within {Format.Bold("-help")}.");
+                            await context.Channel.SendMessageAsync($"Error al ejecutar el comando {commandName}. Verificá los parámetros con {Format.Bold("$ayuda")}.");
                             break;
                         case CommandError.Exception:
                         case CommandError.Unsuccessful:
                         case CommandError.ParseFailed:
-                            if (logger != null)
-                            {
-                                logger.Error($"Error executing command: {result.ErrorReason}");
-                            }
+                            LogCommandError(result);
                             break;
                         default:
                             break;
                     }
 
+                }
+            }
+        }
+
+        private void LogCommandError(IResult result)
+        {
+            if (logger != null)
+            {
+                if (result is ExecuteResult executeResult)
+                {
+                    logger.Error($"Error executing command: {executeResult.Exception.Message}");
+                    logger.Error(executeResult.Exception.StackTrace);
+                }
+                else
+                {
+                    logger.Error($"Error executing command: {result.ErrorReason}");
                 }
             }
         }

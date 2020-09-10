@@ -2,18 +2,17 @@
   <img src="https://github.com/guidospadavecchia/SteamBuddy/blob/master/design/images/dolar-logo-title.png" width="300px" height="300px">
 </p>
 
-## Description
-A Steam bot for Discord aimed at Steam Community Market features.
+El bot de Discord argentino para las cotizaciones del dólar y riesgo país.
 
-## Contributions
-Author: <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
+## Contribuciones
+<b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
 
-Report any bugs or suggestions [here](https://github.com/guidospadavecchia/SteamBuddy/issues).
+Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).
 
-If you enjoy Steam Buddy, [buy me beer](https://paypal.me/guidospadavecchia).
+Si te gustó DolarBot, [pagame un café](https://paypal.me/guidospadavecchia).
 
-## License
-SteamBuddy is licensed under the [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
+## Licencia
+DolarBot está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
 
 ## 
 <p align="center">

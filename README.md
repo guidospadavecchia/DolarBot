@@ -1,8 +1,9 @@
 <p align="center">
   <img src="https://github.com/guidospadavecchia/SteamBuddy/blob/master/design/images/dolar-logo-title.png" width="300px" height="300px">
 </p>
-
-El bot de Discord argentino para las cotizaciones del dólar y riesgo país.
+  
+  
+<i>El bot de Discord argentino para las cotizaciones del dólar y riesgo país.</i>
 
 ## Contribuciones
 <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  

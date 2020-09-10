@@ -3,7 +3,7 @@
 </p>
   
 <p align="center">
-<i>El bot argentino de Discord para las cotizaciones del dólar y riesgo país.</i>
+<i>El bot argentino de Discord para ver las cotizaciones del dólar y riesgo país.</i>
 </p>
   
 ***

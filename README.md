@@ -14,7 +14,7 @@
 Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
 
 ## Licencia
-DolarBot está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
+<b>DolarBot</b> está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
 
 ## 
 <p align="center">

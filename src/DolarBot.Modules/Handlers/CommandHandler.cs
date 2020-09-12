@@ -29,13 +29,13 @@ namespace DolarBot.Modules.Handlers
         public async Task HandleCommandAsync(SocketMessage arg)
         {
             SocketUserMessage message = arg as SocketUserMessage;
-            SocketCommandContext context = new SocketCommandContext(client, message);
 
-            if (message.Author.IsBot)
+            if (message == null || message.Author.IsBot)
             {
                 return;
             }
 
+            SocketCommandContext context = new SocketCommandContext(client, message);
             int argPos = default;
             if (message.HasStringPrefix(configuration["commandPrefix"], ref argPos))
             {

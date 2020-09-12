@@ -1,5 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
+using DolarBot.Modules.Attributes;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -7,12 +9,20 @@ using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands
 {
+    [HelpOrder(1)]
+    [HelpTitle("Información")]
     public class InfoModule : ModuleBase<SocketCommandContext>
     {
         private readonly Color infoEmbedColor = new Color(23, 99, 154);
+        private readonly IConfiguration configuration;
+
+        public InfoModule(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         [Command("date")]        
-        [Summary("Muestra la fecha y hora del servidor donde se encuentra hosteado el bot.")]
+        [Summary("Muestra la fecha y hora del servidor donde se encuentra el bot.")]
         public async Task GetDateAsync()
         {
             string timestamp = Format.Bold(DateTime.Now.ToString("yyyy/MM/dd - HH:mm:ss"));
@@ -38,7 +48,7 @@ namespace DolarBot.Modules.Commands
         }
 
         [Command("ping")]
-        [Summary("Muestra la latencia de un mensaje y de la puerta de enlace del servidor de Discord.")]
+        [Summary("Muestra la latencia del bot de Discord.")]
         public async Task Ping()
         {
             EmbedBuilder embed = new EmbedBuilder()
@@ -63,6 +73,19 @@ namespace DolarBot.Modules.Commands
                      );
                 x.Embed = embed.Build();
             });
+        }
+
+        [Command("invite")]
+        [Alias("invitar")]
+        [Summary("Devuelve el link de invitación del bot en Discord.")]
+        public async Task GetInviteLink()
+        {
+            EmbedBuilder embed = new EmbedBuilder()
+                                 .WithTitle("DolarBot")
+                                 .WithColor(infoEmbedColor)
+                                 .WithDescription($"Invita al bot utilizando el siguiente {Format.Url("link", configuration["inviteLink"])}");
+
+            await ReplyAsync(embed: embed.Build());
         }
     }
 }

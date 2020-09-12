@@ -2,25 +2,27 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using log4net;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Handlers
 {
     public class CommandHandler
     {
-        private const string COMMAND_PREFIX = "$";
-
         private readonly DiscordSocketClient client;
         private readonly CommandService commands;
         private readonly IServiceProvider services;
+        private readonly IConfiguration configuration;
         private readonly ILog logger;
 
-        public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services, ILog logger = null)
+        public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services, IConfiguration configuration, ILog logger = null)
         {
             this.client = client;
             this.commands = commands;
             this.services = services;
+            this.configuration = configuration;
             this.logger = logger;
         }
 
@@ -35,31 +37,49 @@ namespace DolarBot.Modules.Handlers
             }
 
             int argPos = default;
-            if (message.HasStringPrefix(COMMAND_PREFIX, ref argPos))
+            if (message.HasStringPrefix(configuration["commandPrefix"], ref argPos))
             {
                 IResult result = await commands.ExecuteAsync(context, argPos, services);
                 if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
-                    string commandName = Format.Bold(commands.Search(context, argPos).Text);
                     switch (result.Error)
                     {
                         case CommandError.BadArgCount:
-                            await context.Channel.SendMessageAsync($"Error al ejecutar el comando {commandName}. Verificá los parámetros con {Format.Bold("$ayuda")}.");
+                            await ProcessBadArgCount(context, argPos);
                             break;
                         case CommandError.Exception:
                         case CommandError.Unsuccessful:
                         case CommandError.ParseFailed:
-                            LogCommandError(result);
+                            ProcessCommandError(result);
                             break;
                         default:
                             break;
                     }
-
                 }
             }
         }
 
-        private void LogCommandError(IResult result)
+        private string GetCommandSummary(string commandName)
+        {
+            var command = commands.Commands.FirstOrDefault(c => c.Name.ToUpper().Trim().Equals(commandName.ToUpper().Trim()) || c.Aliases.Select(a => a.ToUpper().Trim()).Contains(commandName.ToUpper().Trim()));
+            return command?.Summary;
+        }
+
+        private async Task ProcessBadArgCount(SocketCommandContext context, int argPos)
+        {
+            string commandName = commands.Search(context, argPos).Text;
+            string commandSummary = GetCommandSummary(commandName);
+            if (!string.IsNullOrWhiteSpace(commandSummary))
+            {
+                await context.Channel.SendMessageAsync(Format.Italics(commandSummary));
+            }
+            else
+            {
+                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {commandName}. Verificá los parámetros con {Format.Bold($"{configuration["commandPrefix"]}ayuda")}.");
+            }
+        }
+
+        private void ProcessCommandError(IResult result)
         {
             if (logger != null)
             {

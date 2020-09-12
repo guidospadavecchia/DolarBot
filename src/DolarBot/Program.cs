@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using DolarBot.Modules.Handlers;
+using DolarBot.Util;
 using log4net;
 using log4net.Config;
 using Microsoft.Extensions.Configuration;
@@ -15,12 +16,6 @@ namespace DolarBot
 {
     public class Program
     {
-        #region Constants
-        private const string CONFIG_FILENAME = "appsettings.json";
-        private const string LOG4NET_CONFIG_FILENAME = "log4net.config";
-        private const string GAME_STATUS = "$ayuda";
-        #endregion
-
         #region Vars
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
@@ -42,7 +37,7 @@ namespace DolarBot
 
                 client.Log += LogClientEvent;
 
-                await RegisterCommandsAsync(client, commands, services);
+                await RegisterCommandsAsync(client, commands, services, configuration);
 
                 string token = configuration["token"];
                 if (token == null)
@@ -52,7 +47,7 @@ namespace DolarBot
 
                 await client.LoginAsync(TokenType.Bot, token);
                 await client.StartAsync();
-                await client.SetGameAsync(GAME_STATUS, type: ActivityType.Listening);
+                await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
 
                 await Task.Delay(-1);
             }
@@ -74,19 +69,19 @@ namespace DolarBot
 
         public IConfiguration ConfigureAppSettings()
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(CONFIG_FILENAME);
+            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(GlobalConfiguration.GetAppSettingsFileName());
             return builder.Build();
         }
 
         public void ConfigureLogger()
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.Configure(logRepository, new FileInfo(LOG4NET_CONFIG_FILENAME));
+            XmlConfigurator.Configure(logRepository, new FileInfo(GlobalConfiguration.GetLogConfigFileName()));
         }
 
-        public async Task RegisterCommandsAsync(DiscordSocketClient client, CommandService commands, IServiceProvider services)
+        public async Task RegisterCommandsAsync(DiscordSocketClient client, CommandService commands, IServiceProvider services, IConfiguration configuration)
         {
-            CommandHandler commandHandler = new CommandHandler(client, commands, services, logger);
+            CommandHandler commandHandler = new CommandHandler(client, commands, services, configuration, logger);
             client.MessageReceived += commandHandler.HandleCommandAsync;
             await commands.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
         }

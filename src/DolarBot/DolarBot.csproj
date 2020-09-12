@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Discord.Addons.Interactive">
+      <HintPath>..\libs\Discord.Addons.Interactive.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

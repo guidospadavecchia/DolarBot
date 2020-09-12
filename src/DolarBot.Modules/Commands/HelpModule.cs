@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
 using DolarBot.Util;
@@ -13,7 +14,7 @@ using ParameterInfo = Discord.Commands.ParameterInfo;
 
 namespace DolarBot.Modules.Commands
 {
-    public class HelpModule : ModuleBase<SocketCommandContext>
+    public class HelpModule : InteractiveBase<SocketCommandContext>
     {
         #region Constants
         private const string HELP_COMMAND = "help";
@@ -23,7 +24,7 @@ namespace DolarBot.Modules.Commands
         private const string HELP_SUMMARY = "Muestra los comandos disponibles.";
         private const string HELP_COMMAND_SUMMARY = "Muestra información sobre un comando.";
         private const string HELP_SUMMARY_DM = "Envía la ayuda por mensaje privado.";
-        private const string HELP_COMMAND_SUMMARY_DM = "Envía el comando por privado."; 
+        private const string HELP_COMMAND_SUMMARY_DM = "Envía el comando por privado.";
         #endregion
 
         private readonly Color helpEmbedColor = Color.Blue;
@@ -41,8 +42,16 @@ namespace DolarBot.Modules.Commands
         [Summary(HELP_SUMMARY)]
         public async Task SendHelp(string command = null)
         {
-            EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command, out string thumbnailUrl) : GenerateEmbeddedHelp(out thumbnailUrl);
-            await Context.Channel.SendFileAsync(thumbnailUrl, embed: embed.Build());
+            string thumbnailUrl = GlobalConfiguration.Images.GetLocalHelpImageThumbnailFullPath();
+            if (CommandExists(command))
+            {
+                EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
+                await Context.Channel.SendFileAsync(thumbnailUrl, embed: embed.Build());
+            }
+            else
+            {
+                await SendPagedHelpReplyAsync();
+            }
         }
 
         [Command(HELP_COMMAND_DM)]
@@ -50,7 +59,9 @@ namespace DolarBot.Modules.Commands
         [Summary(HELP_SUMMARY_DM)]
         public async Task SendHelpDM(string command = null)
         {
-            EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command, out string thumbnailUrl) : GenerateEmbeddedHelp(out thumbnailUrl);
+            string thumbnailUrl = GlobalConfiguration.Images.GetLocalHelpImageThumbnailFullPath();
+            EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
+
             var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
             var dm = Context.User.SendFileAsync(thumbnailUrl, embed: embed.Build());
             await Task.WhenAll(reply, dm);
@@ -58,9 +69,8 @@ namespace DolarBot.Modules.Commands
 
         #region Methods
 
-        private EmbedBuilder GenerateEmbeddedHelp(out string thumbnailUrl)
+        private EmbedBuilder GenerateEmbeddedHelp()
         {
-            thumbnailUrl = GlobalConfiguration.Images.GetHelpImageThumbnailFullPath();
             Emoji moduleBullet = new Emoji("\uD83D\uDD37");
             Emoji commandBullet = new Emoji("\uD83D\uDD39");
             string commandPrefix = configuration["commandPrefix"];
@@ -103,9 +113,8 @@ namespace DolarBot.Modules.Commands
             return embed;
         }
 
-        private EmbedBuilder GenerateEmbeddedHelpCommand(string command, out string thumbnailUrl)
+        private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
         {
-            thumbnailUrl = GlobalConfiguration.Images.GetHelpImageThumbnailFullPath();
             string commandPrefix = configuration["commandPrefix"];
             string commandTitle = Format.Code($"{commandPrefix}{command}");
 
@@ -135,7 +144,7 @@ namespace DolarBot.Modules.Commands
                 embed.AddField(Format.Bold("Parametros"), Format.Italics("Ninguno."));
             }
 
-            if(commandInfo.Aliases.Count > 1)
+            if (commandInfo.Aliases.Count > 1)
             {
                 IEnumerable<string> otherAliases = commandInfo.Aliases.Where(a => !a.IsEquivalentTo(command));
                 string aliases = string.Join(", ", otherAliases.Select(a => Format.Code($"{commandPrefix}{a}")));
@@ -143,6 +152,46 @@ namespace DolarBot.Modules.Commands
             }
 
             return embed;
+        }
+
+        private async Task SendPagedHelpReplyAsync()
+        {
+            EmbedBuilder embed = GenerateEmbeddedHelp();
+            List<PaginatedMessage.Page> pages = new List<PaginatedMessage.Page>();
+            int pageCount = 0;
+            foreach (EmbedFieldBuilder embedField in embed.Fields)
+            {
+                pages.Add(new PaginatedMessage.Page
+                {
+                    Description = embed.Description,
+                    Title = embed.Title,
+                    Fields = new List<EmbedFieldBuilder>() { embedField },
+                    ImageUrl = embed.ImageUrl,
+                    Color = embed.Color,
+                    FooterOverride = new EmbedFooterBuilder
+                    {
+                        Text = $"Página {++pageCount} de {embed.Fields.Count}"
+                    },
+                    ThumbnailUrl = embed.ThumbnailUrl
+                });
+            }
+
+            PaginatedMessage pager = new PaginatedMessage
+            {
+                Pages = pages,
+                ThumbnailUrl = pages.First().ThumbnailUrl
+            };
+            ReactionList reactions = new ReactionList
+            {
+                Forward = true,
+                Backward = true,
+                First = true,
+                Last = true,
+                Info = false,
+                Jump = false,
+                Trash = false
+            };
+            await PagedReplyAsync(pager, reactions);
         }
 
         private bool CommandExists(string command)

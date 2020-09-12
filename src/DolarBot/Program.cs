@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using DolarBot.Modules.Handlers;
@@ -33,8 +34,11 @@ namespace DolarBot
 
                 DiscordSocketClient client = new DiscordSocketClient();
                 CommandService commands = new CommandService();
-                IServiceProvider services = new ServiceCollection().AddSingleton(client).AddSingleton(commands).AddSingleton(configuration).BuildServiceProvider();
-
+                IServiceProvider services = new ServiceCollection().AddSingleton(client)
+                                                                   .AddSingleton(commands)
+                                                                   .AddSingleton(configuration)
+                                                                   .AddSingleton<InteractiveService>()
+                                                                   .BuildServiceProvider();
                 client.Log += LogClientEvent;
 
                 await RegisterCommandsAsync(client, commands, services, configuration);

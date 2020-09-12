@@ -14,4 +14,10 @@
     <ProjectReference Include="..\DolarBot.Util\DolarBot.Util.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Discord.Addons.Interactive">
+      <HintPath>..\libs\Discord.Addons.Interactive.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

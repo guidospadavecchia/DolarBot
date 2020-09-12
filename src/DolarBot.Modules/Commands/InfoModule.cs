@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +12,7 @@ namespace DolarBot.Modules.Commands
 {
     [HelpOrder(1)]
     [HelpTitle("Información")]
-    public class InfoModule : ModuleBase<SocketCommandContext>
+    public class InfoModule : InteractiveBase<SocketCommandContext>
     {
         private readonly Color infoEmbedColor = new Color(23, 99, 154);
         private readonly IConfiguration configuration;

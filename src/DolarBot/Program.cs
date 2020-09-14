@@ -2,6 +2,7 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
+using DolarBot.API;
 using DolarBot.Modules.Handlers;
 using DolarBot.Util;
 using log4net;
@@ -32,12 +33,15 @@ namespace DolarBot
                 IConfiguration configuration = ConfigureAppSettings();
                 ConfigureLogger();
 
+                ApiCalls api = new ApiCalls(configuration, logger);
                 DiscordSocketClient client = new DiscordSocketClient();
                 CommandService commands = new CommandService();
+
                 IServiceProvider services = new ServiceCollection().AddSingleton(client)
                                                                    .AddSingleton(commands)
                                                                    .AddSingleton(configuration)
                                                                    .AddSingleton<InteractiveService>()
+                                                                   .AddSingleton(api)
                                                                    .BuildServiceProvider();
                 client.Log += LogClientEvent;
 

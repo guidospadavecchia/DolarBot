@@ -42,11 +42,10 @@ namespace DolarBot.Modules.Commands
         [Summary(HELP_SUMMARY)]
         public async Task SendHelp(string command = null)
         {
-            string thumbnailUrl = GlobalConfiguration.Images.GetLocalHelpImageThumbnailFullPath();
             if (CommandExists(command))
             {
                 EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
-                await Context.Channel.SendFileAsync(thumbnailUrl, embed: embed.Build());
+                await ReplyAsync(embed: embed.Build());
             }
             else
             {
@@ -59,11 +58,10 @@ namespace DolarBot.Modules.Commands
         [Summary(HELP_SUMMARY_DM)]
         public async Task SendHelpDM(string command = null)
         {
-            string thumbnailUrl = GlobalConfiguration.Images.GetLocalHelpImageThumbnailFullPath();
             EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
 
             var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
-            var dm = Context.User.SendFileAsync(thumbnailUrl, embed: embed.Build());
+            var dm = ReplyAsync(embed: embed.Build());
             await Task.WhenAll(reply, dm);
         }
 
@@ -73,6 +71,7 @@ namespace DolarBot.Modules.Commands
         {
             Emoji moduleBullet = new Emoji("\uD83D\uDD37");
             Emoji commandBullet = new Emoji("\uD83D\uDD39");
+            string helpImageUrl = configuration.GetSection("images")?.GetSection("help")?["32"];
             string commandPrefix = configuration["commandPrefix"];
 
             List<ModuleInfo> modules = commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
@@ -82,7 +81,7 @@ namespace DolarBot.Modules.Commands
             EmbedBuilder embed = new EmbedBuilder().WithColor(helpEmbedColor)
                                                    .WithTitle(Format.Bold("Comandos Disponibles"))
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
-                                                   .WithThumbnailUrl(GlobalConfiguration.Images.GetHelpImageThumbnailUrl());
+                                                   .WithThumbnailUrl(helpImageUrl);
 
             string helpCommands = new StringBuilder()
                                   .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")}: {Format.Italics(HELP_SUMMARY)}")
@@ -115,6 +114,7 @@ namespace DolarBot.Modules.Commands
 
         private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
         {
+            string helpImageUrl = configuration.GetSection("images")?.GetSection("help")?["32"];
             string commandPrefix = configuration["commandPrefix"];
             string commandTitle = Format.Code($"{commandPrefix}{command}");
 
@@ -126,7 +126,7 @@ namespace DolarBot.Modules.Commands
             EmbedBuilder embed = new EmbedBuilder().WithTitle($"Comando {commandTitle}")
                                                    .WithColor(helpEmbedColor)
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
-                                                   .WithThumbnailUrl(GlobalConfiguration.Images.GetHelpImageThumbnailUrl())
+                                                   .WithThumbnailUrl(helpImageUrl)
                                                    .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary));
 
             if (commandInfo.Parameters.Count > 0)

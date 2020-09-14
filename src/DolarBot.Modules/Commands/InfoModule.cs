@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands
 {
-    [HelpOrder(1)]
+    [HelpOrder(2)]
     [HelpTitle("Información")]
     public class InfoModule : InteractiveBase<SocketCommandContext>
     {

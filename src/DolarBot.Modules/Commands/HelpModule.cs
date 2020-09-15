@@ -61,7 +61,7 @@ namespace DolarBot.Modules.Commands
             EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
 
             var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
-            var dm = ReplyAsync(embed: embed.Build());
+            var dm = Context.User.SendMessageAsync(embed: embed.Build());
             await Task.WhenAll(reply, dm);
         }
 

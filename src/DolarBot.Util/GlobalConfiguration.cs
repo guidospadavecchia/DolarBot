@@ -1,4 +1,6 @@
-﻿namespace DolarBot.Util
+﻿using System;
+
+namespace DolarBot.Util
 {
     public static class GlobalConfiguration
     {
@@ -7,6 +9,7 @@
         public static string GetStatusText() => "$ayuda | $help";
         public static string GetAppSettingsFileName() => "appsettings.json";
         public static string GetLogConfigFileName() => "log4net.config";
+        public static TimeZoneInfo GetLocalTimeZoneId() => TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
 
         #endregion
 

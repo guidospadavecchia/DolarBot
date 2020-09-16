@@ -7,6 +7,8 @@ using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands
@@ -97,10 +99,31 @@ namespace DolarBot.Modules.Commands
         [Summary("Devuelve el link de invitación del bot en Discord.")]
         public async Task GetInviteLink()
         {
+            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("DolarBot")
                                  .WithColor(infoEmbedColor)
+                                 .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"Invita al bot utilizando el siguiente {Format.Url("link", configuration["inviteLink"])}");
+
+            await ReplyAsync(embed: embed.Build());
+        }
+
+        [Command("bot")]
+        [Summary("Muestra información acerca del bot.")]
+        public async Task GetAbout()
+        {
+            Emoji heartEmoji = new Emoji("\u2764");
+            Emoji versionEmoji = new Emoji("\uD83D\uDCCD");
+            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
+
+            EmbedBuilder embed = new EmbedBuilder()
+                                 .WithTitle("DolarBot")
+                                 .WithColor(infoEmbedColor)
+                                 .WithThumbnailUrl(infoImageUrl)
+                                 .WithDescription($"{versionEmoji} Versión: {version}")
+                                 .WithFooter($"Hecho con {heartEmoji} en .NET Core");
 
             await ReplyAsync(embed: embed.Build());
         }

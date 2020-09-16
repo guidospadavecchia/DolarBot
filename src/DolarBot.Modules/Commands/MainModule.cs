@@ -48,10 +48,10 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dolarturista")]
-        [Alias("dt")]
-        [Summary("Muestra la cotización del dólar oficial más el impuesto PAÍS.")]
-        public async Task GetDolarTuristaPriceAsync()
+        [Command("dolarahorro")]
+        [Alias("da")]
+        [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.")]
+        public async Task GetDolarAhorroPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
@@ -61,7 +61,7 @@ namespace DolarBot.Modules.Commands
                     decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
                     result.Venta *= taxPercent;
 
-                    EmbedBuilder embed = CreateDollarEmbed(result, Format.Bold("Dólar Turista"), $"Cotización del {Format.Bold("dólar turista")} expresada en {Format.Bold("pesos argentinos")}.");
+                    EmbedBuilder embed = CreateDollarEmbed(result, Format.Bold("Dólar Ahorro"), $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
                     await ReplyAsync(embed: embed.Build());
                 }
                 else

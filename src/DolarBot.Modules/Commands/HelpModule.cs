@@ -17,14 +17,14 @@ namespace DolarBot.Modules.Commands
     public class HelpModule : InteractiveBase<SocketCommandContext>
     {
         #region Constants
-        private const string HELP_COMMAND = "help";
-        private const string HELP_ALIAS = "ayuda";
-        private const string HELP_COMMAND_DM = "helpdm";
-        private const string HELP_ALIAS_DM = "ayudadm";
+        private const string HELP_COMMAND = "ayuda";
+        private const string HELP_ALIAS = "a";
+        private const string HELP_COMMAND_DM = "ayudadm";
+        private const string HELP_ALIAS_DM = "adm";
         private const string HELP_SUMMARY = "Muestra los comandos disponibles.";
         private const string HELP_COMMAND_SUMMARY = "Muestra información sobre un comando.";
         private const string HELP_SUMMARY_DM = "Envía la ayuda por mensaje privado.";
-        private const string HELP_COMMAND_SUMMARY_DM = "Envía el comando por privado.";
+        private const string HELP_COMMAND_SUMMARY_DM = "Envía la ayuda del comando por mensaje privado.";
         #endregion
 
         private readonly Color helpEmbedColor = Color.Blue;
@@ -84,10 +84,18 @@ namespace DolarBot.Modules.Commands
                                                    .WithThumbnailUrl(helpImageUrl);
 
             string helpCommands = new StringBuilder()
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")}: {Format.Italics(HELP_SUMMARY)}")
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND_DM}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS_DM}")}: {Format.Italics(HELP_SUMMARY_DM)}")
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")} {Format.Code("<comando>")}: {Format.Italics(HELP_COMMAND_SUMMARY)}")
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND_DM}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS_DM}")} {Format.Code("<comando>")}: {Format.Italics(HELP_COMMAND_SUMMARY_DM)}")
+                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
+                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")}")
+                                  .AppendLine(Format.Italics(HELP_SUMMARY))
+                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
+                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND_DM}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS_DM}")}")
+                                  .AppendLine(Format.Italics(HELP_SUMMARY_DM))
+                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
+                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")} {Format.Code("<comando>")}")
+                                  .AppendLine(Format.Italics(HELP_COMMAND_SUMMARY))
+                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
+                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND_DM}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS_DM}")} {Format.Code("<comando>")}")
+                                  .AppendLine(Format.Italics(HELP_COMMAND_SUMMARY_DM))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
                                   .ToString();
             embed.AddField(Format.Bold($"{moduleBullet} Ayuda"), helpCommands);
@@ -97,15 +105,14 @@ namespace DolarBot.Modules.Commands
                 string moduleTitle = module.GetAttribute<HelpTitleAttribute>()?.Title;
                 if (!string.IsNullOrWhiteSpace(moduleTitle))
                 {
-                    StringBuilder commandsBuilder = new StringBuilder();
+                    StringBuilder commandsBuilder = new StringBuilder().AppendLine(GlobalConfiguration.Constants.BLANK_SPACE);
                     foreach (CommandInfo commandInfo in module.Commands)
                     {
                         string commandSummary = Format.Italics(commandInfo.Summary);
                         string aliases = string.Join(" | ", commandInfo.Aliases.Select(a => Format.Code($"{commandPrefix}{a}")));
-                        commandsBuilder.AppendLine($"{commandBullet} {aliases}: {commandSummary}");
+                        commandsBuilder.AppendLine($"{commandBullet} {aliases}").AppendLine(commandSummary.AppendLineBreak());
                     }
-                    string commands = commandsBuilder.AppendLine(GlobalConfiguration.Constants.BLANK_SPACE).ToString();
-                    embed.AddField($"{moduleBullet} {Format.Bold(moduleTitle)}", commands);
+                    embed.AddField($"{moduleBullet} {Format.Bold(moduleTitle)}", commandsBuilder.ToString());
                 }
             }
 

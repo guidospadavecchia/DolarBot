@@ -2,10 +2,11 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
+using DolarBot.Util;
+using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands
@@ -22,15 +23,23 @@ namespace DolarBot.Modules.Commands
             this.configuration = configuration;
         }
 
-        [Command("date")]        
-        [Summary("Muestra la fecha y hora del servidor donde se encuentra el bot.")]
+        [Command("date")]
+        [Summary("Muestra la fecha y hora local y del bot.")]
         public async Task GetDateAsync()
         {
-            string timestamp = Format.Bold(DateTime.Now.ToString("yyyy/MM/dd - HH:mm:ss"));
+            Emoji timeEmoji = new Emoji("\u23F0");
+            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            TimeZoneInfo localTimeZoneInfo = GlobalConfiguration.GetLocalTimeZoneInfo();
+            string localTimestamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimeZoneInfo).ToString("yyyy/MM/dd - HH:mm:ss");
+            string serverTimestamp = DateTime.Now.ToString("yyyy/MM/dd - HH:mm:ss");
+
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Fecha y Hora")
                                  .WithColor(infoEmbedColor)
-                                 .WithDescription($"La fecha y hora del servidor es {timestamp}");
+                                 .WithThumbnailUrl(infoImageUrl)
+                                 .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
+                                 .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp.AppendLineBreak()}")
+                                 .AddField($"Fecha y hora local", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
 
             await ReplyAsync(embed: embed.Build());
         }
@@ -39,10 +48,12 @@ namespace DolarBot.Modules.Commands
         [Summary("Muestra el ID del servidor de Discord actual.")]
         public async Task GetServerId()
         {
+            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
             string sid = Format.Bold(Context.Guild.Id.ToString());
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Server ID")
                                  .WithColor(infoEmbedColor)
+                                 .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"El ID del servidor es {sid}");
 
             await ReplyAsync(embed: embed.Build());
@@ -52,6 +63,9 @@ namespace DolarBot.Modules.Commands
         [Summary("Muestra la latencia del bot de Discord.")]
         public async Task Ping()
         {
+            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            string commandPrefix = configuration["commandPrefix"];
+
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Procesando...")
                                  .WithColor(infoEmbedColor);
@@ -61,17 +75,19 @@ namespace DolarBot.Modules.Commands
             var message = await ReplyAsync(embed: embed.Build());
             sw.Stop();
 
-            string responseTime = Format.Bold($"{Context.Client.Latency} ms");
-            string latency = Format.Bold($"{sw.ElapsedMilliseconds} ms");
+            string responseTime = $"{Context.Client.Latency} ms";
+            string latency = $"{sw.ElapsedMilliseconds} ms";
             await message.ModifyAsync(x =>
             {
-                embed.WithTitle("Resultado del Ping")
-                     .WithDescription(
-                        new StringBuilder()
-                        .AppendLine($"Tiempo de respuesta del bot: {responseTime}")
-                        .AppendLine($"Latencia de la puerta de enlace: {latency}")
-                        .ToString()
-                     );
+                Emoji pingEmoji = new Emoji("\uD83D\uDCE1");
+                Emoji gatewayEmoji = new Emoji("\uD83D\uDEAA");
+
+                embed.WithTitle($"Resultado del {Format.Code($"{commandPrefix}ping")}")
+                     .WithThumbnailUrl(infoImageUrl)
+                     .AddInlineField("Tiempo de respuesta", $"{pingEmoji} {responseTime}")
+                     .AddInlineField()
+                     .AddInlineField("Latencia del gateway", $"{gatewayEmoji} {latency}");
+
                 x.Embed = embed.Build();
             });
         }

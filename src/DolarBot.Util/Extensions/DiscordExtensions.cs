@@ -28,6 +28,11 @@ namespace DolarBot.Util.Extensions
             return embedBuilder.AddField(name, value, true);
         }
 
+        public static EmbedBuilder AddInlineField(this EmbedBuilder embedBuilder)
+        {
+            return embedBuilder.AddInlineField(GlobalConfiguration.Constants.BLANK_SPACE, GlobalConfiguration.Constants.BLANK_SPACE);
+        }
+
         public static EmbedBuilder AddEmptyLine(this EmbedBuilder embedBuilder)
         {
             return embedBuilder.AddField(GlobalConfiguration.Constants.BLANK_SPACE, GlobalConfiguration.Constants.BLANK_SPACE);

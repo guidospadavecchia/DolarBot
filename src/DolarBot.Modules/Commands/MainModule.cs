@@ -133,7 +133,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("contadoconliqui")]
         [Alias("ccl")]
-        [Summary("Muestra la cotización del dólar \"contado con liqui\".")]
+        [Summary("Muestra la cotización del dólar contado con liquidación.")]
         public async Task GetDolarContadoConLiquiPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -185,7 +185,7 @@ namespace DolarBot.Modules.Commands
                                                    .WithThumbnailUrl(dollarImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneId()):dd/MM/yyyy HH:mm}",
+                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"{dollarEmoji} Compra", Format.Bold($"${dollarResponse.Compra:F}"))
@@ -206,7 +206,7 @@ namespace DolarBot.Modules.Commands
                                                    .WithThumbnailUrl(chartImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneId()):dd/MM/yyyy HH:mm}",
+                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"{chartEmoji} Valor", Format.Bold(value.ToString()).AppendLineBreak());

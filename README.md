@@ -8,7 +8,7 @@
   
 ***
 ## Releases
-Podes acceder a la última versión [acá](https://github.com/guidospadavecchia/DolarBot/releases/latest).
+Existen versiones para **Windows** (x86, x64 y arm) y **Linux** (x64 y arm). La aplicación contiene todas las librerías de **.NET Core** necesarias para su funcionamiento. Podes acceder a la última versión haciendo click [acá](https://github.com/guidospadavecchia/DolarBot/releases/latest).
 
 ## Contribuciones
 - <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  

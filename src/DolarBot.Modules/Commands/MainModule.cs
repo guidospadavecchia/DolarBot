@@ -221,12 +221,13 @@ namespace DolarBot.Modules.Commands
                                                    .WithFooter($"{clockEmoji} = Fecha de última actualización");
 
             foreach (DolarResponse response in dollarResponses)
-            {
+            { 
+                string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()).ToString(response.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy HH:mm");
-                StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} Compra: {Format.Bold($"${response.Compra:F}")}")
-                                                      .AppendLine($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} Venta: {Format.Bold($"${response.Venta:F}")}")
-                                                      .AppendLine($"{clockEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {Format.Bold($"{lastUpdated}")}");
+                StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"${response.Compra:F}")} {blankSpace}")
+                                                      .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"${response.Venta:F}")} {blankSpace}")
+                                                      .AppendLine($"{clockEmoji} {blankSpace} {Format.Bold($"{lastUpdated}")} {blankSpace}");
                 embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
             }
 

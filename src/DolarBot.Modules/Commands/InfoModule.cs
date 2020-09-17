@@ -128,7 +128,8 @@ namespace DolarBot.Modules.Commands
                                  .WithTitle("DolarBot")
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
-                                 .WithDescription($"{versionEmoji} Versión: {version}")
+                                 .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())                                 
+                                 .AddField("¿Te gusta DolarBot?", $"Podés contribuir a su continuidad desde {Format.Url("acá", "https://www.paypal.com/paypalme/guidospadavecchia")}.")
                                  .WithFooter($"Hecho con {heartEmoji} en .NET Core");
 
             await ReplyAsync(embed: embed.Build());

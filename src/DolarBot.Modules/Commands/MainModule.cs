@@ -55,12 +55,9 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Oficial);
+                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Ahorro);
                 if (result != null)
                 {
-                    decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
-                    result.Venta *= taxPercent;
-
                     EmbedBuilder embed = CreateDollarEmbed(result, Format.Bold("Dólar Ahorro"), $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
                     await ReplyAsync(embed: embed.Build());
                 }

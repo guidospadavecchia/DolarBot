@@ -1,4 +1,5 @@
-﻿using DolarBot.API.Models;
+﻿using DolarBot.API.Cache;
+using DolarBot.API.Models;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ namespace DolarBot.API
     public sealed class ApiCalls
     {
         private readonly ILog logger;
+        private readonly ResponseCache cache;
 
         #region Apis
         public DolarArgentinaApi DolarArgentina { get; private set; }
@@ -21,7 +23,8 @@ namespace DolarBot.API
         public ApiCalls(IConfiguration configuration, ILog logger)
         {
             this.logger = logger;
-            DolarArgentina = new DolarArgentinaApi(configuration, LogError);
+            cache = new ResponseCache(configuration);
+            DolarArgentina = new DolarArgentinaApi(configuration, cache, LogError);
         }
 
         private void LogError(IRestResponse response)
@@ -45,16 +48,19 @@ namespace DolarBot.API
             private const string DOLAR_PROMEDIO_ENDPOINT = "/api/dolarpromedio";
             private const string DOLAR_BOLSA_ENDPOINT = "/api/dolarbolsa";
             private const string RIESGO_PAIS_ENDPOINT = "/api/riesgopais";
-
+            private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
 
             private readonly RestClient client;
             private readonly IConfiguration configuration;
+            private readonly ResponseCache cache;
             private readonly Action<IRestResponse> OnError;
 
             public enum DollarType
             {
                 [Description(DOLAR_OFICIAL_ENDPOINT)]
                 Oficial,
+                [Description(DOLAR_OFICIAL_ENDPOINT)]
+                Ahorro,
                 [Description(DOLAR_BLUE_ENDPOINT)]
                 Blue,
                 [Description(DOLAR_CONTADO_LIQUI_ENDPOINT)]
@@ -65,9 +71,10 @@ namespace DolarBot.API
                 Bolsa
             }
 
-            public DolarArgentinaApi(IConfiguration configuration, Action<IRestResponse> onError)
+            public DolarArgentinaApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
             {
                 this.configuration = configuration;
+                this.cache = cache;
                 OnError = onError;
 
                 client = new RestClient(this.configuration["apiUrl"]);
@@ -76,33 +83,57 @@ namespace DolarBot.API
 
             public async Task<DolarResponse> GetDollarPrice(DollarType type)
             {
-                string endpoint = type.GetDescription();
-
-                var request = new RestRequest(endpoint, DataFormat.Json);
-                var response = await client.ExecuteGetAsync<DolarResponse>(request);
-                if (response.IsSuccessful)
+                DolarResponse cachedResponse = cache.GetObject<DolarResponse>(type);
+                if(cachedResponse != null)
                 {
-                    return response.Data;
+                    return cachedResponse;
                 }
                 else
                 {
-                    OnError(response);
-                    return null;
+                    string endpoint = type.GetDescription();
+
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<DolarResponse> response = await client.ExecuteGetAsync<DolarResponse>(request);
+                    if (response.IsSuccessful)
+                    {
+                        if(type == DollarType.Ahorro)
+                        {
+                            decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
+                            response.Data.Venta *= taxPercent;
+                        }
+
+                        cache.SaveObject(type, response.Data);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
                 }
             }
 
             public async Task<RiesgoPaisResponse> GetRiesgoPais()
             {
-                var request = new RestRequest(RIESGO_PAIS_ENDPOINT, DataFormat.Json);
-                var response = await client.ExecuteGetAsync<RiesgoPaisResponse>(request);
-                if (response.IsSuccessful)
+                RiesgoPaisResponse cachedResponse = cache.GetObject<RiesgoPaisResponse>(RIESGO_PAIS_CACHE_KEY);
+                if (cachedResponse != null)
                 {
-                    return response.Data;
+                    return cachedResponse;
                 }
                 else
                 {
-                    OnError(response);
-                    return null;
+                    RestRequest request = new RestRequest(RIESGO_PAIS_ENDPOINT, DataFormat.Json);
+                    IRestResponse<RiesgoPaisResponse> response = await client.ExecuteGetAsync<RiesgoPaisResponse>(request);
+                    if (response.IsSuccessful)
+                    {
+                        cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    } 
                 }
             }
         }

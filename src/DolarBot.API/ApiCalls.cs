@@ -96,13 +96,15 @@ namespace DolarBot.API
                     IRestResponse<DolarResponse> response = await client.ExecuteGetAsync<DolarResponse>(request);
                     if (response.IsSuccessful)
                     {
+                        DolarResponse dolarResponse = response.Data;
+                        dolarResponse.Type = type;
                         if(type == DollarType.Ahorro)
                         {
                             decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
-                            response.Data.Venta *= taxPercent;
+                            dolarResponse.Venta *= taxPercent;
                         }
 
-                        cache.SaveObject(type, response.Data);
+                        cache.SaveObject(type, dolarResponse);
                         return response.Data;
                     }
                     else

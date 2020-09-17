@@ -18,6 +18,7 @@ namespace DolarBot.Modules.Commands
     public class MainModule : InteractiveBase<SocketCommandContext>
     {
         private const string ERROR_MESSAGE = "Error: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
+
         private readonly Color mainEmbedColor = new Color(67, 181, 129);
         private readonly IConfiguration configuration;
         private readonly ApiCalls api;
@@ -185,8 +186,8 @@ namespace DolarBot.Modules.Commands
                                                        Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"{dollarEmoji} Compra", Format.Bold($"${dollarResponse.Compra:F}"))
-                                                   .AddInlineField($"{dollarEmoji} Venta", Format.Bold($"${dollarResponse.Venta:F}".AppendLineBreak()));
+                                                   .AddInlineField("Compra", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} ${dollarResponse.Compra:F}"))
+                                                   .AddInlineField("Venta", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} ${dollarResponse.Venta:F}".AppendLineBreak()));
             return embed;
         }
 
@@ -206,7 +207,7 @@ namespace DolarBot.Modules.Commands
                                                        Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"{chartEmoji} Valor", Format.Bold(value.ToString()).AppendLineBreak());
+                                                   .AddInlineField($"Valor", Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}").AppendLineBreak());
             return embed;
         }
         #endregion

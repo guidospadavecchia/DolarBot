@@ -1,6 +1,6 @@
 ﻿{
-  "token": "NzUyMzEzMzg2MzUxNDYwMzcy.X1V0cA.ZhBCx0k6JXekfEc3putSM8MHebk",
-  "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=752313386351460372&permissions=84032&scope=bot",
+  "token": "",
+  "inviteLink": "",
   "commandPrefix": "$",
   "apiUrl": "https://api-dolar-argentina.herokuapp.com/",
   "dollarTaxPercent": 65,

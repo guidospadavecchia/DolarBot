@@ -7,7 +7,9 @@
 </p>
   
 ***
- 
+## Releases
+Podes acceder a la última versión [acá](https://github.com/guidospadavecchia/DolarBot/releases/latest).
+
 ## Contribuciones
 - <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
 

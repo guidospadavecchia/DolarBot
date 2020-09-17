@@ -6,7 +6,7 @@ namespace DolarBot.Util
     {
         #region Global
 
-        public static string GetStatusText() => "$ayuda | $help";
+        public static string GetStatusText() => "$ayuda";
         public static string GetAppSettingsFileName() => "appsettings.json";
         public static string GetLogConfigFileName() => "log4net.config";
         public static TimeZoneInfo GetLocalTimeZoneInfo() => TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");

@@ -9,6 +9,8 @@ namespace DolarBot.Util
         public static string GetStatusText() => "$ayuda";
         public static string GetAppSettingsFileName() => "appsettings.json";
         public static string GetLogConfigFileName() => "log4net.config";
+        public static string GetTokenEnvVarName() => "DOLARBOT_TOKEN";
+        public static string GetInviteLinkEnvVarName() => "DOLARBOT_INVITE";
         public static TimeZoneInfo GetLocalTimeZoneInfo() => TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
 
         #endregion

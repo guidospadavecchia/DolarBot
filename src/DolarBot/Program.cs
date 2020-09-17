@@ -47,11 +47,7 @@ namespace DolarBot
 
                 await RegisterCommandsAsync(client, commands, services, configuration);
 
-                string token = configuration["token"];
-                if (token == null)
-                {
-                    throw new SystemException("Token is missing from configuration file");
-                }
+                string token = GetToken(configuration);
 
                 await client.LoginAsync(TokenType.Bot, token);
                 await client.StartAsync();
@@ -92,6 +88,21 @@ namespace DolarBot
             CommandHandler commandHandler = new CommandHandler(client, commands, services, configuration, logger);
             client.MessageReceived += commandHandler.HandleCommandAsync;
             await commands.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
+        }
+
+        public string GetToken(IConfiguration configuration)
+        {
+            string token = configuration["token"];
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                token = Environment.GetEnvironmentVariable(GlobalConfiguration.GetTokenEnvVarName());
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    throw new SystemException("Missing token");
+                }
+            }
+
+            return token;
         }
 
         #endregion

@@ -99,11 +99,18 @@ namespace DolarBot.Modules.Commands
         public async Task GetInviteLink()
         {
             string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            string inviteLink = configuration["inviteLink"];
+
+            if (string.IsNullOrWhiteSpace(inviteLink))
+            {
+                inviteLink = Environment.GetEnvironmentVariable(GlobalConfiguration.GetInviteLinkEnvVarName());
+            }
+
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("DolarBot")
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
-                                 .WithDescription($"Invita al bot utilizando el siguiente {Format.Url("link", configuration["inviteLink"])}");
+                                 .WithDescription($"Invita al bot utilizando el este {Format.Url("link", inviteLink)}");
 
             await ReplyAsync(embed: embed.Build());
         }

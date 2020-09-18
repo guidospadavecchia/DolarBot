@@ -26,7 +26,7 @@ El prefijo para invocar cualquier comando con el bot es `$`. La mayoría de los 
 
 ### Cotizaciones
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial.  
+- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial (Banco Nación).  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
 - \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  

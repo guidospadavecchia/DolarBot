@@ -17,7 +17,7 @@ Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/ap
 - <b>Guido Spadavecchia</b>. (Contacto: guido.spadavecchia@gmail.com).  
 
 Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
-Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls)
+Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls).
 
 ## Licencia
 <b>DolarBot</b> está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).

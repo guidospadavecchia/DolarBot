@@ -225,7 +225,7 @@ namespace DolarBot.Modules.Commands
             { 
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
-                string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM/yyyy HH:mm");
+                string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM HH:mm");
                 StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"${response.Compra:F}")} {blankSpace}")
                                                       .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"${response.Venta:F}")} {blankSpace}")
                                                       .AppendLine($"{clockEmoji} {blankSpace} {Format.Bold($"{lastUpdated}")} {blankSpace}");

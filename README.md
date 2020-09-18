@@ -13,7 +13,7 @@
 
 ***
 ## Discord
-Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot).
+Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
 
 ## Comandos
 El prefijo para invocar cualquier comando con el bot es `$`. La mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente. A continuación se listan los comandos disponibles:

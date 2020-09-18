@@ -213,18 +213,19 @@ namespace DolarBot.Modules.Commands
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             Emoji clockEmoji = new Emoji("\u23F0");
             string dollarImageUrl = configuration.GetSection("images")?.GetSection("dollar")?["64"];
+            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle("Cotizaciones del Dólar")
                                                    .WithDescription($"Cotizaciones disponibles expresadas en {Format.Bold("pesos argentinos")}.".AppendLineBreak())
                                                    .WithThumbnailUrl(dollarImageUrl)
-                                                   .WithFooter($"{clockEmoji} = Fecha de última actualización");
+                                                   .WithFooter($"{clockEmoji} = Última actualización ({localTimeZone.StandardName})");
 
             foreach (DolarResponse response in dollarResponses)
             { 
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
-                string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()).ToString(response.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy HH:mm");
+                string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM/yyyy HH:mm");
                 StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"${response.Compra:F}")} {blankSpace}")
                                                       .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"${response.Venta:F}")} {blankSpace}")
                                                       .AppendLine($"{clockEmoji} {blankSpace} {Format.Bold($"{lastUpdated}")} {blankSpace}");
@@ -237,16 +238,17 @@ namespace DolarBot.Modules.Commands
         public EmbedBuilder CreateDollarEmbed(DolarResponse dollarResponse, string description)
         {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
+            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             string dollarImageUrl = configuration.GetSection("images")?.GetSection("dollar")?["64"];
             string footerImageUrl = configuration.GetSection("images")?.GetSection("clock")?["32"];
             string title = GetTitle(dollarResponse);
-            string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy HH:mm");
+            string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy HH:mm");
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle(title)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(dollarImageUrl)
-                                                   .WithFooter($"Ultima actualización: {lastUpdated}", footerImageUrl)
+                                                   .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
                                                    .AddInlineField("Compra", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} ${dollarResponse.Compra:F}"))
                                                    .AddInlineField("Venta", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} ${dollarResponse.Venta:F}".AppendLineBreak()));
             return embed;

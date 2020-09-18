@@ -24,7 +24,8 @@ namespace DolarBot.Modules.Commands
             this.configuration = configuration;
         }
 
-        [Command("date")]
+        [Command("hora")]
+        [Alias("date")]
         [Summary("Muestra la fecha y hora local y del bot.")]
         public async Task GetDateAsync()
         {
@@ -110,7 +111,7 @@ namespace DolarBot.Modules.Commands
                                  .WithTitle("DolarBot")
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
-                                 .WithDescription($"Invita al bot utilizando el este {Format.Url("link", inviteLink)}");
+                                 .WithDescription($"Invita al bot haciendo {Format.Url("click acá", inviteLink)}");
 
             await ReplyAsync(embed: embed.Build());
         }

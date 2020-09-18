@@ -128,7 +128,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("dolarpromedio")]
         [Alias("dp")]
-        [Summary("Muestra el promedio de las cotizaciones del dólar oficial.")]
+        [Summary("Muestra el promedio de las cotizaciones bancarias del dólar oficial.")]
         public async Task GetDolarPromedioPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -148,7 +148,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("dolarbolsa")]
         [Alias("dbo")]
-        [Summary("Muestra la cotización del dólar bolsa.")]
+        [Summary("Muestra la cotización del dólar bolsa (MEP).")]
         public async Task GetDolarBolsaPriceAsync()
         {
             using (Context.Channel.EnterTypingState())

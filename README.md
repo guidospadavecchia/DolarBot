@@ -14,27 +14,27 @@ Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/ap
 El prefijo para invocar cualquier comando con el bot es `$`. La mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente. A continuación se listan los comandos disponibles:
 
 ### Ayuda
-\[`$ayuda` | `$a`]: Muestra los comandos disponibles.  
-\[`$ayudadm` | `$adm`]: Envía la ayuda por mensaje privado.  
-\[`$ayuda` | `$a`] `<comando>`: Muestra información sobre un comando particular.  
-\[`$ayudadm` | `$adm`] `<comando>`: Envía la ayuda de un comando particular por mensaje privado.  
+- \[`$ayuda` | `$a`]: Muestra los comandos disponibles.  
+- \[`$ayudadm` | `$adm`]: Envía la ayuda por mensaje privado.  
+- \[`$ayuda` | `$a`] `<comando>`: Muestra información sobre un comando particular.  
+- \[`$ayudadm` | `$adm`] `<comando>`: Envía la ayuda de un comando particular por mensaje privado.  
 
 ### Cotizaciones
-\[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-\[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial.  
-\[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
-\[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
-\[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
-\[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
-\[`$contadoconliqui` | `$ccl`]: Muestra la cotización del dólar contado con liquidación.  
-\[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  
+- \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
+- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial.  
+- \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
+- \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
+- \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
+- \[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
+- \[`$contadoconliqui` | `$ccl`]: Muestra la cotización del dólar contado con liquidación.  
+- \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  
 
 ### Información
-\[`$hora` | `$date`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  
-\[`$sid`]: Muestra el ID del servidor de Discord actual.  
-\[`$ping`]: Muestra la latencia del bot de Discord.  
-\[`$invite` | `$invitar`]: Devuelve el link de invitación del bot en Discord.  
-\[`$bot`]: Muestra información acerca del bot.  
+- \[`$hora` | `$date`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  
+- \[`$sid`]: Muestra el ID del servidor de Discord actual.  
+- \[`$ping`]: Muestra la latencia del bot de Discord.  
+- \[`$invite` | `$invitar`]: Devuelve el link de invitación del bot en Discord.  
+- \[`$bot`]: Muestra información acerca del bot.  
 
 ## Librerías y APIS
 - [Discord.NET](https://github.com/discord-net/Discord.Net)

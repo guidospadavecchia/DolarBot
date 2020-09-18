@@ -8,7 +8,7 @@
   
 ***
 ## Discord
-Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot)
+Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot).
 
 ## Comandos
 

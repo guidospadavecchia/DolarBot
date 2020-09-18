@@ -225,10 +225,10 @@ namespace DolarBot.Modules.Commands
             { 
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
-                string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM HH:mm");
+                string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
                 StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"${response.Compra:F}")} {blankSpace}")
                                                       .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"${response.Venta:F}")} {blankSpace}")
-                                                      .AppendLine($"{clockEmoji} {blankSpace} {Format.Bold($"{lastUpdated}")} {blankSpace}");
+                                                      .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}");
                 embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
             }
 
@@ -242,7 +242,7 @@ namespace DolarBot.Modules.Commands
             string dollarImageUrl = configuration.GetSection("images")?.GetSection("dollar")?["64"];
             string footerImageUrl = configuration.GetSection("images")?.GetSection("clock")?["32"];
             string title = GetTitle(dollarResponse);
-            string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy HH:mm");
+            string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle(title)
@@ -288,7 +288,7 @@ namespace DolarBot.Modules.Commands
                                                    .WithThumbnailUrl(chartImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy HH:mm}",
+                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos".AppendLineBreak());

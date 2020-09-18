@@ -26,7 +26,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("hora")]
         [Alias("date")]
-        [Summary("Muestra la fecha y hora local y del bot.")]
+        [Summary("Muestra la fecha y hora del bot y del servidor donde se aloja.")]
         public async Task GetDateAsync()
         {
             Emoji timeEmoji = new Emoji("\u23F0");
@@ -40,8 +40,8 @@ namespace DolarBot.Modules.Commands
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
-                                 .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp.AppendLineBreak()}")
-                                 .AddField($"Fecha y hora local", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
+                                 .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
+                                 .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
 
             await ReplyAsync(embed: embed.Build());
         }

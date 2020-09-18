@@ -7,16 +7,20 @@
 </p>
   
 ***
-## Releases
-Existen versiones para **Windows** (x86, x64 y arm) y **Linux** (x64 y arm). La aplicación contiene todas las librerías de **.NET Core** necesarias para su funcionamiento. Podes acceder a la última versión haciendo click [acá](https://github.com/guidospadavecchia/DolarBot/releases/latest).
+## Discord
+Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot).
+
+## Comandos
+
 
 ## Contribuciones
-- <b>Guido Spadavecchia</b>. (Contact me at guido.spadavecchia@gmail.com).  
+- <b>Guido Spadavecchia</b>. (Contacto: guido.spadavecchia@gmail.com).  
 
 Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
+Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls).
 
 ## Licencia
-<b>DolarBot</b> está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE)
+<b>DolarBot</b> está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
 
 ## 
 <p align="center">

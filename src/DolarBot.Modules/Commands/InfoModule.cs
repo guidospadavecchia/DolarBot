@@ -130,8 +130,7 @@ namespace DolarBot.Modules.Commands
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
-                                 .AddField("Autor", "Guido Spadavecchia")
-                                 .AddField("Contacto", "guido.spadavecchia@gmail.com")
+                                 .AddField("GitHub", $"{Format.Url("guidospadavecchia/DolarBot", "https://github.com/guidospadavecchia/DolarBot")}".AppendLineBreak())
                                  .AddField("¿Te gusta DolarBot?", $"Invitame un {Format.Url("café", "https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1")}".AppendLineBreak())
                                  .WithFooter($"Hecho con {heartEmoji} en .NET Core");
 

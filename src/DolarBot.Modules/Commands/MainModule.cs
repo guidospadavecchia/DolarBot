@@ -291,7 +291,7 @@ namespace DolarBot.Modules.Commands
                                                        Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"Valor", Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}").AppendLineBreak());
+                                                   .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos".AppendLineBreak());
             return embed;
         }
         #endregion

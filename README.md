@@ -7,6 +7,7 @@
 </p>  
 
 ***    
+## Status
 [![License](https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/releases/latest)
 [![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=182336&scope=bot)  

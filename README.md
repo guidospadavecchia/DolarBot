@@ -5,13 +5,12 @@
 <p align="center">
 <i>El bot argentino de Discord para ver las cotizaciones del dólar y riesgo país.</i>  
 </p>  
-<p align="center">
-  <img alt="Release version" src="https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square">
-  <img alt="License" src="https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square">
-  <img alt="Discord" src="https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square">
-</p>
 
-***
+***    
+[![License](https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/releases/latest)
+[![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=182336&scope=bot)  
+ 
 ## Discord
 Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
 

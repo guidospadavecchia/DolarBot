@@ -43,12 +43,12 @@ namespace DolarBot
                                                                    .AddSingleton<InteractiveService>()
                                                                    .AddSingleton(api)
                                                                    .BuildServiceProvider();
-                client.Log += LogClientEvent;
-
-                await RegisterCommandsAsync(client, commands, services, configuration);
-
                 string token = GetToken(configuration);
 
+                client.Log += LogClientEvent;
+                
+                PrintCurrentVersion();
+                await RegisterCommandsAsync(client, commands, services, configuration);
                 await client.LoginAsync(TokenType.Bot, token);
                 await client.StartAsync();
                 await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
@@ -61,15 +61,22 @@ namespace DolarBot
             }
         }
 
+        #endregion
+
+        #region Methods
+
         private Task LogClientEvent(LogMessage logMessage)
         {
             Console.WriteLine(logMessage);
             return Task.CompletedTask;
         }
 
-        #endregion
-
-        #region Methods
+        private void PrintCurrentVersion()
+        {
+            string assemblyVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            Console.WriteLine($"DolarBot v{assemblyVersion}");
+            Console.WriteLine();
+        }
 
         public IConfiguration ConfigureAppSettings()
         {

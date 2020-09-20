@@ -8,6 +8,7 @@ using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -222,13 +223,16 @@ namespace DolarBot.Modules.Commands
                                                    .WithFooter($"{clockEmoji} = Última actualización ({localTimeZone.StandardName})");
 
             foreach (DolarResponse response in dollarResponses)
-            { 
+            {
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
-                StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"${response.Compra:F}")} {blankSpace}")
-                                                      .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"${response.Venta:F}")} {blankSpace}")
-                                                      .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}");
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
+
+                StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold(buyPrice)} {blankSpace}")
+                                                           .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold(sellPrice)} {blankSpace}")
+                                                           .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}");
                 embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
             }
 
@@ -243,14 +247,16 @@ namespace DolarBot.Modules.Commands
             string footerImageUrl = configuration.GetSection("images")?.GetSection("clock")?["32"];
             string title = GetTitle(dollarResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
+            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
+            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle(title)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(dollarImageUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
-                                                   .AddInlineField("Compra", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} ${dollarResponse.Compra:F}"))
-                                                   .AddInlineField("Venta", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} ${dollarResponse.Venta:F}".AppendLineBreak()));
+                                                   .AddInlineField("Compra", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {buyPrice}"))
+                                                   .AddInlineField("Venta", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {sellPrice}".AppendLineBreak()));
             return embed;
         }
 
@@ -280,7 +286,7 @@ namespace DolarBot.Modules.Commands
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             string chartImageUrl = configuration.GetSection("images")?.GetSection("chart")?["64"];
             string footerImageUrl = configuration.GetSection("images")?.GetSection("clock")?["32"];
-            int value = (int)(Math.Round(riesgoPaisResponse.Valor * 1000, MidpointRounding.AwayFromZero));
+            string value = decimal.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal valor) ? ((int)Math.Round(valor * 1000, MidpointRounding.AwayFromZero)).ToString() : "No informado";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle("Riesgo País")

@@ -1,5 +1,6 @@
 ﻿using DolarBot.API.Cache;
 using DolarBot.API.Models;
+using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DolarBot.API
@@ -81,10 +83,12 @@ namespace DolarBot.API
                 client.UseNewtonsoftJson();
             }
 
+            public CultureInfo GetApiCulture() => CultureInfo.GetCultureInfo("en-US");
+
             public async Task<DolarResponse> GetDollarPrice(DollarType type)
             {
                 DolarResponse cachedResponse = cache.GetObject<DolarResponse>(type);
-                if(cachedResponse != null)
+                if (cachedResponse != null)
                 {
                     return cachedResponse;
                 }
@@ -98,10 +102,14 @@ namespace DolarBot.API
                     {
                         DolarResponse dolarResponse = response.Data;
                         dolarResponse.Type = type;
-                        if(type == DollarType.Ahorro)
+                        if (type == DollarType.Ahorro)
                         {
+                            CultureInfo apiCulture = GetApiCulture();
                             decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
-                            dolarResponse.Venta *= taxPercent;
+                            if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                            {
+                                dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F", apiCulture);
+                            }
                         }
 
                         cache.SaveObject(type, dolarResponse);
@@ -135,7 +143,7 @@ namespace DolarBot.API
                     {
                         OnError(response);
                         return null;
-                    } 
+                    }
                 }
             }
         }

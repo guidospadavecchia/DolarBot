@@ -94,8 +94,8 @@ namespace DolarBot.Modules.Commands
             });
         }
 
-        [Command("invite")]
-        [Alias("invitar")]
+        [Command("invitar")]
+        [Alias("invite")]
         [Summary("Devuelve el link de invitación del bot en Discord.")]
         public async Task GetInviteLink()
         {

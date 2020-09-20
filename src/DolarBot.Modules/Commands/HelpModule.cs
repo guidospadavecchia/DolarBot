@@ -126,7 +126,7 @@ namespace DolarBot.Modules.Commands
 
         private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
         {
-            string helpImageUrl = Configuration.GetSection("images")?.GetSection("help")?["32"];
+            string helpImageUrl = Configuration.GetSection("images")?.GetSection("help")?["64"];
             string commandPrefix = Configuration["commandPrefix"];
             string commandTitle = Format.Code($"{commandPrefix}{command}");
 
@@ -139,7 +139,7 @@ namespace DolarBot.Modules.Commands
                                                    .WithColor(helpEmbedColor)
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                                    .WithThumbnailUrl(helpImageUrl)
-                                                   .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary));
+                                                   .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary).AppendLineBreak());
 
             if (commandInfo.Parameters.Count > 0)
             {
@@ -149,11 +149,11 @@ namespace DolarBot.Modules.Commands
                     parameterBuilder.AppendLine($"{Format.Code($"<{parameter.Name}>")}: {Format.Italics(parameter.Summary)}");
                 }
                 string parameters = parameterBuilder.ToString();
-                embed.AddField(Format.Bold("Parametros"), parameters);
+                embed.AddField(Format.Bold("Parametros"), parameters.AppendLineBreak());
             }
             else
             {
-                embed.AddField(Format.Bold("Parametros"), Format.Italics("Ninguno."));
+                embed.AddField(Format.Bold("Parametros"), Format.Italics("Ninguno.").AppendLineBreak());
             }
 
             if (commandInfo.Aliases.Count > 1)

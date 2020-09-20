@@ -76,7 +76,7 @@ namespace DolarBot.Modules.Commands
         {
             Emoji moduleBullet = new Emoji("\uD83D\uDD37");
             Emoji commandBullet = new Emoji("\uD83D\uDD39");
-            string helpImageUrl = Configuration.GetSection("images")?.GetSection("help")?["32"];
+            string helpImageUrl = Configuration.GetSection("images").GetSection("help")["32"];
             string commandPrefix = Configuration["commandPrefix"];
 
             List<ModuleInfo> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
@@ -126,7 +126,7 @@ namespace DolarBot.Modules.Commands
 
         private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
         {
-            string helpImageUrl = Configuration.GetSection("images")?.GetSection("help")?["64"];
+            string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
             string commandPrefix = Configuration["commandPrefix"];
             string commandTitle = Format.Code($"{commandPrefix}{command}");
 

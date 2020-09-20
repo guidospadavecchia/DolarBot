@@ -44,18 +44,32 @@ namespace DolarBot.API
         [Description("https://github.com/Castrogiovanni20/api-dolar-argentina")]
         public class DolarArgentinaApi
         {
+            #region Constants
             private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolaroficial";
             private const string DOLAR_BLUE_ENDPOINT = "/api/dolarblue";
             private const string DOLAR_CONTADO_LIQUI_ENDPOINT = "/api/contadoliqui";
             private const string DOLAR_PROMEDIO_ENDPOINT = "/api/dolarpromedio";
             private const string DOLAR_BOLSA_ENDPOINT = "/api/dolarbolsa";
+            private const string DOLAR_BBVA_ENDPOINT = "/api/bbva";
+            private const string DOLAR_PIANO_ENDPOINT = "/api/piano";
+            private const string DOLAR_HIPOTECARIO_ENDPOINT = "/api/hipotecario";
+            private const string DOLAR_GALICIA_ENDPOINT = "/api/galicia";
+            private const string DOLAR_SANTANDER_ENDPOINT = "/api/santander";
+            private const string DOLAR_CIUDAD_ENDPOINT = "/api/ciudad";
+            private const string DOLAR_SUPERVIELLE_ENDPOINT = "/api/supervielle";
+            private const string DOLAR_PATAGONIA_ENDPOINT = "/api/patagonia";
+            private const string DOLAR_COMAFI_ENDPOINT = "/api/comafi";
+
             private const string RIESGO_PAIS_ENDPOINT = "/api/riesgopais";
             private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
+            #endregion
 
+            #region Vars
             private readonly RestClient client;
             private readonly IConfiguration configuration;
             private readonly ResponseCache cache;
             private readonly Action<IRestResponse> OnError;
+            #endregion
 
             public enum DollarType
             {
@@ -70,7 +84,25 @@ namespace DolarBot.API
                 [Description(DOLAR_PROMEDIO_ENDPOINT)]
                 Promedio,
                 [Description(DOLAR_BOLSA_ENDPOINT)]
-                Bolsa
+                Bolsa,
+                [Description(DOLAR_BBVA_ENDPOINT)]
+                BBVA,
+                [Description(DOLAR_PIANO_ENDPOINT)]
+                Piano,
+                [Description(DOLAR_HIPOTECARIO_ENDPOINT)]
+                Hipotecario,
+                [Description(DOLAR_GALICIA_ENDPOINT)]
+                Galicia,
+                [Description(DOLAR_SANTANDER_ENDPOINT)]
+                Santander,
+                [Description(DOLAR_CIUDAD_ENDPOINT)]
+                Ciudad,
+                [Description(DOLAR_SUPERVIELLE_ENDPOINT)]
+                Supervielle,
+                [Description(DOLAR_PATAGONIA_ENDPOINT)]
+                Patagonia,
+                [Description(DOLAR_COMAFI_ENDPOINT)]
+                Comafi
             }
 
             public DolarArgentinaApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)

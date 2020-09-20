@@ -13,9 +13,19 @@ namespace DolarBot.Util.Extensions
             return module.Attributes.Any(a => (a as T) != null);
         }
 
+        public static bool HasAttribute<T>(this CommandInfo command) where T : Attribute
+        {
+            return command.Attributes.Any(a => (a as T) != null);
+        }
+
         public static T GetAttribute<T>(this ModuleInfo module) where T : Attribute
         {
             return module.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
+        }
+
+        public static T GetAttribute<T>(this CommandInfo command) where T : Attribute
+        {
+            return command.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
         }
 
         public static CommandInfo GetCommand(this IEnumerable<CommandInfo> commands, string command)

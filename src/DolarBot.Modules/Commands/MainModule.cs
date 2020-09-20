@@ -69,7 +69,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("dolaroficial")]
         [Alias("do")]
-        [Summary("Muestra la cotización del dólar oficial.")]
+        [Summary("Muestra la cotización del dólar oficial (Banco Nación).")]
         public async Task GetDolarOficialPriceAsync()
         {
             using (Context.Channel.EnterTypingState())

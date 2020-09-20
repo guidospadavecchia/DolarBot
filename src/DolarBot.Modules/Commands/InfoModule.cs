@@ -1,7 +1,7 @@
 ﻿using Discord;
-using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
+using DolarBot.Modules.Commands.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -14,23 +14,24 @@ namespace DolarBot.Modules.Commands
 {
     [HelpOrder(2)]
     [HelpTitle("Información")]
-    public class InfoModule : InteractiveBase<SocketCommandContext>
+    public class InfoModule : BaseInteractiveModule
     {
+        #region Vars
         private readonly Color infoEmbedColor = new Color(23, 99, 154);
-        private readonly IConfiguration configuration;
+        #endregion
 
-        public InfoModule(IConfiguration configuration)
-        {
-            this.configuration = configuration;
-        }
+        #region Constructor
+        public InfoModule(IConfiguration configuration) : base(configuration) { }
+        #endregion
 
         [Command("hora")]
         [Alias("date")]
         [Summary("Muestra la fecha y hora del bot y del servidor donde se aloja.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDateAsync()
         {
             Emoji timeEmoji = new Emoji("\u23F0");
-            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
             TimeZoneInfo localTimeZoneInfo = GlobalConfiguration.GetLocalTimeZoneInfo();
             string localTimestamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimeZoneInfo).ToString("yyyy/MM/dd - HH:mm:ss");
             string serverTimestamp = DateTime.Now.ToString("yyyy/MM/dd - HH:mm:ss");
@@ -48,9 +49,10 @@ namespace DolarBot.Modules.Commands
 
         [Command("sid")]
         [Summary("Muestra el ID del servidor de Discord actual.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetServerId()
         {
-            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
             string sid = Format.Bold(Context.Guild.Id.ToString());
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Server ID")
@@ -63,10 +65,11 @@ namespace DolarBot.Modules.Commands
 
         [Command("ping")]
         [Summary("Muestra la latencia del bot de Discord.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task Ping()
         {
-            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
-            string commandPrefix = configuration["commandPrefix"];
+            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
+            string commandPrefix = Configuration["commandPrefix"];
 
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Procesando...")
@@ -97,10 +100,11 @@ namespace DolarBot.Modules.Commands
         [Command("invitar")]
         [Alias("invite")]
         [Summary("Devuelve el link de invitación del bot en Discord.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetInviteLink()
         {
-            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
-            string inviteLink = configuration["inviteLink"];
+            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
+            string inviteLink = Configuration["inviteLink"];
 
             if (string.IsNullOrWhiteSpace(inviteLink))
             {
@@ -118,6 +122,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("bot")]
         [Summary("Muestra información acerca del bot.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetAbout()
         {
             Emoji heartEmoji = new Emoji("\uD83D\uDC99");
@@ -125,11 +130,11 @@ namespace DolarBot.Modules.Commands
             Emoji supportServerEmoji = new Emoji("\uD83D\uDCAC");
             Emoji githubEmoji = new Emoji("\uD83D\uDCBB");
             Emoji coffeeEmoji = new Emoji("\u2615");
-            string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
+            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
+            string githubUrl = Configuration["githubUrl"];
+            string donationUrl = Configuration["donationUrl"];
+            string supportServerUrl = Configuration["supportServerUrl"];
             string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
-            string githubUrl = configuration["githubUrl"];
-            string donationUrl = configuration["donationUrl"];
-            string supportServerUrl = configuration["supportServerUrl"];
 
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("DolarBot")

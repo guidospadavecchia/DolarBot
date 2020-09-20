@@ -4,6 +4,7 @@ using Discord.Commands;
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
+using DolarBot.Modules.Commands.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ namespace DolarBot.Modules.Commands
 {
     [HelpOrder(1)]
     [HelpTitle("Cotizaciones")]
-    public class MainModule : InteractiveBase<SocketCommandContext>
+    public class MainModule : BaseInteractiveModule
     {
         #region Constants
         private const string DOLAR_OFICIAL_TITLE = "Dólar Oficial";
@@ -32,29 +33,30 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         private readonly Color mainEmbedColor = new Color(67, 181, 129);
-        private readonly IConfiguration configuration;
-        private readonly ApiCalls api;
+        protected readonly ApiCalls Api;
         #endregion
 
-        public MainModule(IConfiguration configuration, ApiCalls api)
+        #region Constructor
+        public MainModule(IConfiguration configuration, ApiCalls api) : base(configuration)
         {
-            this.configuration = configuration;
-            this.api = api;
+            Api = api;
         }
+        #endregion
 
         [Command("dolar")]
         [Alias("d")]
         [Summary("Muestra todas las cotizaciones del dólar disponibles.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse[] responses = await Task.WhenAll(api.DolarArgentina.GetDollarPrice(DollarType.Oficial),
-                                                               api.DolarArgentina.GetDollarPrice(DollarType.Ahorro),
-                                                               api.DolarArgentina.GetDollarPrice(DollarType.Blue),
-                                                               api.DolarArgentina.GetDollarPrice(DollarType.Bolsa),
-                                                               api.DolarArgentina.GetDollarPrice(DollarType.Promedio),
-                                                               api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui));
+                DolarResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetDollarPrice(DollarType.Oficial),
+                                                               Api.DolarArgentina.GetDollarPrice(DollarType.Ahorro),
+                                                               Api.DolarArgentina.GetDollarPrice(DollarType.Blue),
+                                                               Api.DolarArgentina.GetDollarPrice(DollarType.Bolsa),
+                                                               Api.DolarArgentina.GetDollarPrice(DollarType.Promedio),
+                                                               Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui));
                 if (responses.All(r => r != null))
                 {
                     EmbedBuilder embed = CreateDollarEmbed(responses);
@@ -70,11 +72,12 @@ namespace DolarBot.Modules.Commands
         [Command("dolaroficial")]
         [Alias("do")]
         [Summary("Muestra la cotización del dólar oficial (Banco Nación).")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarOficialPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Oficial);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Oficial);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
@@ -90,11 +93,12 @@ namespace DolarBot.Modules.Commands
         [Command("dolarahorro")]
         [Alias("da")]
         [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarAhorroPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Ahorro);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Ahorro);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
@@ -110,11 +114,12 @@ namespace DolarBot.Modules.Commands
         [Command("dolarblue")]
         [Alias("db")]
         [Summary("Muestra la cotización del dólar blue.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarBluePriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Blue);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Blue);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
@@ -130,11 +135,12 @@ namespace DolarBot.Modules.Commands
         [Command("dolarpromedio")]
         [Alias("dp")]
         [Summary("Muestra el promedio de las cotizaciones bancarias del dólar oficial.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarPromedioPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Promedio);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Promedio);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
@@ -150,11 +156,12 @@ namespace DolarBot.Modules.Commands
         [Command("dolarbolsa")]
         [Alias("dbo")]
         [Summary("Muestra la cotización del dólar bolsa (MEP).")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarBolsaPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.Bolsa);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Bolsa);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
@@ -170,11 +177,12 @@ namespace DolarBot.Modules.Commands
         [Command("contadoconliqui")]
         [Alias("ccl")]
         [Summary("Muestra la cotización del dólar contado con liquidación.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetDolarContadoConLiquiPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
@@ -190,11 +198,12 @@ namespace DolarBot.Modules.Commands
         [Command("riesgopais")]
         [Alias("rp")]
         [Summary("Muestra el valor del riesgo país.")]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task GetRiesgoPaisValueAsync()
         {
             using (Context.Channel.EnterTypingState())
             {
-                RiesgoPaisResponse result = await api.DolarArgentina.GetRiesgoPais();
+                RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais();
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateRiesgoPaisEmbed(result);
@@ -213,7 +222,7 @@ namespace DolarBot.Modules.Commands
         {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             Emoji clockEmoji = new Emoji("\u23F0");
-            string dollarImageUrl = configuration.GetSection("images")?.GetSection("dollar")?["64"];
+            string dollarImageUrl = Configuration.GetSection("images")?.GetSection("dollar")?["64"];
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
@@ -227,8 +236,8 @@ namespace DolarBot.Modules.Commands
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
 
                 StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold(buyPrice)} {blankSpace}")
                                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold(sellPrice)} {blankSpace}")
@@ -243,12 +252,12 @@ namespace DolarBot.Modules.Commands
         {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
-            string dollarImageUrl = configuration.GetSection("images")?.GetSection("dollar")?["64"];
-            string footerImageUrl = configuration.GetSection("images")?.GetSection("clock")?["32"];
+            string dollarImageUrl = Configuration.GetSection("images")?.GetSection("dollar")?["64"];
+            string footerImageUrl = Configuration.GetSection("images")?.GetSection("clock")?["32"];
             string title = GetTitle(dollarResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
-            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
+            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
+            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle(title)
@@ -284,9 +293,9 @@ namespace DolarBot.Modules.Commands
         public EmbedBuilder CreateRiesgoPaisEmbed(RiesgoPaisResponse riesgoPaisResponse)
         {
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
-            string chartImageUrl = configuration.GetSection("images")?.GetSection("chart")?["64"];
-            string footerImageUrl = configuration.GetSection("images")?.GetSection("clock")?["32"];
-            string value = decimal.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, api.DolarArgentina.GetApiCulture(), out decimal valor) ? ((int)Math.Round(valor * 1000, MidpointRounding.AwayFromZero)).ToString() : "No informado";
+            string chartImageUrl = Configuration.GetSection("images")?.GetSection("chart")?["64"];
+            string footerImageUrl = Configuration.GetSection("images")?.GetSection("clock")?["32"];
+            string value = decimal.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal valor) ? ((int)Math.Round(valor * 1000, MidpointRounding.AwayFromZero)).ToString() : "No informado";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle("Riesgo País")

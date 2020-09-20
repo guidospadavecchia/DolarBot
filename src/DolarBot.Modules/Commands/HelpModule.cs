@@ -2,6 +2,7 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
+using DolarBot.Modules.Commands.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +15,7 @@ using ParameterInfo = Discord.Commands.ParameterInfo;
 
 namespace DolarBot.Modules.Commands
 {
-    public class HelpModule : InteractiveBase<SocketCommandContext>
+    public class HelpModule : BaseInteractiveModule
     {
         #region Constants
         private const string HELP_COMMAND = "ayuda";
@@ -27,19 +28,22 @@ namespace DolarBot.Modules.Commands
         private const string HELP_COMMAND_SUMMARY_DM = "Envía la ayuda del comando por mensaje privado.";
         #endregion
 
+        #region Vars
         private readonly Color helpEmbedColor = Color.Blue;
-        private readonly CommandService commands;
-        private readonly IConfiguration configuration;
+        private readonly CommandService Commands;
+        #endregion
 
-        public HelpModule(CommandService commands, IConfiguration configuration)
+        #region Constructor
+        public HelpModule(IConfiguration configuration, CommandService commands) : base(configuration)
         {
-            this.commands = commands;
-            this.configuration = configuration;
+            Commands = commands;
         }
+        #endregion
 
         [Command(HELP_COMMAND)]
         [Alias(HELP_ALIAS)]
         [Summary(HELP_SUMMARY)]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task SendHelp(string command = null)
         {
             if (CommandExists(command))
@@ -56,6 +60,7 @@ namespace DolarBot.Modules.Commands
         [Command(HELP_COMMAND_DM)]
         [Alias(HELP_ALIAS_DM)]
         [Summary(HELP_SUMMARY_DM)]
+        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
         public async Task SendHelpDM(string command = null)
         {
             EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
@@ -71,10 +76,10 @@ namespace DolarBot.Modules.Commands
         {
             Emoji moduleBullet = new Emoji("\uD83D\uDD37");
             Emoji commandBullet = new Emoji("\uD83D\uDD39");
-            string helpImageUrl = configuration.GetSection("images")?.GetSection("help")?["32"];
-            string commandPrefix = configuration["commandPrefix"];
+            string helpImageUrl = Configuration.GetSection("images")?.GetSection("help")?["32"];
+            string commandPrefix = Configuration["commandPrefix"];
 
-            List<ModuleInfo> modules = commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
+            List<ModuleInfo> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
                                                        .OrderBy(m => (m.GetAttribute<HelpOrderAttribute>()?.Order))
                                                        .ToList();
 
@@ -121,15 +126,15 @@ namespace DolarBot.Modules.Commands
 
         private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
         {
-            string helpImageUrl = configuration.GetSection("images")?.GetSection("help")?["32"];
-            string commandPrefix = configuration["commandPrefix"];
+            string helpImageUrl = Configuration.GetSection("images")?.GetSection("help")?["32"];
+            string commandPrefix = Configuration["commandPrefix"];
             string commandTitle = Format.Code($"{commandPrefix}{command}");
 
-            List<ModuleInfo> modules = commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
+            List<ModuleInfo> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
                                                        .OrderBy(m => m.GetAttribute<HelpOrderAttribute>()?.Order)
                                                        .ToList();
 
-            CommandInfo commandInfo = commands.Commands.GetCommand(command);
+            CommandInfo commandInfo = Commands.Commands.GetCommand(command);
             EmbedBuilder embed = new EmbedBuilder().WithTitle($"Comando {commandTitle}")
                                                    .WithColor(helpEmbedColor)
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
@@ -203,7 +208,7 @@ namespace DolarBot.Modules.Commands
 
         private bool CommandExists(string command)
         {
-            return !string.IsNullOrWhiteSpace(command) && commands.Commands.Any(c => c.Aliases.Select(a => a.ToUpper().Trim()).Contains(command.ToUpper().Trim()) && !c.Module.Name.IsEquivalentTo(typeof(HelpModule).Name));
+            return !string.IsNullOrWhiteSpace(command) && Commands.Commands.Any(c => c.Aliases.Select(a => a.ToUpper().Trim()).Contains(command.ToUpper().Trim()) && !c.Module.Name.IsEquivalentTo(typeof(HelpModule).Name));
         }
 
         #endregion

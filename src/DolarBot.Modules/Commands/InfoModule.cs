@@ -120,18 +120,25 @@ namespace DolarBot.Modules.Commands
         [Summary("Muestra información acerca del bot.")]
         public async Task GetAbout()
         {
-            Emoji heartEmoji = new Emoji("\u2764");
+            Emoji heartEmoji = new Emoji("\uD83D\uDC99");
             Emoji versionEmoji = new Emoji("\uD83D\uDCCD");
+            Emoji supportServerEmoji = new Emoji("\uD83D\uDCAC");
+            Emoji githubEmoji = new Emoji("\uD83D\uDCBB");
+            Emoji coffeeEmoji = new Emoji("\u2615");
             string infoImageUrl = configuration.GetSection("images")?.GetSection("info")?["64"];
             string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
+            string githubUrl = configuration["githubUrl"];
+            string donationUrl = configuration["donationUrl"];
+            string supportServerUrl = configuration["supportServerUrl"];
 
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("DolarBot")
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
-                                 .AddField("GitHub", $"{Format.Url("guidospadavecchia/DolarBot", "https://github.com/guidospadavecchia/DolarBot")}".AppendLineBreak())
-                                 .AddField("¿Te gusta DolarBot?", $"Invitame un {Format.Url("café", "https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1")}".AppendLineBreak())
+                                 .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor de soporte", supportServerUrl)}".AppendLineBreak())
+                                 .AddField("GitHub", $"{githubEmoji} {Format.Url("guidospadavecchia/DolarBot", githubUrl)}".AppendLineBreak())
+                                 .AddField("¿Te gusta DolarBot?", $"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}".AppendLineBreak())
                                  .WithFooter($"Hecho con {heartEmoji} en .NET Core");
 
             await ReplyAsync(embed: embed.Build());

@@ -69,7 +69,7 @@ namespace DolarBot.Modules.Commands
         [Command("bancos")]
         [Alias("b")]
         [Summary("Muestra la lista de bancos disponibles para obtener las cotizaciones.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetBanks()
         {
             string banks = string.Join(", ", Enum.GetNames(typeof(BankCommandType)).Select(b => Format.Bold(b)));
@@ -79,7 +79,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolar")]
         [Alias("d")]
         [Summary("Muestra todas las cotizaciones del dólar disponibles o por banco.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarPriceAsync(
             [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`. Ejemplo: `$dolar galicia`.")]
             string banco = null)
@@ -133,7 +133,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolaroficial")]
         [Alias("do")]
         [Summary("Muestra la cotización del dólar oficial (Banco Nación).")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarOficialPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -154,7 +154,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarahorro")]
         [Alias("da")]
         [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y ganancias.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarAhorroPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -175,7 +175,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarblue")]
         [Alias("db")]
         [Summary("Muestra la cotización del dólar blue.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarBluePriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -196,7 +196,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarpromedio")]
         [Alias("dp")]
         [Summary("Muestra el promedio de las cotizaciones bancarias del dólar oficial.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarPromedioPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -217,7 +217,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarbolsa")]
         [Alias("dbo")]
         [Summary("Muestra la cotización del dólar bolsa (MEP).")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarBolsaPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -238,7 +238,7 @@ namespace DolarBot.Modules.Commands
         [Command("contadoconliqui")]
         [Alias("ccl")]
         [Summary("Muestra la cotización del dólar contado con liquidación.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarContadoConLiquiPriceAsync()
         {
             using (Context.Channel.EnterTypingState())
@@ -259,7 +259,7 @@ namespace DolarBot.Modules.Commands
         [Command("riesgopais")]
         [Alias("rp")]
         [Summary("Muestra el valor del riesgo país.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetRiesgoPaisValueAsync()
         {
             using (Context.Channel.EnterTypingState())

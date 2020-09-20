@@ -27,7 +27,7 @@ namespace DolarBot.Modules.Commands
         [Command("hora")]
         [Alias("date")]
         [Summary("Muestra la fecha y hora del bot y del servidor donde se aloja.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDateAsync()
         {
             Emoji timeEmoji = new Emoji("\u23F0");
@@ -49,7 +49,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("sid")]
         [Summary("Muestra el ID del servidor de Discord actual.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetServerId()
         {
             string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
@@ -65,7 +65,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("ping")]
         [Summary("Muestra la latencia del bot de Discord.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task Ping()
         {
             string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
@@ -100,7 +100,7 @@ namespace DolarBot.Modules.Commands
         [Command("invitar")]
         [Alias("invite")]
         [Summary("Devuelve el link de invitación del bot en Discord.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetInviteLink()
         {
             string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
@@ -122,7 +122,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("bot")]
         [Summary("Muestra información acerca del bot.")]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetAbout()
         {
             Emoji heartEmoji = new Emoji("\uD83D\uDC99");

@@ -10,7 +10,7 @@
 ## Status
 [![Release](https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/releases/latest)
 [![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)
-[![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discordapp.com/invite/S7FmbU)
+[![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discord.gg/tCkbjuM)
 [![Issues](https://img.shields.io/github/issues/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/issues)
 [![PullRequests](https://img.shields.io/github/issues-pr-closed/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/pulls)  
 

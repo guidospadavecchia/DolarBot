@@ -14,12 +14,15 @@
 [![Issues](https://img.shields.io/github/issues/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/issues)
 [![PullRequests](https://img.shields.io/github/issues-pr-closed/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/pulls)  
 
- 
+## Descripción  
+**DolarBot** te permite ver todas las cotizaciones del dólar en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
+La cantidad de comandos que puede ejecutar cada usuario está limitada a 1 comando cada 5 segundos, ayudando a evitar problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema momentáneo.
+
 ## Discord
 Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
 
 ## Comandos
-El prefijo para invocar cualquier comando con el bot es `$`. La mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente. A continuación se listan los comandos disponibles:
+A continuación se listan los comandos disponibles:
 
 ### Ayuda
 - \[`$ayuda` | `$a`]: Muestra los comandos disponibles.  
@@ -28,8 +31,10 @@ El prefijo para invocar cualquier comando con el bot es `$`. La mayoría de los 
 - \[`$ayudadm` | `$adm`] `<comando>`: Envía la ayuda de un comando particular por mensaje privado.  
 
 ### Cotizaciones
+- \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial (Banco Nación).  
+- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Valores posibles: Ver `$bancos`).  
+- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial del Banco Nación.  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
 - \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
@@ -46,6 +51,7 @@ El prefijo para invocar cualquier comando con el bot es `$`. La mayoría de los 
 
 ## Librerías y APIS
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
+- [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
 - [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive)
 - [Castrogiovanni20/api-dolar-argentina](https://github.com/Castrogiovanni20/api-dolar-argentina)
 

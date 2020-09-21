@@ -43,7 +43,7 @@ namespace DolarBot.Modules.Commands
         [Command(HELP_COMMAND)]
         [Alias(HELP_ALIAS)]
         [Summary(HELP_SUMMARY)]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task SendHelp(string command = null)
         {
             if (CommandExists(command))
@@ -60,7 +60,7 @@ namespace DolarBot.Modules.Commands
         [Command(HELP_COMMAND_DM)]
         [Alias(HELP_ALIAS_DM)]
         [Summary(HELP_SUMMARY_DM)]
-        [RateLimit(1, 5, Measure.Seconds, RatelimitFlags.ApplyPerGuild)]
+        [RateLimit(1, 5, Measure.Seconds)]
         public async Task SendHelpDM(string command = null)
         {
             EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
@@ -139,7 +139,7 @@ namespace DolarBot.Modules.Commands
                                                    .WithColor(helpEmbedColor)
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                                    .WithThumbnailUrl(helpImageUrl)
-                                                   .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary).AppendLineBreak());
+                                                   .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary));
 
             if (commandInfo.Parameters.Count > 0)
             {
@@ -149,11 +149,11 @@ namespace DolarBot.Modules.Commands
                     parameterBuilder.AppendLine($"{Format.Code($"<{parameter.Name}>")}: {Format.Italics(parameter.Summary)}");
                 }
                 string parameters = parameterBuilder.ToString();
-                embed.AddField(Format.Bold("Parametros"), parameters.AppendLineBreak());
+                embed.AddField(Format.Bold("Parametros"), parameters);
             }
             else
             {
-                embed.AddField(Format.Bold("Parametros"), Format.Italics("Ninguno.").AppendLineBreak());
+                embed.AddField(Format.Bold("Parametros"), Format.Italics("Ninguno."));
             }
 
             if (commandInfo.Aliases.Count > 1)
@@ -161,6 +161,19 @@ namespace DolarBot.Modules.Commands
                 IEnumerable<string> otherAliases = commandInfo.Aliases.Where(a => !a.IsEquivalentTo(command));
                 string aliases = string.Join(", ", otherAliases.Select(a => Format.Code($"{commandPrefix}{a}")));
                 embed.AddField(Format.Bold("Otros Alias"), aliases);
+            }
+
+            if (commandInfo.HasAttribute<HelpUsageExampleAttribute>())
+            {
+                HelpUsageExampleAttribute attribute = commandInfo.GetAttribute<HelpUsageExampleAttribute>();
+                IEnumerable<string> examples = attribute.Examples;
+                StringBuilder exampleBuilder = new StringBuilder();
+                foreach (string example in examples)
+                {
+                    string exampleText = attribute.IsPreformatted ? example : Format.Code(example);
+                    exampleBuilder.AppendLine(exampleText);
+                }
+                embed.AddField(Format.Bold("Ejemplos"), exampleBuilder.ToString());
             }
 
             return embed;

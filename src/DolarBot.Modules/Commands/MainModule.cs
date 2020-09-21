@@ -79,9 +79,10 @@ namespace DolarBot.Modules.Commands
         [Command("dolar")]
         [Alias("d")]
         [Summary("Muestra todas las cotizaciones del dólar disponibles o por banco.")]
+        [HelpUsageExample(false, "$dolar", "$dolar santander", "$d galicia")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarPriceAsync(
-            [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`. Ejemplo: `$dolar galicia`.")]
+            [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`.\nEjemplo: `$dolar galicia`.")]
             string banco = null)
         {
             using (Context.Channel.EnterTypingState())
@@ -105,7 +106,7 @@ namespace DolarBot.Modules.Commands
                     else
                     {
                         string bankCommand = GetType().GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code(bankCommand)}.");
+                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"${bankCommand}")}.");
                     }
                 }
                 else

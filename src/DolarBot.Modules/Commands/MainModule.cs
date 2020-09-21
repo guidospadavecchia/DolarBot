@@ -82,7 +82,7 @@ namespace DolarBot.Modules.Commands
         [HelpUsageExample(false, "$dolar", "$dolar santander", "$d galicia")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarPriceAsync(
-            [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`.\nEjemplo: `$dolar galicia`.")]
+            [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`.")]
             string banco = null)
         {
             using (Context.Channel.EnterTypingState())

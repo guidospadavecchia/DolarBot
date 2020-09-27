@@ -67,6 +67,7 @@ namespace DolarBot.Modules.Handlers
 
         private async Task ProcessBadArgCount(SocketCommandContext context, int argPos)
         {
+            string commandPrefix = configuration["commandPrefix"];
             string commandName = commands.Search(context, argPos).Text;
             string commandSummary = GetCommandSummary(commandName);
             if (!string.IsNullOrWhiteSpace(commandSummary))
@@ -75,7 +76,7 @@ namespace DolarBot.Modules.Handlers
             }
             else
             {
-                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {commandName}. Verificá los parámetros con {Format.Bold($"{configuration["commandPrefix"]}ayuda")}.");
+                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {Format.Bold($"{commandPrefix}{commandName}")}. Verificá los parámetros con {Format.Bold($"{commandPrefix}ayuda")}.");
             }
         }
 

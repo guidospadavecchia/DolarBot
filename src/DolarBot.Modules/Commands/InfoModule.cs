@@ -130,17 +130,21 @@ namespace DolarBot.Modules.Commands
             Emoji supportServerEmoji = new Emoji("\uD83D\uDCAC");
             Emoji githubEmoji = new Emoji("\uD83D\uDCBB");
             Emoji coffeeEmoji = new Emoji("\u2615");
+            Emoji checkEmoji = new Emoji("\u2705");
+
             string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
             string githubUrl = Configuration["githubUrl"];
             string donationUrl = Configuration["donationUrl"];
             string supportServerUrl = Configuration["supportServerUrl"];
             string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
+            int serverCount = Context.Client.Guilds.Count;            
 
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("DolarBot")
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
+                                 .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}.".AppendLineBreak())
                                  .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor de soporte", supportServerUrl)}".AppendLineBreak())
                                  .AddField("GitHub", $"{githubEmoji} {Format.Url("guidospadavecchia/DolarBot", githubUrl)}".AppendLineBreak())
                                  .AddField("¿Te gusta DolarBot?", $"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}".AppendLineBreak())

@@ -8,6 +8,8 @@ using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -43,15 +45,27 @@ namespace DolarBot.Modules.Commands
         #region Vars
         private enum BankCommandType
         {
+            [Description("Todos los bancos")]
+            Bancos,
+            [Description("Banco Nación")]
             Nacion,
+            [Description("Banco BBVA")]
             BBVA,
+            [Description("Banco Piano")]
             Piano,
+            [Description("Banco Hipotecario")]
             Hipotecario,
+            [Description("Banco Galicia")]
             Galicia,
+            [Description("Banco Santander")]
             Santander,
+            [Description("Banco Ciudad")]
             Ciudad,
+            [Description("Banco Supervielle")]
             Supervielle,
+            [Description("Banco Patagonia")]
             Patagonia,
+            [Description("Banco Comafi")]
             Comafi
         }
 
@@ -72,14 +86,15 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetBanks()
         {
+            string commandPrefix = Configuration["commandPrefix"];
             string banks = string.Join(", ", Enum.GetNames(typeof(BankCommandType)).Select(b => Format.Bold(b)));
-            await ReplyAsync($"Bancos disponibles: {banks}.");
+            await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.");
         }
 
         [Command("dolar")]
         [Alias("d")]
         [Summary("Muestra todas las cotizaciones del dólar disponibles o por banco.")]
-        [HelpUsageExample(false, "$dolar", "$dolar santander", "$d galicia")]
+        [HelpUsageExample(false, "$dolar", "$d", "$dolar bancos", "$dolar santander", "$d galicia")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarPriceAsync(
             [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`.")]
@@ -91,37 +106,72 @@ namespace DolarBot.Modules.Commands
                 {
                     if (Enum.TryParse(banco, true, out BankCommandType bankCommandType))
                     {
-                        DollarType dollarType = GetBankInformation(bankCommandType, out string thumbnailUrl);
-                        DolarResponse result = await Api.DolarArgentina.GetDollarPrice(dollarType);
-                        if (result != null)
+                        if (bankCommandType == BankCommandType.Bancos)
                         {
-                            EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold($"Banco {dollarType}")} expresada en {Format.Bold("pesos argentinos")}.", bankCommandType == BankCommandType.Nacion ? DOLAR_BANCO_NACION : null,  thumbnailUrl);
-                            await ReplyAsync(embed: embed.Build());
+                            //Show all private banks prices
+                            List<BankCommandType> banks = Enum.GetValues(typeof(BankCommandType)).Cast<BankCommandType>().Where(b => b != BankCommandType.Bancos && b != BankCommandType.Nacion).ToList();
+                            Task<DolarResponse>[] tasks = new Task<DolarResponse>[banks.Count];
+                            for (int i = 0; i < banks.Count; i++)
+                            {
+                                DollarType dollarType = GetBankInformation(banks[i], out string _);
+                                tasks[i] = Api.DolarArgentina.GetDollarPrice(dollarType);
+                            }
+
+                            DolarResponse[] responses = await Task.WhenAll(tasks);
+                            if (responses.Any(r => r != null))
+                            {
+                                string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
+                                DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
+                                EmbedBuilder embed = CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos privados")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
+                                if (responses.Length != successfulResponses.Length)
+                                {
+                                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
+                                }
+                                await ReplyAsync(embed: embed.Build());
+                            }
+                            else
+                            {
+                                await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                            }
                         }
                         else
-                        {
-                            await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        {   //Show individual bank price
+                            DollarType dollarType = GetBankInformation(bankCommandType, out string thumbnailUrl);
+                            DolarResponse result = await Api.DolarArgentina.GetDollarPrice(dollarType);
+                            if (result != null)
+                            {
+                                EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold($"Banco {dollarType}")} expresada en {Format.Bold("pesos argentinos")}.", bankCommandType == BankCommandType.Nacion ? DOLAR_BANCO_NACION : null, thumbnailUrl);
+                                await ReplyAsync(embed: embed.Build());
+                            }
+                            else
+                            {
+                                await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                            }
                         }
                     }
                     else
-                    {
+                    {   //Unknown parameter
                         string commandPrefix = Configuration["commandPrefix"];
                         string bankCommand = GetType().GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
                         await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.");
                     }
                 }
                 else
-                {
-
+                {   //Show all dollar types (not banks)
                     DolarResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetDollarPrice(DollarType.Oficial),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Ahorro),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Blue),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Bolsa),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Promedio),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui));
-                    if (responses.All(r => r != null))
+                    if (responses.Any(r => r != null))
                     {
-                        EmbedBuilder embed = CreateDollarEmbed(responses);
+                        DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
+                        EmbedBuilder embed = CreateDollarEmbed(successfulResponses);
+                        if (responses.Length != successfulResponses.Length)
+                        {
+                            await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
+                        }
                         await ReplyAsync(embed: embed.Build());
                     }
                     else
@@ -283,29 +333,40 @@ namespace DolarBot.Modules.Commands
 
         private EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses)
         {
+            string dollarImageUrl = Configuration.GetSection("images").GetSection("dollar")["64"];
+            return CreateDollarEmbed(dollarResponses, $"Cotizaciones disponibles expresadas en {Format.Bold("pesos argentinos")}.", dollarImageUrl);
+        }
+
+        private EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses, string description, string thumbnailUrl)
+        {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             Emoji clockEmoji = new Emoji("\u23F0");
-            string dollarImageUrl = Configuration.GetSection("images").GetSection("dollar")["64"];
+
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle("Cotizaciones del Dólar")
-                                                   .WithDescription($"Cotizaciones disponibles expresadas en {Format.Bold("pesos argentinos")}.".AppendLineBreak())
-                                                   .WithThumbnailUrl(dollarImageUrl)
+                                                   .WithDescription(description.AppendLineBreak())
+                                                   .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter($"{clockEmoji} = Última actualización ({localTimeZone.StandardName})");
 
-            foreach (DolarResponse response in dollarResponses)
+            for (int i = 0; i < dollarResponses.Length; i++)
             {
+                DolarResponse response = dollarResponses[i];
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
                 string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
                 string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
 
-                StringBuilder sbField = new StringBuilder().Append($"{dollarEmoji} {blankSpace} Compra: {Format.Bold(buyPrice)} {blankSpace}")
-                                                           .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold(sellPrice)} {blankSpace}")
-                                                           .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}");
-                embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
+                if (buyPrice != "?" || sellPrice != "?")
+                {
+                    StringBuilder sbField = new StringBuilder()
+                                            .AppendLine($"{dollarEmoji} {blankSpace} Compra: {Format.Bold(buyPrice)} {blankSpace}")
+                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold(sellPrice)} {blankSpace}")
+                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}  ");
+                    embed.AddInlineField(title, sbField.ToString().AppendLineBreak()); 
+                }
             }
 
             return embed;
@@ -319,8 +380,8 @@ namespace DolarBot.Modules.Commands
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(dollarResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
-            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
+            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : null;
+            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : null;
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(mainEmbedColor)
                                                    .WithTitle(embedTitle)

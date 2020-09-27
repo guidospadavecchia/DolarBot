@@ -17,7 +17,7 @@
 
 ## Descripción  
 **DolarBot** te permite ver todas las cotizaciones del dólar en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
-La cantidad de comandos que puede ejecutar cada usuario está limitada a 1 comando cada 5 segundos, ayudando a evitar problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema momentáneo.
+La cantidad de comandos que puede ejecutar cada usuario está limitada a **1 comando cada 5 segundos**, ayudando a evitar problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema temporal.
 
 ## Discord
 Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.

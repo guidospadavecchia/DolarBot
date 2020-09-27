@@ -32,9 +32,6 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Images\banks\bbva.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Images\banks\ciudad.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

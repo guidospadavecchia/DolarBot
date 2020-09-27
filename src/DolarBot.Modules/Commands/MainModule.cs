@@ -105,8 +105,9 @@ namespace DolarBot.Modules.Commands
                     }
                     else
                     {
+                        string commandPrefix = Configuration["commandPrefix"];
                         string bankCommand = GetType().GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"${bankCommand}")}.");
+                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.");
                     }
                 }
                 else

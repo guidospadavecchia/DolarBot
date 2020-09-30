@@ -10,7 +10,7 @@
 ## Status
 [![Release](https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/releases/latest)
 [![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)
-[![Invite](https://img.shields.io/badge/Discord-invitar-7289DA)](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot)
+[![Invite](https://img.shields.io/badge/Discord-invitar-7289DA)](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot)
 [![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discord.gg/tCkbjuM)
 [![Issues](https://img.shields.io/github/issues/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/issues)
 [![PullRequests](https://img.shields.io/github/issues-pr-closed/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/pulls)  
@@ -20,7 +20,7 @@
 La cantidad de comandos que puede ejecutar cada usuario está limitada a **1 comando cada 5 segundos**, ayudando a evitar problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema temporal.
 
 ## Discord
-Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=51264&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
+Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
 
 ## Comandos
 A continuación se listan los comandos disponibles:

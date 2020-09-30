@@ -59,11 +59,11 @@ namespace DolarBot.Modules.Commands
             if (CommandExists(command))
             {
                 EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
-                await ReplyAsync(embed: embed.Build());
+                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
             }
             else
             {
-                await SendPagedHelpReplyAsync();
+                await SendPagedHelpReplyAsync().ConfigureAwait(false);
             }
         }
 
@@ -77,7 +77,7 @@ namespace DolarBot.Modules.Commands
 
             var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
             var dm = Context.User.SendMessageAsync(embed: embed.Build());
-            await Task.WhenAll(reply, dm);
+            await Task.WhenAll(reply, dm).ConfigureAwait(false);
         }
 
         #region Methods
@@ -239,7 +239,7 @@ namespace DolarBot.Modules.Commands
                 Jump = false,
                 Trash = false
             };
-            await PagedReplyAsync(pager, reactions);
+            await PagedReplyAsync(pager, reactions).ConfigureAwait(false);
         }
 
         /// <summary>

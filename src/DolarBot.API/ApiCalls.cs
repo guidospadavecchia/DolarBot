@@ -180,7 +180,7 @@ namespace DolarBot.API
                     string endpoint = type.GetDescription();
 
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<DolarResponse> response = await client.ExecuteGetAsync<DolarResponse>(request);
+                    IRestResponse<DolarResponse> response = await client.ExecuteGetAsync<DolarResponse>(request).ConfigureAwait(false);
                     if (response.IsSuccessful)
                     {
                         DolarResponse dolarResponse = response.Data;
@@ -220,7 +220,7 @@ namespace DolarBot.API
                 else
                 {
                     RestRequest request = new RestRequest(RIESGO_PAIS_ENDPOINT, DataFormat.Json);
-                    IRestResponse<RiesgoPaisResponse> response = await client.ExecuteGetAsync<RiesgoPaisResponse>(request);
+                    IRestResponse<RiesgoPaisResponse> response = await client.ExecuteGetAsync<RiesgoPaisResponse>(request).ConfigureAwait(false);
                     if (response.IsSuccessful)
                     {
                         cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);

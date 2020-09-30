@@ -50,7 +50,7 @@ namespace DolarBot.Modules.Commands
                                  .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
                                  .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
 
-            await ReplyAsync(embed: embed.Build());
+            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
         [Command("sid")]
@@ -66,7 +66,7 @@ namespace DolarBot.Modules.Commands
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"El ID del servidor es {sid}");
 
-            await ReplyAsync(embed: embed.Build());
+            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
         [Command("ping")]
@@ -83,7 +83,7 @@ namespace DolarBot.Modules.Commands
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var message = await ReplyAsync(embed: embed.Build());
+            var message = await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
             sw.Stop();
 
             string responseTime = $"{Context.Client.Latency} ms";
@@ -100,7 +100,7 @@ namespace DolarBot.Modules.Commands
                      .AddInlineField("Latencia del gateway", $"{gatewayEmoji} {latency}");
 
                 x.Embed = embed.Build();
-            });
+            }).ConfigureAwait(false);
         }
 
         [Command("invitar")]
@@ -123,7 +123,7 @@ namespace DolarBot.Modules.Commands
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"Invita al bot haciendo {Format.Url("click acá", inviteLink)}");
 
-            await ReplyAsync(embed: embed.Build());
+            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
         [Command("bot")]
@@ -156,7 +156,7 @@ namespace DolarBot.Modules.Commands
                                  .AddField("¿Te gusta DolarBot?", $"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}".AppendLineBreak())
                                  .WithFooter($"Hecho con {heartEmoji} en .NET Core");
 
-            await ReplyAsync(embed: embed.Build());
+            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
     }
 }

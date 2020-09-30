@@ -58,12 +58,12 @@ namespace DolarBot
                 client.Log += LogClientEvent;
                 
                 PrintCurrentVersion();
-                await RegisterCommandsAsync(client, commands, services, configuration);
-                await client.LoginAsync(TokenType.Bot, token);
-                await client.StartAsync();
-                await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
+                await RegisterCommandsAsync(client, commands, services, configuration).ConfigureAwait(false);
+                await client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
+                await client.StartAsync().ConfigureAwait(false);
+                await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening).ConfigureAwait(false);
 
-                await Task.Delay(-1);
+                await Task.Delay(-1).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

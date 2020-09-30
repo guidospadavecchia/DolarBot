@@ -106,7 +106,7 @@ namespace DolarBot.Modules.Commands
         {
             string commandPrefix = Configuration["commandPrefix"];
             string banks = string.Join(", ", Enum.GetNames(typeof(BankCommandType)).Select(b => Format.Bold(b)));
-            await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.");
+            await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
         }
 
         [Command("dolar")]
@@ -135,7 +135,7 @@ namespace DolarBot.Modules.Commands
                                 tasks[i] = Api.DolarArgentina.GetDollarPrice(dollarType);
                             }
 
-                            DolarResponse[] responses = await Task.WhenAll(tasks);
+                            DolarResponse[] responses = await Task.WhenAll(tasks).ConfigureAwait(false);
                             if (responses.Any(r => r != null))
                             {
                                 string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
@@ -143,27 +143,27 @@ namespace DolarBot.Modules.Commands
                                 EmbedBuilder embed = CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos privados")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
                                 if (responses.Length != successfulResponses.Length)
                                 {
-                                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
+                                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
                                 }
-                                await ReplyAsync(embed: embed.Build());
+                                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                             }
                             else
                             {
-                                await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                             }
                         }
                         else
                         {   //Show individual bank price
                             DollarType dollarType = GetBankInformation(bankCommandType, out string thumbnailUrl);
-                            DolarResponse result = await Api.DolarArgentina.GetDollarPrice(dollarType);
+                            DolarResponse result = await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
                             if (result != null)
                             {
                                 EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold($"Banco {dollarType}")} expresada en {Format.Bold("pesos argentinos")}.", bankCommandType == BankCommandType.Nacion ? DOLAR_BANCO_NACION : null, thumbnailUrl);
-                                await ReplyAsync(embed: embed.Build());
+                                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                             }
                             else
                             {
-                                await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                             }
                         }
                     }
@@ -171,7 +171,7 @@ namespace DolarBot.Modules.Commands
                     {   //Unknown parameter
                         string commandPrefix = Configuration["commandPrefix"];
                         string bankCommand = GetType().GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.");
+                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.").ConfigureAwait(false);
                     }
                 }
                 else
@@ -181,20 +181,20 @@ namespace DolarBot.Modules.Commands
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Blue),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Bolsa),
                                                                    Api.DolarArgentina.GetDollarPrice(DollarType.Promedio),
-                                                                   Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui));
+                                                                   Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui)).ConfigureAwait(false);
                     if (responses.Any(r => r != null))
                     {
                         DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                         EmbedBuilder embed = CreateDollarEmbed(successfulResponses);
                         if (responses.Length != successfulResponses.Length)
                         {
-                            await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
+                            await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
                         }
-                        await ReplyAsync(embed: embed.Build());
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                     }
                 }
             }
@@ -208,15 +208,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Oficial);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Oficial).ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }
@@ -229,15 +229,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Ahorro);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Ahorro).ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }
@@ -250,15 +250,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Blue);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Blue).ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }
@@ -271,15 +271,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Promedio);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Promedio).ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }
@@ -292,15 +292,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Bolsa);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.Bolsa).ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }
@@ -313,15 +313,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui);
+                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarType.ContadoConLiqui).ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }
@@ -334,15 +334,15 @@ namespace DolarBot.Modules.Commands
         {
             using (Context.Channel.EnterTypingState())
             {
-                RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais();
+                RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
                 if (result != null)
                 {
                     EmbedBuilder embed = CreateRiesgoPaisEmbed(result);
-                    await ReplyAsync(embed: embed.Build());
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                 }
             }
         }

@@ -9,14 +9,35 @@ using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Handlers
 {
+    /// <summary>
+    /// Contains methods and events to process the bot's commands.
+    /// </summary>
     public class CommandHandler
     {
+        #region Vars
+        /// <summary>
+        /// The current Discord client instance.
+        /// </summary>
         private readonly DiscordSocketClient client;
+        /// <summary>
+        /// Service which provides access to the available commands.
+        /// </summary>
         private readonly CommandService commands;
+        /// <summary>
+        /// Provides access to the different services instances.
+        /// </summary>
         private readonly IServiceProvider services;
+        /// <summary>
+        /// Allows access to application settings.
+        /// </summary>
         private readonly IConfiguration configuration;
+        /// <summary>
+        /// Log4net logger.
+        /// </summary>
         private readonly ILog logger;
+        #endregion
 
+        #region Constructors
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services, IConfiguration configuration, ILog logger = null)
         {
             this.client = client;
@@ -25,12 +46,12 @@ namespace DolarBot.Modules.Handlers
             this.configuration = configuration;
             this.logger = logger;
         }
+        #endregion
 
+        #region Events
         public async Task HandleCommandAsync(SocketMessage arg)
         {
-            SocketUserMessage message = arg as SocketUserMessage;
-
-            if (message == null || message.Author.IsBot)
+            if (!(arg is SocketUserMessage message) || message.Author.IsBot)
             {
                 return;
             }
@@ -58,7 +79,9 @@ namespace DolarBot.Modules.Handlers
                 }
             }
         }
+        #endregion
 
+        #region Methods
         private string GetCommandSummary(string commandName)
         {
             var command = commands.Commands.FirstOrDefault(c => c.Name.ToUpper().Trim().Equals(commandName.ToUpper().Trim()) || c.Aliases.Select(a => a.ToUpper().Trim()).Contains(commandName.ToUpper().Trim()));
@@ -95,5 +118,6 @@ namespace DolarBot.Modules.Handlers
                 }
             }
         }
+        #endregion
     }
 }

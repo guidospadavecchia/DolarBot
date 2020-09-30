@@ -18,6 +18,9 @@ using DollarType = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarType;
 
 namespace DolarBot.Modules.Commands
 {
+    /// <summary>
+    /// Contains the main theme related commands.
+    /// </summary>
     [HelpOrder(1)]
     [HelpTitle("Cotizaciones")]
     public class MainModule : BaseInteractiveModule
@@ -43,6 +46,9 @@ namespace DolarBot.Modules.Commands
         #endregion
 
         #region Vars
+        /// <summary>
+        /// Represents the available bank parameters for dollar command.
+        /// </summary>
         private enum BankCommandType
         {
             [Description("Todos los bancos")]
@@ -69,11 +75,23 @@ namespace DolarBot.Modules.Commands
             Comafi
         }
 
+        /// <summary>
+        /// Color for the embed messages.
+        /// </summary>
         private readonly Color mainEmbedColor = new Color(67, 181, 129);
+
+        /// <summary>
+        /// Provides access to the different APIs.
+        /// </summary>
         protected readonly ApiCalls Api;
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
+        /// </summary>
+        /// <param name="configuration">Provides access to application settings.</param>
+        /// <param name="api">Provides access to the different APIs.</param>
         public MainModule(IConfiguration configuration, ApiCalls api) : base(configuration)
         {
             Api = api;
@@ -331,12 +349,24 @@ namespace DolarBot.Modules.Commands
 
         #region Methods
 
+        /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for multiple dollar responses.
+        /// </summary>
+        /// <param name="dollarResponses">The dollar responses to show.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         private EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses)
         {
             string dollarImageUrl = Configuration.GetSection("images").GetSection("dollar")["64"];
             return CreateDollarEmbed(dollarResponses, $"Cotizaciones disponibles expresadas en {Format.Bold("pesos argentinos")}.", dollarImageUrl);
         }
 
+        /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for multiple dollar responses specifying a custom description and thumbnail URL.
+        /// </summary>
+        /// <param name="dollarResponses">The dollar responses to show.</param>
+        /// <param name="description">The embed's description.</param>
+        /// <param name="thumbnailUrl">The URL of the embed's thumbnail image.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         private EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses, string description, string thumbnailUrl)
         {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
@@ -372,6 +402,14 @@ namespace DolarBot.Modules.Commands
             return embed;
         }
 
+        /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for a single dollar response specifying a custom description, title and thumbnail URL.
+        /// </summary>
+        /// <param name="dollarResponse">>The dollar response to show.</param>
+        /// <param name="description">The embed's description.</param>
+        /// <param name="title">Optional. The embed's title.</param>
+        /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         private EmbedBuilder CreateDollarEmbed(DolarResponse dollarResponse, string description, string title = null, string thumbnailUrl = null)
         {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
@@ -393,6 +431,11 @@ namespace DolarBot.Modules.Commands
             return embed;
         }
 
+        /// <summary>
+        /// Returns the title depending on the response type.
+        /// </summary>
+        /// <param name="dollarResponse">The dollar response.</param>
+        /// <returns>The corresponding title.</returns>
         private string GetTitle(DolarResponse dollarResponse)
         {
             return dollarResponse.Type switch
@@ -416,6 +459,12 @@ namespace DolarBot.Modules.Commands
             };
         }
 
+        /// <summary>
+        /// Converts a <see cref="BankCommandType"/> object to its <see cref="DollarType"/> equivalent and returns its thumbnail URL.
+        /// </summary>
+        /// <param name="bankCommandType">The value to convert.</param>
+        /// <param name="thumbnailUrl">The thumbnail URL corresponding to the bank.</param>
+        /// <returns>The converted value as <see cref="DollarType"/>.</returns>
         private DollarType GetBankInformation(BankCommandType bankCommandType, out string thumbnailUrl)
         {
             switch (bankCommandType)
@@ -456,6 +505,11 @@ namespace DolarBot.Modules.Commands
             }
         }
 
+        /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for a <see cref="RiesgoPaisResponse"/>.
+        /// </summary>
+        /// <param name="riesgoPaisResponse">The Riesgo Pais response.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateRiesgoPaisEmbed(RiesgoPaisResponse riesgoPaisResponse)
         {
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");

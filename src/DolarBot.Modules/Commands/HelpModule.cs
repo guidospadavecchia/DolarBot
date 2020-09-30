@@ -15,6 +15,9 @@ using ParameterInfo = Discord.Commands.ParameterInfo;
 
 namespace DolarBot.Modules.Commands
 {
+    /// <summary>
+    /// Contains help related commands.
+    /// </summary>
     public class HelpModule : BaseInteractiveModule
     {
         #region Constants
@@ -29,7 +32,14 @@ namespace DolarBot.Modules.Commands
         #endregion
 
         #region Vars
+        /// <summary>
+        /// Color for the embed messages.
+        /// </summary>
         private readonly Color helpEmbedColor = Color.Blue;
+
+        /// <summary>
+        /// Service which provides access to the available commands.
+        /// </summary>
         private readonly CommandService Commands;
         #endregion
 
@@ -72,6 +82,10 @@ namespace DolarBot.Modules.Commands
 
         #region Methods
 
+        /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for help using reflection and attribute values.
+        /// </summary>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         private EmbedBuilder GenerateEmbeddedHelp()
         {
             Emoji moduleBullet = new Emoji("\uD83D\uDD37");
@@ -124,6 +138,11 @@ namespace DolarBot.Modules.Commands
             return embed;
         }
 
+        /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for help for a particular command using reflection and attribute values.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
         {
             string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
@@ -179,6 +198,10 @@ namespace DolarBot.Modules.Commands
             return embed;
         }
 
+        /// <summary>
+        /// Creates and sends a paginated message as reply, containing the full description about all commands.
+        /// </summary>
+        /// <returns>A completed task.</returns>
         private async Task SendPagedHelpReplyAsync()
         {
             EmbedBuilder embed = GenerateEmbeddedHelp();
@@ -219,6 +242,11 @@ namespace DolarBot.Modules.Commands
             await PagedReplyAsync(pager, reactions);
         }
 
+        /// <summary>
+        /// Checks whether a command exists in any module.
+        /// </summary>
+        /// <param name="command">The command to check.</param>
+        /// <returns>True if the command exists, otherwise false.</returns>
         private bool CommandExists(string command)
         {
             return !string.IsNullOrWhiteSpace(command) && Commands.Commands.Any(c => c.Aliases.Select(a => a.ToUpper().Trim()).Contains(command.ToUpper().Trim()) && !c.Module.Name.IsEquivalentTo(typeof(HelpModule).Name));

@@ -1,6 +1,5 @@
 ﻿using DolarBot.API.Cache;
 using DolarBot.API.Models;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -13,15 +12,30 @@ using System.Threading.Tasks;
 
 namespace DolarBot.API
 {
+    /// <summary>
+    /// This class centralizes all API calls in a single entity.
+    /// </summary>
     public sealed class ApiCalls
     {
+        /// <summary>
+        /// Log4net logger.
+        /// </summary>
         private readonly ILog logger;
+
+        /// <summary>
+        /// A cache of in-memory objects.
+        /// </summary>
         private readonly ResponseCache cache;
 
-        #region Apis
+        #region Apis        
         public DolarArgentinaApi DolarArgentina { get; private set; }
         #endregion
 
+        /// <summary>
+        /// Creates an ApiCalls object and instantiates the available API objects.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
+        /// <param name="logger">The log4net logger.</param>
         public ApiCalls(IConfiguration configuration, ILog logger)
         {
             this.logger = logger;
@@ -29,6 +43,10 @@ namespace DolarBot.API
             DolarArgentina = new DolarArgentinaApi(configuration, cache, LogError);
         }
 
+        /// <summary>
+        /// Logs an error from a REST response using log4net <see cref="ILog"/> object.
+        /// </summary>
+        /// <param name="response"></param>
         private void LogError(IRestResponse response)
         {
             if (response.ErrorException != null)
@@ -41,7 +59,7 @@ namespace DolarBot.API
             }
         }
 
-        [Description("https://github.com/Castrogiovanni20/api-dolar-argentina")]
+        [Description("https://github.com/Castrogiovanni20/api-dolar-argentina")]        
         public class DolarArgentinaApi
         {
             #region Constants
@@ -65,12 +83,30 @@ namespace DolarBot.API
             #endregion
 
             #region Vars
+            /// <summary>
+            /// An object to execute REST calls to the API.
+            /// </summary>
             private readonly RestClient client;
+            
+            /// <summary>
+            /// Allows access to application settings.
+            /// </summary>
             private readonly IConfiguration configuration;
+
+            /// <summary>
+            /// A cache of in-memory objects.
+            /// </summary>
             private readonly ResponseCache cache;
+
+            /// <summary>
+            /// An action to execute in case of error.
+            /// </summary>
             private readonly Action<IRestResponse> OnError;
             #endregion
 
+            /// <summary>
+            /// Represents the different API endpoints.
+            /// </summary>
             public enum DollarType
             {
                 [Description(DOLAR_OFICIAL_ENDPOINT)]
@@ -105,6 +141,12 @@ namespace DolarBot.API
                 Comafi
             }
 
+            /// <summary>
+            /// Creats a <see cref="DolarArgentinaApi"/> object using the provided configuration, cache and error action.
+            /// </summary>
+            /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
+            /// <param name="cache">A cache of in-memory objects.</param>
+            /// <param name="onError">An action to execute in case of error.</param>
             public DolarArgentinaApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
             {
                 this.configuration = configuration;
@@ -115,8 +157,17 @@ namespace DolarBot.API
                 client.UseNewtonsoftJson();
             }
 
+            /// <summary>
+            /// Gets the <see cref="DolarArgentinaApi"/> current culture.
+            /// </summary>
+            /// <returns>A <see cref="CultureInfo"/> object that represents the API culture.</returns>
             public CultureInfo GetApiCulture() => CultureInfo.GetCultureInfo("en-US");
 
+            /// <summary>
+            /// Querys an API endpoint asynchronously and returs its result.
+            /// </summary>
+            /// <param name="type">The type of dollar (endpoint) to query.</param>
+            /// <returns>A task that contains a normalized <see cref="DolarResponse"/> object.</returns>
             public async Task<DolarResponse> GetDollarPrice(DollarType type)
             {
                 DolarResponse cachedResponse = cache.GetObject<DolarResponse>(type);
@@ -155,6 +206,10 @@ namespace DolarBot.API
                 }
             }
 
+            /// <summary>
+            /// Querys the API endpoint asynchronously and returns a <see cref="RiesgoPaisResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="RiesgoPaisResponse"/> object.</returns>
             public async Task<RiesgoPaisResponse> GetRiesgoPais()
             {
                 RiesgoPaisResponse cachedResponse = cache.GetObject<RiesgoPaisResponse>(RIESGO_PAIS_CACHE_KEY);

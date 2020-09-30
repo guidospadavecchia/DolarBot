@@ -12,11 +12,17 @@ using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands
 {
+    /// <summary>
+    /// Contains information related commands.
+    /// </summary>
     [HelpOrder(2)]
     [HelpTitle("Información")]
     public class InfoModule : BaseInteractiveModule
     {
         #region Vars
+        /// <summary>
+        /// Color for the embed messages.
+        /// </summary>
         private readonly Color infoEmbedColor = new Color(23, 99, 154);
         #endregion
 

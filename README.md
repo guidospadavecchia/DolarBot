@@ -34,7 +34,7 @@ A continuación se listan los comandos disponibles:
 ### Cotizaciones
 - \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Valores posibles: Ver `$bancos`).  
+- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Ver `$bancos`).  
 - \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial del Banco Nación.  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
@@ -53,7 +53,7 @@ A continuación se listan los comandos disponibles:
 ## Librerías y APIS
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
-- [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive)
+- [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive) (fork propio de [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive))
 - [Castrogiovanni20/api-dolar-argentina](https://github.com/Castrogiovanni20/api-dolar-argentina)
 
 ## Contribuciones

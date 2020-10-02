@@ -109,7 +109,7 @@ namespace DolarBot.Modules.Commands
             await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
         }
 
-        [Command("dolar")]
+        [Command("dolar", RunMode = RunMode.Async)]
         [Alias("d")]
         [Summary("Muestra todas las cotizaciones del dólar disponibles o por banco.")]
         [HelpUsageExample(false, "$dolar", "$d", "$dolar bancos", "$dolar santander", "$d galicia")]
@@ -200,7 +200,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dolaroficial")]
+        [Command("dolaroficial", RunMode = RunMode.Async)]
         [Alias("do")]
         [Summary("Muestra la cotización del dólar oficial (Banco Nación).")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -221,7 +221,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dolarahorro")]
+        [Command("dolarahorro", RunMode = RunMode.Async)]
         [Alias("da")]
         [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y ganancias.")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -242,7 +242,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dolarblue")]
+        [Command("dolarblue", RunMode = RunMode.Async)]
         [Alias("db")]
         [Summary("Muestra la cotización del dólar blue.")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -263,7 +263,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dolarpromedio")]
+        [Command("dolarpromedio", RunMode = RunMode.Async)]
         [Alias("dp")]
         [Summary("Muestra el promedio de las cotizaciones bancarias del dólar oficial.")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -284,7 +284,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dolarbolsa")]
+        [Command("dolarbolsa", RunMode = RunMode.Async)]
         [Alias("dbo")]
         [Summary("Muestra la cotización del dólar bolsa (MEP).")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -305,7 +305,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("contadoconliqui")]
+        [Command("contadoconliqui", RunMode = RunMode.Async)]
         [Alias("ccl")]
         [Summary("Muestra la cotización del dólar contado con liquidación.")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -326,7 +326,7 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("riesgopais")]
+        [Command("riesgopais", RunMode = RunMode.Async)]
         [Alias("rp")]
         [Summary("Muestra el valor del riesgo país.")]
         [RateLimit(1, 5, Measure.Seconds)]

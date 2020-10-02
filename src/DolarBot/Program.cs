@@ -38,37 +38,30 @@ namespace DolarBot
         /// <returns></returns>
         public async Task RunAsync()
         {
-            try
-            {
-                IConfiguration configuration = ConfigureAppSettings();
-                ConfigureLogger();
+            IConfiguration configuration = ConfigureAppSettings();
+            ConfigureLogger();
 
-                ApiCalls api = new ApiCalls(configuration, logger);
-                DiscordSocketClient client = new DiscordSocketClient();
-                CommandService commands = new CommandService();
+            ApiCalls api = new ApiCalls(configuration, logger);
+            DiscordSocketClient client = new DiscordSocketClient();
+            CommandService commands = new CommandService();
 
-                IServiceProvider services = new ServiceCollection().AddSingleton(client)
-                                                                   .AddSingleton(commands)
-                                                                   .AddSingleton(configuration)
-                                                                   .AddSingleton<InteractiveService>()
-                                                                   .AddSingleton(api)
-                                                                   .BuildServiceProvider();
-                string token = GetToken(configuration);
+            IServiceProvider services = new ServiceCollection().AddSingleton(client)
+                                                               .AddSingleton(commands)
+                                                               .AddSingleton(configuration)
+                                                               .AddSingleton<InteractiveService>()
+                                                               .AddSingleton(api)
+                                                               .BuildServiceProvider();
+            string token = GetToken(configuration);
 
-                client.Log += LogClientEvent;
-                
-                PrintCurrentVersion();
-                await RegisterCommandsAsync(client, commands, services, configuration).ConfigureAwait(false);
-                await client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
-                await client.StartAsync().ConfigureAwait(false);
-                await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening).ConfigureAwait(false);
+            client.Log += LogClientEvent;
 
-                await Task.Delay(-1).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Application error", ex);
-            }
+            PrintCurrentVersion();
+            await RegisterCommandsAsync(client, commands, services, configuration).ConfigureAwait(false);
+            await client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
+            await client.StartAsync().ConfigureAwait(false);
+            await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening).ConfigureAwait(false);
+
+            await Task.Delay(-1).ConfigureAwait(false);
         }
 
         #endregion
@@ -76,12 +69,16 @@ namespace DolarBot
         #region Methods
 
         /// <summary>
-        /// Redirects log messages to console.
+        /// Redirects log messages to console and errors to log.
         /// </summary>
         /// <param name="logMessage">Incoming log message.</param>
         /// <returns>A completed task.</returns>
         private Task LogClientEvent(LogMessage logMessage)
         {
+            if (logMessage.Exception != null)
+            {
+                logger.Error("Application error", logMessage.Exception);
+            }
             Console.WriteLine(logMessage);
             return Task.CompletedTask;
         }

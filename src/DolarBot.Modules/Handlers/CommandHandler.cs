@@ -58,7 +58,7 @@ namespace DolarBot.Modules.Handlers
 
             SocketCommandContext context = new SocketCommandContext(client, message);
             int argPos = default;
-            if (message.HasStringPrefix(configuration["commandPrefix"], ref argPos))
+            if (!context.IsPrivate && message.HasStringPrefix(configuration["commandPrefix"], ref argPos))
             {
                 IResult result = await commands.ExecuteAsync(context, argPos, services).ConfigureAwait(false);
                 if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)

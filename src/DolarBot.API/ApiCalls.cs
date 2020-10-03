@@ -68,6 +68,7 @@ namespace DolarBot.API
             private const string DOLAR_CONTADO_LIQUI_ENDPOINT = "/api/contadoliqui";
             private const string DOLAR_PROMEDIO_ENDPOINT = "/api/dolarpromedio";
             private const string DOLAR_BOLSA_ENDPOINT = "/api/dolarbolsa";
+            private const string DOLAR_NACION_ENDPOINT = "/api/nacion";
             private const string DOLAR_BBVA_ENDPOINT = "/api/bbva";
             private const string DOLAR_PIANO_ENDPOINT = "/api/piano";
             private const string DOLAR_HIPOTECARIO_ENDPOINT = "/api/hipotecario";
@@ -77,6 +78,10 @@ namespace DolarBot.API
             private const string DOLAR_SUPERVIELLE_ENDPOINT = "/api/supervielle";
             private const string DOLAR_PATAGONIA_ENDPOINT = "/api/patagonia";
             private const string DOLAR_COMAFI_ENDPOINT = "/api/comafi";
+            private const string DOLAR_BIND_ENDPOINT = "/api/bind";
+            private const string DOLAR_BANCOR_ENDPOINT = "/api/bancor";
+            private const string DOLAR_CHACO_ENDPOINT = "/api/chaco";
+            private const string DOLAR_PAMPA_ENDPOINT = "/api/pampa";
 
             private const string RIESGO_PAIS_ENDPOINT = "/api/riesgopais";
             private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
@@ -121,6 +126,8 @@ namespace DolarBot.API
                 Promedio,
                 [Description(DOLAR_BOLSA_ENDPOINT)]
                 Bolsa,
+                [Description(DOLAR_NACION_ENDPOINT)]
+                Nacion,
                 [Description(DOLAR_BBVA_ENDPOINT)]
                 BBVA,
                 [Description(DOLAR_PIANO_ENDPOINT)]
@@ -138,7 +145,15 @@ namespace DolarBot.API
                 [Description(DOLAR_PATAGONIA_ENDPOINT)]
                 Patagonia,
                 [Description(DOLAR_COMAFI_ENDPOINT)]
-                Comafi
+                Comafi,
+                [Description(DOLAR_BIND_ENDPOINT)]
+                BIND,
+                [Description(DOLAR_BANCOR_ENDPOINT)]
+                Bancor,
+                [Description(DOLAR_CHACO_ENDPOINT)]
+                Chaco,
+                [Description(DOLAR_PAMPA_ENDPOINT)]
+                Pampa,
             }
 
             /// <summary>

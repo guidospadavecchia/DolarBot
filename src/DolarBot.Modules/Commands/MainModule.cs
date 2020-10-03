@@ -32,16 +32,6 @@ namespace DolarBot.Modules.Commands
         private const string DOLAR_BOLSA_TITLE = "Dólar Bolsa (MEP)";
         private const string DOLAR_PROMEDIO_TITLE = "Dólar Promedio";
         private const string DOLAR_CCL_TITLE = "Contado con Liqui";
-        private const string DOLAR_BANCO_NACION = "Banco Nación";
-        private const string DOLAR_BBVA_TITLE = "Banco BBVA";
-        private const string DOLAR_PIANO_TITLE = "Banco Piano";
-        private const string DOLAR_HIPOTECARIO_TITLE = "Banco Hipotecario";
-        private const string DOLAR_GALICIA_TITLE = "Banco Galicia";
-        private const string DOLAR_SANTANDER_TITLE = "Banco Santander";
-        private const string DOLAR_CIUDAD_TITLE = "Banco Ciudad";
-        private const string DOLAR_SUPERVIELLE_TITLE = "Banco Supervielle";
-        private const string DOLAR_PATAGONIA_TITLE = "Banco Patagonia";
-        private const string DOLAR_COMAFI_TITLE = "Banco Comafi";
         private const string REQUEST_ERROR_MESSAGE = "Error: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
         #endregion
 
@@ -49,7 +39,7 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Represents the available bank parameters for dollar command.
         /// </summary>
-        private enum BankCommandType
+        private enum Banks
         {
             [Description("Todos los bancos")]
             Bancos,
@@ -72,7 +62,15 @@ namespace DolarBot.Modules.Commands
             [Description("Banco Patagonia")]
             Patagonia,
             [Description("Banco Comafi")]
-            Comafi
+            Comafi,
+            [Description("Banco Industrial")]
+            BIND,
+            [Description("Banco de Córdoba")]
+            Bancor,
+            [Description("Nuevo Banco del Chaco")]
+            Chaco,
+            [Description("Banco de La Pampa")]
+            Pampa
         }
 
         /// <summary>
@@ -105,7 +103,7 @@ namespace DolarBot.Modules.Commands
         public async Task GetBanks()
         {
             string commandPrefix = Configuration["commandPrefix"];
-            string banks = string.Join(", ", Enum.GetNames(typeof(BankCommandType)).Select(b => Format.Bold(b)));
+            string banks = string.Join(", ", Enum.GetNames(typeof(Banks)).Select(b => Format.Bold(b)));
             await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
         }
 
@@ -122,12 +120,12 @@ namespace DolarBot.Modules.Commands
             {
                 if (banco != null)
                 {
-                    if (Enum.TryParse(banco, true, out BankCommandType bankCommandType))
+                    if (Enum.TryParse(banco, true, out Banks bank))
                     {
-                        if (bankCommandType == BankCommandType.Bancos)
+                        if (bank == Banks.Bancos)
                         {
                             //Show all private banks prices
-                            List<BankCommandType> banks = Enum.GetValues(typeof(BankCommandType)).Cast<BankCommandType>().Where(b => b != BankCommandType.Bancos && b != BankCommandType.Nacion).ToList();
+                            List<Banks> banks = Enum.GetValues(typeof(Banks)).Cast<Banks>().Where(b => b != Banks.Bancos).ToList();
                             Task<DolarResponse>[] tasks = new Task<DolarResponse>[banks.Count];
                             for (int i = 0; i < banks.Count; i++)
                             {
@@ -154,11 +152,11 @@ namespace DolarBot.Modules.Commands
                         }
                         else
                         {   //Show individual bank price
-                            DollarType dollarType = GetBankInformation(bankCommandType, out string thumbnailUrl);
+                            DollarType dollarType = GetBankInformation(bank, out string thumbnailUrl);
                             DolarResponse result = await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
                             if (result != null)
                             {
-                                EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold($"Banco {dollarType}")} expresada en {Format.Bold("pesos argentinos")}.", bankCommandType == BankCommandType.Nacion ? DOLAR_BANCO_NACION : null, thumbnailUrl);
+                                EmbedBuilder embed = CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
                                 await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                             }
                             else
@@ -202,7 +200,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("dolaroficial", RunMode = RunMode.Async)]
         [Alias("do")]
-        [Summary("Muestra la cotización del dólar oficial (Banco Nación).")]
+        [Summary("Muestra la cotización del dólar oficial.")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarOficialPriceAsync()
         {
@@ -446,59 +444,76 @@ namespace DolarBot.Modules.Commands
                 DollarType.Bolsa => DOLAR_BOLSA_TITLE,
                 DollarType.Promedio => DOLAR_PROMEDIO_TITLE,
                 DollarType.ContadoConLiqui => DOLAR_CCL_TITLE,
-                DollarType.BBVA => DOLAR_BBVA_TITLE,
-                DollarType.Piano => DOLAR_PIANO_TITLE,
-                DollarType.Hipotecario => DOLAR_HIPOTECARIO_TITLE,
-                DollarType.Galicia => DOLAR_GALICIA_TITLE,
-                DollarType.Santander => DOLAR_SANTANDER_TITLE,
-                DollarType.Ciudad => DOLAR_CIUDAD_TITLE,
-                DollarType.Supervielle => DOLAR_SUPERVIELLE_TITLE,
-                DollarType.Patagonia => DOLAR_PATAGONIA_TITLE,
-                DollarType.Comafi => DOLAR_COMAFI_TITLE,
-                _ => string.Empty,
+                DollarType.Nacion => Banks.Nacion.GetDescription(),
+                DollarType.BBVA => Banks.BBVA.GetDescription(),
+                DollarType.Piano => Banks.Piano.GetDescription(),
+                DollarType.Hipotecario => Banks.Hipotecario.GetDescription(),
+                DollarType.Galicia => Banks.Galicia.GetDescription(),
+                DollarType.Santander => Banks.Santander.GetDescription(),
+                DollarType.Ciudad => Banks.Ciudad.GetDescription(),
+                DollarType.Supervielle => Banks.Supervielle.GetDescription(),
+                DollarType.Patagonia => Banks.Patagonia.GetDescription(),
+                DollarType.Comafi => Banks.Comafi.GetDescription(),
+                DollarType.BIND => Banks.BIND.GetDescription(),
+                DollarType.Bancor => Banks.Bancor.GetDescription(),
+                DollarType.Chaco => Banks.Chaco.GetDescription(),
+                DollarType.Pampa => Banks.Pampa.GetDescription(),
+                _ => throw new ArgumentException($"Unable to get title from '{dollarResponse.Type}'.")
             };
         }
 
         /// <summary>
-        /// Converts a <see cref="BankCommandType"/> object to its <see cref="DollarType"/> equivalent and returns its thumbnail URL.
+        /// Converts a <see cref="Banks"/> object to its <see cref="DollarType"/> equivalent and returns its thumbnail URL.
         /// </summary>
-        /// <param name="bankCommandType">The value to convert.</param>
+        /// <param name="bank">The value to convert.</param>
         /// <param name="thumbnailUrl">The thumbnail URL corresponding to the bank.</param>
         /// <returns>The converted value as <see cref="DollarType"/>.</returns>
-        private DollarType GetBankInformation(BankCommandType bankCommandType, out string thumbnailUrl)
+        private DollarType GetBankInformation(Banks bank, out string thumbnailUrl)
         {
-            switch (bankCommandType)
+            switch (bank)
             {
-                case BankCommandType.Nacion:
+                case Banks.Nacion:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["nacion"];
-                    return DollarType.Oficial;
-                case BankCommandType.BBVA:
+                    return DollarType.Nacion;
+                case Banks.BBVA:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["bbva"];
                     return DollarType.BBVA;
-                case BankCommandType.Piano:
+                case Banks.Piano:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["piano"];
                     return DollarType.Piano;
-                case BankCommandType.Hipotecario:
+                case Banks.Hipotecario:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["hipotecario"];
                     return DollarType.Hipotecario;
-                case BankCommandType.Galicia:
+                case Banks.Galicia:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["galicia"];
                     return DollarType.Galicia;
-                case BankCommandType.Santander:
+                case Banks.Santander:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["santander"];
                     return DollarType.Santander;
-                case BankCommandType.Ciudad:
+                case Banks.Ciudad:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["ciudad"];
                     return DollarType.Ciudad;
-                case BankCommandType.Supervielle:
+                case Banks.Supervielle:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["supervielle"];
                     return DollarType.Supervielle;
-                case BankCommandType.Patagonia:
+                case Banks.Patagonia:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["patagonia"];
                     return DollarType.Patagonia;
-                case BankCommandType.Comafi:
+                case Banks.Comafi:
                     thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["comafi"];
                     return DollarType.Comafi;
+                case Banks.BIND:
+                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["bind"];
+                    return DollarType.BIND;
+                case Banks.Bancor:
+                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["bancor"];
+                    return DollarType.Bancor;
+                case Banks.Chaco:
+                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["chaco"];
+                    return DollarType.Chaco;
+                case Banks.Pampa:
+                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["pampa"];
+                    return DollarType.Pampa;
                 default:
                     thumbnailUrl = string.Empty;
                     return DollarType.Oficial;

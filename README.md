@@ -35,6 +35,7 @@ A continuación se listan los comandos disponibles:
 - \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
 - \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Ver `$bancos`).  
+- \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos`).  
 - \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial del Banco Nación.  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  

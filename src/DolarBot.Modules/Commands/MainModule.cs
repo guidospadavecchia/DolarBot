@@ -138,7 +138,7 @@ namespace DolarBot.Modules.Commands
                             {
                                 string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
                                 DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                                EmbedBuilder embed = CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos privados")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
+                                EmbedBuilder embed = CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
                                 if (responses.Length != successfulResponses.Length)
                                 {
                                     await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);

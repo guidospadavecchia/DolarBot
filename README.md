@@ -61,13 +61,13 @@ A continuación se listan los comandos disponibles:
 Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
 Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls).  
 
-¿Te gusta DolarBot? Podes impulsar su avance y mantenimiento con una [pequeña contribución](https://www.mercadopago.com.ar/checkout/v1/redirect?preference-id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1).
+¿Te gusta **DolarBot**? Podes impulsar su avance y mantenimiento con una [pequeña contribución](https://www.mercadopago.com.ar/checkout/v1/redirect?preference-id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1).
 
 ## Autor
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  
 
 ## Licencia
-<b>DolarBot</b> está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
+**DolarBot** está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
 
 ## 
 <p align="center">

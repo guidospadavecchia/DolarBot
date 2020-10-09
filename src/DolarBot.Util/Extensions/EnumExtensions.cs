@@ -6,6 +6,12 @@ namespace DolarBot.Util.Extensions
 {
     public static class EnumExtensions
     {
+        /// <summary>
+        /// Retrieves the current enum's description and, if found, returns it.
+        /// </summary>
+        /// <typeparam name="T">The enum's type.</typeparam>
+        /// <param name="source">The current enum's value.</param>
+        /// <returns>The enum's description if found, otherwise null.</returns>
         public static string GetDescription<T>(this T source) where T : Enum
         {
             FieldInfo fi = source.GetType().GetField(source.ToString());

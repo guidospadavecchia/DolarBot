@@ -51,6 +51,7 @@ namespace DolarBot
                                                                .AddSingleton<InteractiveService>()
                                                                .AddSingleton(api)
                                                                .BuildServiceProvider();
+            string commandPrefix = configuration["commandPrefix"];
             string token = GetToken(configuration);
 
             client.Log += LogClientEvent;
@@ -59,7 +60,7 @@ namespace DolarBot
             await RegisterCommandsAsync(client, commands, services, configuration).ConfigureAwait(false);
             await client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
             await client.StartAsync().ConfigureAwait(false);
-            await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening).ConfigureAwait(false);
+            await client.SetGameAsync(GlobalConfiguration.GetStatusText(commandPrefix), type: ActivityType.Listening).ConfigureAwait(false);
 
             await Task.Delay(-1).ConfigureAwait(false);
         }

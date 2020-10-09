@@ -38,6 +38,15 @@ namespace DolarBot.Modules.Handlers
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Command handler constructor.
+        /// </summary>
+        /// <param name="client">The current <see cref="DiscordSocketClient"/>.</param>
+        /// <param name="commands">The Discord command service.</param>
+        /// <param name="services">The service provider.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
+        /// <param name="logger">The log4net <see cref="ILog"/> instance.</param>
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services, IConfiguration configuration, ILog logger = null)
         {
             this.client = client;
@@ -49,6 +58,12 @@ namespace DolarBot.Modules.Handlers
         #endregion
 
         #region Events
+
+        /// <summary>
+        /// Processes user input and, if valid, executes the command.
+        /// </summary>
+        /// <param name="arg">The received <see cref="SocketMessage"/>.</param>
+        /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
         public async Task HandleCommandAsync(SocketMessage arg)
         {
             if (!(arg is SocketUserMessage message) || message.Author.IsBot)
@@ -82,12 +97,24 @@ namespace DolarBot.Modules.Handlers
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Retrieves the summary for a particular command.
+        /// </summary>
+        /// <param name="commandName">The command name or alias.</param>
+        /// <returns>The command's summary if found, otherwise null.</returns>
         private string GetCommandSummary(string commandName)
         {
             var command = commands.Commands.FirstOrDefault(c => c.Name.ToUpper().Trim().Equals(commandName.ToUpper().Trim()) || c.Aliases.Select(a => a.ToUpper().Trim()).Contains(commandName.ToUpper().Trim()));
             return command?.Summary;
         }
 
+        /// <summary>
+        /// Processes an invalid command and notifies the user.
+        /// </summary>
+        /// <param name="context">The current command context.</param>
+        /// <param name="argPos">The position of which the command starts at.</param>
+        /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
         private async Task ProcessBadArgCount(SocketCommandContext context, int argPos)
         {
             string commandPrefix = configuration["commandPrefix"];
@@ -103,6 +130,10 @@ namespace DolarBot.Modules.Handlers
             }
         }
 
+        /// <summary>
+        /// Processes an error on a command invocation, logging the exception.
+        /// </summary>
+        /// <param name="result">The execution result.</param>
         private void ProcessCommandError(IResult result)
         {
             if (logger != null)

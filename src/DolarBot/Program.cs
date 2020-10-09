@@ -10,6 +10,7 @@ using log4net.Config;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -90,7 +91,7 @@ namespace DolarBot
         private void PrintCurrentVersion()
         {
             string assemblyVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            Console.WriteLine($"DolarBot v{assemblyVersion}");
+            Console.WriteLine(Debugger.IsAttached ? $"DolarBot v{assemblyVersion} (DEV)" : $"DolarBot v{assemblyVersion}");
             Console.WriteLine();
         }
 

@@ -162,7 +162,7 @@ namespace DolarBot.API
             /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
             /// <param name="cache">A cache of in-memory objects.</param>
             /// <param name="onError">An action to execute in case of error.</param>
-            public DolarArgentinaApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
+            internal DolarArgentinaApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
             {
                 this.configuration = configuration;
                 this.cache = cache;

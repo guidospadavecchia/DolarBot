@@ -525,7 +525,7 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="riesgoPaisResponse">The Riesgo Pais response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRiesgoPaisEmbed(RiesgoPaisResponse riesgoPaisResponse)
+        private EmbedBuilder CreateRiesgoPaisEmbed(RiesgoPaisResponse riesgoPaisResponse)
         {
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];

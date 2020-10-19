@@ -150,7 +150,7 @@ namespace DolarBot.Modules.Commands
                                  .WithColor(infoEmbedColor)
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
-                                 .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}.".AppendLineBreak())
+                                 .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}".AppendLineBreak())
                                  .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor de soporte", supportServerUrl)}".AppendLineBreak())
                                  .AddField("GitHub", $"{githubEmoji} {Format.Url("DolarBot repo", githubUrl)}".AppendLineBreak())
                                  .AddField("¿Te gusta DolarBot?", $"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}".AppendLineBreak())

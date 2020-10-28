@@ -120,7 +120,8 @@ namespace DolarBot.Modules.Commands
             {
                 if (banco != null)
                 {
-                    if (Enum.TryParse(banco, true, out Banks bank))
+                    string userInput = Format.Sanitize(banco).RemoveFormat(true);
+                    if (Enum.TryParse(userInput, true, out Banks bank))
                     {
                         if (bank == Banks.Bancos)
                         {
@@ -169,7 +170,7 @@ namespace DolarBot.Modules.Commands
                     {   //Unknown parameter
                         string commandPrefix = Configuration["commandPrefix"];
                         string bankCommand = GetType().GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                        await ReplyAsync($"Banco '{Format.Bold(banco)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.").ConfigureAwait(false);
+                        await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.").ConfigureAwait(false);
                     }
                 }
                 else

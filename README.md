@@ -50,6 +50,10 @@ A continuación se listan los comandos disponibles:
 - \[`$ping`]: Muestra la latencia del bot de Discord.  
 - \[`$invite` | `$invitar`]: Devuelve el link de invitación del bot en Discord.  
 - \[`$bot`]: Muestra información acerca del bot.  
+- \[`$votar` | `$vote`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
+
+### Otros
+- \[`$frase` | `$f`]: Muestra una frase célebre acerca de la economía argentina.  
 
 ## Librerías y APIS
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
@@ -61,7 +65,8 @@ A continuación se listan los comandos disponibles:
 Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
 Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls).  
 
-¿Te gusta **DolarBot**? Podes impulsar su avance y mantenimiento con una [pequeña contribución](https://www.mercadopago.com.ar/checkout/v1/redirect?preference-id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1).
+¿Te gusta DolarBot? Apoyalo votándolo en [top.gg](https://top.gg/bot/752669185053818941/vote).  
+También podes impulsar su avance y mantenimiento con una [pequeña contribución](https://www.mercadopago.com.ar/checkout/v1/redirect?preference-id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1).
 
 ## Autor
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  

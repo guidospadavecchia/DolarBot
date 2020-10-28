@@ -15,7 +15,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains information related commands.
     /// </summary>
-    [HelpOrder(2)]
+    [HelpOrder(3)]
     [HelpTitle("Información")]
     public class InfoModule : BaseInteractiveModule
     {
@@ -30,7 +30,7 @@ namespace DolarBot.Modules.Commands
         public InfoModule(IConfiguration configuration) : base(configuration) { }
         #endregion
 
-        [Command("hora")]
+        [Command("hora", RunMode = RunMode.Async)]
         [Alias("date")]
         [Summary("Muestra la fecha y hora del bot y del servidor donde se aloja.")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -53,7 +53,7 @@ namespace DolarBot.Modules.Commands
             await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
-        [Command("sid")]
+        [Command("sid", RunMode = RunMode.Async)]
         [Summary("Muestra el ID del servidor de Discord actual.")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetServerId()
@@ -69,7 +69,7 @@ namespace DolarBot.Modules.Commands
             await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
-        [Command("ping")]
+        [Command("ping", RunMode = RunMode.Async)]
         [Summary("Muestra la latencia del bot de Discord.")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task Ping()
@@ -103,7 +103,7 @@ namespace DolarBot.Modules.Commands
             }).ConfigureAwait(false);
         }
 
-        [Command("invitar")]
+        [Command("invitar", RunMode = RunMode.Async)]
         [Alias("invite")]
         [Summary("Devuelve el link de invitación del bot en Discord.")]
         [RateLimit(1, 5, Measure.Seconds)]
@@ -126,7 +126,25 @@ namespace DolarBot.Modules.Commands
             await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
 
-        [Command("bot")]
+        [Command("votar", RunMode = RunMode.Async)]
+        [Alias("vote")]
+        [Summary("Muestra el link para votar por DolarBot")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetVoteLink()
+        {
+            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
+            string voteLink = Configuration["voteUrl"];
+
+            EmbedBuilder embed = new EmbedBuilder()
+                                 .WithTitle("Votar")
+                                 .WithColor(infoEmbedColor)
+                                 .WithThumbnailUrl(infoImageUrl)
+                                 .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");
+
+            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+        }
+
+        [Command("bot", RunMode = RunMode.Async)]
         [Summary("Muestra información acerca del bot.")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetAbout()
@@ -143,7 +161,7 @@ namespace DolarBot.Modules.Commands
             string donationUrl = Configuration["donationUrl"];
             string supportServerUrl = Configuration["supportServerUrl"];
             string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
-            int serverCount = Context.Client.Guilds.Count;            
+            int serverCount = Context.Client.Guilds.Count;
 
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("DolarBot")

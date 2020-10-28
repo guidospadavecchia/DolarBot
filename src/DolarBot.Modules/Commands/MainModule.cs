@@ -5,15 +5,11 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Modules.Services.Dolar;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DollarType = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarType;
 

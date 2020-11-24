@@ -62,7 +62,7 @@ namespace DolarBot.Modules.Services.Dolar
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string value = decimal.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal valor) ? ((int)Math.Round(valor * 1000, MidpointRounding.AwayFromZero)).ToString() : "No informado";
+            string value = decimal.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal valor) ? ((int)Math.Round(valor, MidpointRounding.AwayFromZero)).ToString() : "No informado";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
                                                    .WithTitle("Riesgo País")

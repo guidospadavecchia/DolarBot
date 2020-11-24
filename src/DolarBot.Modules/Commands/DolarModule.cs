@@ -16,11 +16,11 @@ using DollarType = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarType;
 namespace DolarBot.Modules.Commands
 {
     /// <summary>
-    /// Contains the main theme related commands.
+    /// Contains the dollar related commands.
     /// </summary>
     [HelpOrder(1)]
-    [HelpTitle("Cotizaciones")]
-    public class MainModule : BaseInteractiveModule
+    [HelpTitle("Cotizaciones del Dólar")]
+    public class DolarModule : BaseInteractiveModule
     {
         #region Constants
         private const string REQUEST_ERROR_MESSAGE = "Error: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
@@ -44,22 +44,11 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public MainModule(IConfiguration configuration, ApiCalls api) : base(configuration)
+        public DolarModule(IConfiguration configuration, ApiCalls api) : base(configuration)
         {
             Api = api;
         }
         #endregion
-
-        [Command("bancos")]
-        [Alias("b")]
-        [Summary("Muestra la lista de bancos disponibles para obtener las cotizaciones.")]
-        [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetBanks()
-        {
-            string commandPrefix = Configuration["commandPrefix"];
-            string banks = string.Join(", ", Enum.GetNames(typeof(Banks)).Select(b => Format.Bold(b)));
-            await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
-        }
 
         [Command("dolar", RunMode = RunMode.Async)]
         [Alias("d")]
@@ -278,28 +267,6 @@ namespace DolarBot.Modules.Commands
                 if (result != null)
                 {
                     EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
-                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                }
-                else
-                {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                }
-            }
-        }
-
-        [Command("riesgopais", RunMode = RunMode.Async)]
-        [Alias("rp")]
-        [Summary("Muestra el valor del riesgo país.")]
-        [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetRiesgoPaisValueAsync()
-        {
-            using (Context.Channel.EnterTypingState())
-            {
-                RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
-                if (result != null)
-                {
-                    RiesgoPaisService riesgoPaisService = new RiesgoPaisService(Configuration, Api, mainEmbedColor);
-                    EmbedBuilder embed = riesgoPaisService.CreateRiesgoPaisEmbed(result);
                     await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                 }
                 else

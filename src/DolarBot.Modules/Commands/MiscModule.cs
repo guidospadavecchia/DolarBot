@@ -2,8 +2,11 @@
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
+using DolarBot.Modules.Services.Dolar;
 using DolarBot.Modules.Services.Quotes;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands
@@ -11,13 +14,24 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains information related commands.
     /// </summary>
-    [HelpOrder(2)]
+    [HelpOrder(3)]
     [HelpTitle("Otros")]
     public class MiscModule : BaseInteractiveModule
     {
         #region Constructor
         public MiscModule(IConfiguration configuration) : base(configuration) { }
         #endregion
+
+        [Command("bancos")]
+        [Alias("b")]
+        [Summary("Muestra la lista de bancos disponibles para obtener las cotizaciones.")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetBanks()
+        {
+            string commandPrefix = Configuration["commandPrefix"];
+            string banks = string.Join(", ", Enum.GetNames(typeof(Banks)).Select(b => Format.Bold(b)));
+            await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
+        }
 
         [Command("frase", RunMode = RunMode.Async)]
         [Alias("f")]

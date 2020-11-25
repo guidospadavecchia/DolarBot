@@ -116,7 +116,6 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-
         [Command("circulante", RunMode = RunMode.Async)]
         [Alias("c")]
         [Summary("Muestra la cantidad total de pesos en circulación a la fecha.")]

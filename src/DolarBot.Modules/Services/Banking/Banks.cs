@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DolarBot.Modules.Services.Dolar
+namespace DolarBot.Modules.Services.Banking
 {
     /// <summary>
     /// Represents the available bank parameters for dollar command.
@@ -33,7 +33,7 @@ namespace DolarBot.Modules.Services.Dolar
         BIND,
         [Description("Banco de Córdoba")]
         Bancor,
-        [Description("Nuevo Banco del Chaco")]
+        [Description("NBC (Chaco)")]
         Chaco,
         [Description("Banco de La Pampa")]
         Pampa

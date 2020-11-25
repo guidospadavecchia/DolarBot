@@ -2,7 +2,7 @@
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
-using DolarBot.Modules.Services.Dolar;
+using DolarBot.Modules.Services.Banking;
 using DolarBot.Modules.Services.Quotes;
 using DolarBot.Util;
 using log4net;
@@ -16,7 +16,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains information related commands.
     /// </summary>
-    [HelpOrder(3)]
+    [HelpOrder(5)]
     [HelpTitle("Otros")]
     public class MiscModule : BaseInteractiveModule
     {
@@ -33,7 +33,7 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">Provides access to the different APIs.</param>
-        public MiscModule(IConfiguration configuration, ILog logger) : base(configuration) 
+        public MiscModule(IConfiguration configuration, ILog logger) : base(configuration)
         {
             Logger = logger;
         }

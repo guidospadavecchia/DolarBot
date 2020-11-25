@@ -84,6 +84,19 @@ namespace DolarBot.API
             private const string DOLAR_CHACO_ENDPOINT = "/api/chaco";
             private const string DOLAR_PAMPA_ENDPOINT = "/api/pampa";
 
+            //Euro
+            private const string EURO_NACION_ENDPOINT = "/api/euro/nacion";
+            private const string EURO_GALICIA_ENDPOINT = "/api/euro/galicia";
+            private const string EURO_BBVA_ENDPOINT = "/api/euro/bbva";
+            private const string EURO_HIPOTECARIO_ENDPOINT = "/api/euro/hipotecario";
+            private const string EURO_CHACO_ENDPOINT = "/api/euro/chaco";
+            private const string EURO_PAMPA_ENDPOINT = "/api/euro/pampa";
+
+            //Real
+            private const string REAL_NACION_ENDPOINT = "/api/real/nacion";
+            private const string REAL_BBVA_ENDPOINT = "/api/real/bbva";
+            private const string REAL_CHACO_ENDPOINT = "/api/real/chaco";
+
             //BCRA
             private const string RESERVAS_ENDPOINT = "/api/bcra/reservas";
             private const string CIRCULANTE_ENDPOINT = "/api/bcra/circulante";
@@ -113,10 +126,11 @@ namespace DolarBot.API
             private readonly Action<IRestResponse> OnError;
             #endregion
 
+            #region Enums
             /// <summary>
             /// Represents the different API endpoints for dollar rates.
             /// </summary>
-            public enum DollarType
+            public enum DollarTypes
             {
                 [Description(DOLAR_OFICIAL_ENDPOINT)]
                 Oficial,
@@ -161,6 +175,38 @@ namespace DolarBot.API
             }
 
             /// <summary>
+            /// Represents the different API endpoints for euro rates.
+            /// </summary>
+            public enum EuroTypes
+            {
+                [Description(EURO_NACION_ENDPOINT)]
+                Nacion,
+                [Description(EURO_GALICIA_ENDPOINT)]
+                Galicia,
+                [Description(EURO_BBVA_ENDPOINT)]
+                BBVA,
+                [Description(EURO_HIPOTECARIO_ENDPOINT)]
+                Hipotecario,
+                [Description(EURO_PAMPA_ENDPOINT)]
+                Pampa,
+                [Description(EURO_CHACO_ENDPOINT)]
+                Chaco
+            }
+
+            /// <summary>
+            /// Represents the different API endpoints for Real rates.
+            /// </summary>
+            public enum RealTypes
+            {
+                [Description(REAL_NACION_ENDPOINT)]
+                Nacion,
+                [Description(REAL_BBVA_ENDPOINT)]
+                BBVA,
+                [Description(REAL_CHACO_ENDPOINT)]
+                Chaco
+            }
+
+            /// <summary>
             /// Represents the different API endpoints for BCRA values.
             /// </summary>
             public enum BcraValues
@@ -170,6 +216,7 @@ namespace DolarBot.API
                 [Description(CIRCULANTE_ENDPOINT)]
                 Circulante
             }
+            #endregion
 
             /// <summary>
             /// Creats a <see cref="DolarArgentinaApi"/> object using the provided configuration, cache and error action.
@@ -198,7 +245,7 @@ namespace DolarBot.API
             /// </summary>
             /// <param name="type">The type of dollar (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="DolarResponse"/> object.</returns>
-            public async Task<DolarResponse> GetDollarPrice(DollarType type)
+            public async Task<DolarResponse> GetDollarPrice(DollarTypes type)
             {
                 DolarResponse cachedResponse = cache.GetObject<DolarResponse>(type);
                 if (cachedResponse != null)
@@ -214,7 +261,7 @@ namespace DolarBot.API
                     {
                         DolarResponse dolarResponse = response.Data;
                         dolarResponse.Type = type;
-                        if (type == DollarType.Ahorro)
+                        if (type == DollarTypes.Ahorro)
                         {
                             CultureInfo apiCulture = GetApiCulture();
                             decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
@@ -225,6 +272,72 @@ namespace DolarBot.API
                         }
 
                         cache.SaveObject(type, dolarResponse);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys an API endpoint asynchronously and returs its result.
+            /// </summary>
+            /// <param name="type">The type of euro (endpoint) to query.</param>
+            /// <returns>A task that contains a normalized <see cref="EuroResponse"/> object.</returns>
+            public async Task<EuroResponse> GetEuroPrice(EuroTypes type)
+            {
+                EuroResponse cachedResponse = cache.GetObject<EuroResponse>(type);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = type.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<EuroResponse> response = await client.ExecuteGetAsync<EuroResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        EuroResponse euroResponse = response.Data;
+                        euroResponse.Type = type;
+                        
+                        cache.SaveObject(type, euroResponse);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys an API endpoint asynchronously and returs its result.
+            /// </summary>
+            /// <param name="type">The type of Real (endpoint) to query.</param>
+            /// <returns>A task that contains a normalized <see cref="RealResponse"/> object.</returns>
+            public async Task<RealResponse> GetRealPrice(RealTypes type)
+            {
+                RealResponse cachedResponse = cache.GetObject<RealResponse>(type);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = type.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<RealResponse> response = await client.ExecuteGetAsync<RealResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        RealResponse realResponse = response.Data;
+                        realResponse.Type = type;
+
+                        cache.SaveObject(type, realResponse);
                         return response.Data;
                     }
                     else

@@ -4,7 +4,7 @@ using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
-using DolarBot.Modules.Services.Dolar;
+using DolarBot.Modules.Services.Bcra;
 using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +17,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains the BCRA (Argentine Republic Central Bank) related commands.
     /// </summary>
-    [HelpOrder(2)]
+    [HelpOrder(4)]
     [HelpTitle("Indicadores BCRA")]
     public class BcraModule : BaseInteractiveModule
     {
@@ -29,7 +29,7 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Color for the embed messages.
         /// </summary>
-        private readonly Color mainEmbedColor = new Color(67, 181, 129);
+        private readonly Color mainEmbedColor = new Color(40, 150, 75);
 
         /// <summary>
         /// Provides access to the different APIs.
@@ -59,6 +59,7 @@ namespace DolarBot.Modules.Commands
         [Command("riesgopais", RunMode = RunMode.Async)]
         [Alias("rp")]
         [Summary("Muestra el valor del riesgo país.")]
+        [HelpUsageExample(false, "$riesgopais", "$rp")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetRiesgoPaisValueAsync()
         {
@@ -87,8 +88,9 @@ namespace DolarBot.Modules.Commands
         }
 
         [Command("reservas", RunMode = RunMode.Async)]
-        [Alias("r")]
+        [Alias("rs")]
         [Summary("Muestra las reservas de dólares del Banco Central a la fecha.")]
+        [HelpUsageExample(false, "$reservas", "$rs")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetReservasAsync()
         {
@@ -119,6 +121,7 @@ namespace DolarBot.Modules.Commands
         [Command("circulante", RunMode = RunMode.Async)]
         [Alias("c")]
         [Summary("Muestra la cantidad total de pesos en circulación a la fecha.")]
+        [HelpUsageExample(false, "$circulante", "$c")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetCirculanteAsync()
         {

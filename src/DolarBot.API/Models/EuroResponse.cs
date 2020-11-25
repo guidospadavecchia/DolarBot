@@ -1,14 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
-using DollarTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarTypes;
+using EuroTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.EuroTypes;
 
 namespace DolarBot.API.Models
 {
     [Serializable]
-    public class DolarResponse
+    public class EuroResponse
     {
         [JsonIgnore]
-        public DollarTypes Type { get; set; }
+        public EuroTypes Type { get; set; }
         public DateTime Fecha { get; set; }
         public string Compra { get; set; }
         public string Venta { get; set; }

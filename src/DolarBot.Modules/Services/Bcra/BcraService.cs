@@ -8,7 +8,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace DolarBot.Modules.Services.Dolar
+namespace DolarBot.Modules.Services.Bcra
 {
     /// <summary>
     /// Contains several methods to process Argentine Central Bank related commands.

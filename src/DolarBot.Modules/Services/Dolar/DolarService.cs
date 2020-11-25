@@ -101,14 +101,14 @@ namespace DolarBot.Modules.Services.Dolar
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : "?";
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 if (buyPrice != "?" || sellPrice != "?")
                 {
                     StringBuilder sbField = new StringBuilder()
-                                            .AppendLine($"{dollarEmoji} {blankSpace} Compra: {Format.Bold(buyPrice)} {blankSpace}")
-                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold(sellPrice)} {blankSpace}")
+                                            .AppendLine($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")} {blankSpace}")
+                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")} {blankSpace}")
                                             .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}  ");
                     embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
                 }
@@ -133,16 +133,16 @@ namespace DolarBot.Modules.Services.Dolar
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(dollarResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? $"${compra:F}" : null;
-            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? $"${venta:F}" : null;
+            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
+            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(dollarImageUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
-                                                   .AddInlineField("Compra", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {buyPrice}"))
-                                                   .AddInlineField("Venta", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {sellPrice}".AppendLineBreak()));
+                                                   .AddInlineField("Compra", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}"))
+                                                   .AddInlineField("Venta", Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}".AppendLineBreak()));
             return embed;
         }
 

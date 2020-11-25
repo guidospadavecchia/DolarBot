@@ -5,6 +5,7 @@ using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
+using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -41,11 +42,23 @@ namespace DolarBot.Modules.Commands
         /// Service which provides access to the available commands.
         /// </summary>
         private readonly CommandService Commands;
+
+        /// <summary>
+        /// The log4net logger.
+        /// </summary>
+        private readonly ILog Logger;
         #endregion
 
         #region Constructor
-        public HelpModule(IConfiguration configuration, CommandService commands) : base(configuration)
+        /// <summary>
+        /// Creates the module using the specified <see cref="IConfiguration"/>, <see cref="ILog"/> and <see cref="CommandService"/> objects.
+        /// </summary>
+        /// <param name="configuration">Provides access to application settings.</param>
+        /// <param name="api">Provides access to the different APIs.</param>
+        /// <param name="logger">The log4net logger.</param>
+        public HelpModule(IConfiguration configuration, ILog logger, CommandService commands) : base(configuration)
         {
+            Logger = logger;
             Commands = commands;
         }
         #endregion
@@ -56,14 +69,22 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task SendHelp(string command = null)
         {
-            if (CommandExists(command))
+            try
             {
-                EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                if (CommandExists(command))
+                {
+                    EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
+                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                }
+                else
+                {
+                    await SendPagedHelpReplyAsync().ConfigureAwait(false);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await SendPagedHelpReplyAsync().ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
             }
         }
 
@@ -73,11 +94,19 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task SendHelpDM(string command = null)
         {
-            EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
+            try
+            {
+                EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
 
-            var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
-            var dm = Context.User.SendMessageAsync(embed: embed.Build());
-            await Task.WhenAll(reply, dm).ConfigureAwait(false);
+                var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
+                var dm = Context.User.SendMessageAsync(embed: embed.Build());
+                await Task.WhenAll(reply, dm).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
         }
 
         #region Methods

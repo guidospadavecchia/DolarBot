@@ -53,6 +53,7 @@ namespace DolarBot
                                                                .AddSingleton(configuration)
                                                                .AddSingleton<InteractiveService>()
                                                                .AddSingleton(api)
+                                                               .AddSingleton(logger)
                                                                .BuildServiceProvider();
             string commandPrefix = configuration["commandPrefix"];
             string token = GetToken(configuration);

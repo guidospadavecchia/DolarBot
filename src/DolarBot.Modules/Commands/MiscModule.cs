@@ -4,6 +4,8 @@ using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Modules.Services.Dolar;
 using DolarBot.Modules.Services.Quotes;
+using DolarBot.Util;
+using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
@@ -18,8 +20,23 @@ namespace DolarBot.Modules.Commands
     [HelpTitle("Otros")]
     public class MiscModule : BaseInteractiveModule
     {
+        #region Vars
+        /// <summary>
+        /// The log4net logger.
+        /// </summary>
+        private readonly ILog Logger;
+        #endregion
+
         #region Constructor
-        public MiscModule(IConfiguration configuration) : base(configuration) { }
+        /// <summary>
+        /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ILog"/> objects.
+        /// </summary>
+        /// <param name="configuration">Provides access to application settings.</param>
+        /// <param name="logger">Provides access to the different APIs.</param>
+        public MiscModule(IConfiguration configuration, ILog logger) : base(configuration) 
+        {
+            Logger = logger;
+        }
         #endregion
 
         [Command("bancos")]
@@ -28,9 +45,17 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetBanks()
         {
-            string commandPrefix = Configuration["commandPrefix"];
-            string banks = string.Join(", ", Enum.GetNames(typeof(Banks)).Select(b => Format.Bold(b)));
-            await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
+            try
+            {
+                string commandPrefix = Configuration["commandPrefix"];
+                string banks = string.Join(", ", Enum.GetNames(typeof(Banks)).Select(b => Format.Bold(b)));
+                await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
         }
 
         [Command("frase", RunMode = RunMode.Async)]
@@ -39,14 +64,22 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 2, Measure.Seconds)]
         public async Task GetRandomQuote()
         {
-            Quote quote = QuoteService.GetRandomQuote();
-            if (quote != null && !string.IsNullOrWhiteSpace(quote.Text))
+            try
             {
-                await ReplyAsync($"{Format.Italics($"\"{quote.Text}\"")} -{Format.Bold(quote.Author)}.").ConfigureAwait(false);
+                Quote quote = QuoteService.GetRandomQuote();
+                if (quote != null && !string.IsNullOrWhiteSpace(quote.Text))
+                {
+                    await ReplyAsync($"{Format.Italics($"\"{quote.Text}\"")} -{Format.Bold(quote.Author)}.").ConfigureAwait(false);
+                }
+                else
+                {
+                    await ReplyAsync($"{Format.Bold("Error")}. No se puede acceder a las frases célebres en este momento. Intentá nuevamente más tarde.").ConfigureAwait(false);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await ReplyAsync($"{Format.Bold("Error")}. No se puede acceder a las frases célebres en este momento. Intentá nuevamente más tarde.").ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
             }
         }
     }

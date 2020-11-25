@@ -5,8 +5,12 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Modules.Services.Dolar;
+using DolarBot.Util;
+using log4net;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
+using BcraValues = DolarBot.API.ApiCalls.DolarArgentinaApi.BcraValues;
 
 namespace DolarBot.Modules.Commands
 {
@@ -31,6 +35,11 @@ namespace DolarBot.Modules.Commands
         /// Provides access to the different APIs.
         /// </summary>
         protected readonly ApiCalls Api;
+
+        /// <summary>
+        /// The log4net logger.
+        /// </summary>
+        private readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -39,8 +48,10 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public BcraModule(IConfiguration configuration, ApiCalls api) : base(configuration)
+        /// <param name="logger">The log4net logger.</param>
+        public BcraModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
+            Logger = logger;
             Api = api;
         }
         #endregion
@@ -51,19 +62,88 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetRiesgoPaisValueAsync()
         {
-            using (Context.Channel.EnterTypingState())
+            try
             {
-                RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
-                if (result != null)
+                using (Context.Channel.EnterTypingState())
                 {
-                    RiesgoPaisService riesgoPaisService = new RiesgoPaisService(Configuration, Api, mainEmbedColor);
-                    EmbedBuilder embed = riesgoPaisService.CreateRiesgoPaisEmbed(result);
-                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        BcraService bcraService = new BcraService(Configuration, Api, mainEmbedColor);
+                        EmbedBuilder embed = bcraService.CreateRiesgoPaisEmbed(result);
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
                 }
-                else
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("reservas", RunMode = RunMode.Async)]
+        [Alias("r")]
+        [Summary("Muestra las reservas de dólares del Banco Central a la fecha.")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetReservasAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
                 {
-                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    BcraResponse result = await Api.DolarArgentina.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        BcraService bcraService = new BcraService(Configuration, Api, mainEmbedColor);
+                        EmbedBuilder embed = bcraService.CreateReservasEmbed(result);
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+
+        [Command("circulante", RunMode = RunMode.Async)]
+        [Alias("c")]
+        [Summary("Muestra la cantidad total de pesos en circulación a la fecha.")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetCirculanteAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    BcraResponse result = await Api.DolarArgentina.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        BcraService bcraService = new BcraService(Configuration, Api, mainEmbedColor);
+                        EmbedBuilder embed = bcraService.CreateCirculanteEmbed(result);
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+                Logger.Error("Error al ejecutar comando.", ex);
             }
         }
     }

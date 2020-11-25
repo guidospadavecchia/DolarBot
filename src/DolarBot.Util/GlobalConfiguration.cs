@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Discord;
+using System;
+using System.Globalization;
 
 namespace DolarBot.Util
 {
@@ -39,6 +41,28 @@ namespace DolarBot.Util
         /// </summary>
         /// <returns></returns>
         public static TimeZoneInfo GetLocalTimeZoneInfo() => TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
+        /// <summary>
+        /// Gets the localized culture format.
+        /// </summary>
+        /// <returns></returns>
+        public static CultureInfo GetLocalCultureInfo() => CultureInfo.GetCultureInfo("es-AR");
+        /// <summary>
+        /// Returns the standarized message for unhandled errors.
+        /// </summary>
+        /// <param name="supportServerUrl">Support server URL.</param>
+        /// <returns></returns>
+        public static string GetGenericErrorMessage(string supportServerUrl)
+        {
+            if (string.IsNullOrEmpty(supportServerUrl))
+            {
+                return $"{Format.Bold("Oops!")} Ocurrió un error al ejecutar el comando. Probablemente se trate de algo temporal. Si el problema persiste, contactate con {Format.Bold("Svenjörn#9806")}.";
+            }
+            else
+            {
+                return $"{Format.Bold("Oops!")} Ocurrió un error al ejecutar el comando. Probablemente se trate de algo temporal. Si el problema persiste, reportá el problema en el {Format.Url("servidor de soporte", supportServerUrl)} o contactate con {Format.Bold("Svenjörn#9806")}.";
+            }
+        }
+
 
         #endregion
 

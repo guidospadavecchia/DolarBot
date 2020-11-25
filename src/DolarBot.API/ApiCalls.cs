@@ -63,6 +63,7 @@ namespace DolarBot.API
         public class DolarArgentinaApi
         {
             #region Constants
+            //Dólar
             private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolaroficial";
             private const string DOLAR_BLUE_ENDPOINT = "/api/dolarblue";
             private const string DOLAR_CONTADO_LIQUI_ENDPOINT = "/api/contadoliqui";
@@ -83,6 +84,9 @@ namespace DolarBot.API
             private const string DOLAR_CHACO_ENDPOINT = "/api/chaco";
             private const string DOLAR_PAMPA_ENDPOINT = "/api/pampa";
 
+            //BCRA
+            private const string RESERVAS_ENDPOINT = "/api/bcra/reservas";
+            private const string CIRCULANTE_ENDPOINT = "/api/bcra/circulante";
             private const string RIESGO_PAIS_ENDPOINT = "/api/riesgopais";
             private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
             #endregion
@@ -110,7 +114,7 @@ namespace DolarBot.API
             #endregion
 
             /// <summary>
-            /// Represents the different API endpoints.
+            /// Represents the different API endpoints for dollar rates.
             /// </summary>
             public enum DollarType
             {
@@ -157,6 +161,17 @@ namespace DolarBot.API
             }
 
             /// <summary>
+            /// Represents the different API endpoints for BCRA values.
+            /// </summary>
+            public enum BcraValues
+            {
+                [Description(RESERVAS_ENDPOINT)]
+                Reservas,
+                [Description(CIRCULANTE_ENDPOINT)]
+                Circulante
+            }
+
+            /// <summary>
             /// Creats a <see cref="DolarArgentinaApi"/> object using the provided configuration, cache and error action.
             /// </summary>
             /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
@@ -193,7 +208,6 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = type.GetDescription();
-
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
                     IRestResponse<DolarResponse> response = await client.ExecuteGetAsync<DolarResponse>(request).ConfigureAwait(false);
                     if (response.IsSuccessful)
@@ -239,6 +253,35 @@ namespace DolarBot.API
                     if (response.IsSuccessful)
                     {
                         cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys the API endpoint asynchronously and returns a <see cref="BcraResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="BcraResponse"/> object.</returns>
+            public async Task<BcraResponse> GetBcraValue(BcraValues bcraValue)
+            {
+                BcraResponse cachedResponse = cache.GetObject<BcraResponse>(bcraValue);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = bcraValue.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<BcraResponse> response = await client.ExecuteGetAsync<BcraResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        cache.SaveObject(bcraValue, response.Data);
                         return response.Data;
                     }
                     else

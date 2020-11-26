@@ -1,4 +1,4 @@
-﻿namespace DolarBot.Modules.Services.Quotes
+﻿namespace DolarBot.Services.Quotes
 {
     /// <summary>
     /// Represents a famous quote.

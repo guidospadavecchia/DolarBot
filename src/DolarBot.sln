@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.Modules", "DolarBo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.Util", "DolarBot.Util\DolarBot.Util.csproj", "{29C8CD4B-B16B-4E31-B2D2-7408D0F1837C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DolarBot.API", "DolarBot.API\DolarBot.API.csproj", "{399E55F8-15C4-4C0A-B566-F4A927E44F54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.API", "DolarBot.API\DolarBot.API.csproj", "{399E55F8-15C4-4C0A-B566-F4A927E44F54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DolarBot.Services", "DolarBot.Services\DolarBot.Services.csproj", "{BEF52310-C831-4F69-8AA3-7358CEF42875}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{399E55F8-15C4-4C0A-B566-F4A927E44F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{399E55F8-15C4-4C0A-B566-F4A927E44F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{399E55F8-15C4-4C0A-B566-F4A927E44F54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

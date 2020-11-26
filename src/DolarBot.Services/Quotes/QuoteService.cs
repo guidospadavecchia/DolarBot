@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace DolarBot.Modules.Services.Quotes
+namespace DolarBot.Services.Quotes
 {
     /// <summary>
     /// Contains methods for retrieving famous argentine dollar-related quotes.

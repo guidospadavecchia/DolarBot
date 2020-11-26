@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DolarBot.API\DolarBot.API.csproj" />
+    <ProjectReference Include="..\DolarBot.Services\DolarBot.Services.csproj" />
     <ProjectReference Include="..\DolarBot.Util\DolarBot.Util.csproj" />
   </ItemGroup>
 

@@ -1,7 +1,7 @@
 ﻿using Discord;
 using DolarBot.API;
 using DolarBot.API.Models;
-using DolarBot.Modules.Services.Banking;
+using DolarBot.Services.Banking;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Text;
 using static DolarBot.API.ApiCalls.DolarArgentinaApi;
 
-namespace DolarBot.Modules.Services.Dolar
+namespace DolarBot.Services.Dolar
 {
     /// <summary>
     /// Contains several methods to process dollar commands.

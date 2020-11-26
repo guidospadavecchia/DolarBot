@@ -2,8 +2,8 @@
 using Discord.Commands;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
-using DolarBot.Modules.Services.Banking;
-using DolarBot.Modules.Services.Quotes;
+using DolarBot.Services.Banking;
+using DolarBot.Services.Quotes;
 using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;

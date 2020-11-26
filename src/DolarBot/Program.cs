@@ -4,7 +4,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using DolarBot.API;
 using DolarBot.Modules.Handlers;
-using DolarBot.Modules.Services.Quotes;
+using DolarBot.Services.Quotes;
 using DolarBot.Util;
 using log4net;
 using log4net.Config;

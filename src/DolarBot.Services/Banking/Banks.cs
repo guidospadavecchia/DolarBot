@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace DolarBot.Modules.Services.Banking
+namespace DolarBot.Services.Banking
 {
     /// <summary>
     /// Represents the available bank parameters for dollar command.

@@ -4,7 +4,7 @@ using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
-using DolarBot.Modules.Services.Real;
+using DolarBot.Services.Real;
 using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;

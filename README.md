@@ -32,7 +32,6 @@ A continuación se listan los comandos disponibles:
 - \[`$ayudadm` | `$adm`] `<comando>`: Envía la ayuda de un comando particular por mensaje privado.  
 
 ### Cotizaciones del dólar
-- \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
 - \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Ver `$bancos`).  
 - \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos`).  
@@ -55,7 +54,7 @@ A continuación se listan los comandos disponibles:
 - \[`$circulante` | `$c`]: Muestra la cantidad total de pesos en circulación a la fecha.  
 
 ### Evolución
-- \[`$evolucion` | `$ev`]: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.  
+- \[`$evolucion` | `$ev`] `<cotizacion>`: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.  
 
 ### Información
 - \[`$hora` | `$date`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  
@@ -66,6 +65,7 @@ A continuación se listan los comandos disponibles:
 - \[`$votar` | `$vote`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
 
 ### Otros
+- \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
 - \[`$frase` | `$f`]: Muestra una frase célebre acerca de la economía argentina.  
 
 ## Librerías y APIS

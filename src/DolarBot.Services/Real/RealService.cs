@@ -29,11 +29,6 @@ namespace DolarBot.Services.Real
         /// </summary>
         protected readonly ApiCalls Api;
 
-        /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color EmbedColor;
-
         #endregion
 
         #region Constructors
@@ -43,11 +38,9 @@ namespace DolarBot.Services.Real
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        /// <param name="embedColor">The color to use for embed messages.</param>
-        public RealService(IConfiguration configuration, ApiCalls api, Color embedColor)
+        public RealService(IConfiguration configuration, ApiCalls api)
         {
             Configuration = configuration;
-            EmbedColor = embedColor;
             Api = api;
         }
 
@@ -81,7 +74,7 @@ namespace DolarBot.Services.Real
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle("Cotizaciones del Real")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
@@ -129,7 +122,7 @@ namespace DolarBot.Services.Real
             string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
             string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(realImageUrl)

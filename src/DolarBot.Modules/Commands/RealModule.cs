@@ -28,11 +28,6 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color mainEmbedColor = new Color(255, 218, 68);
-
-        /// <summary>
         /// Provides access to the different APIs.
         /// </summary>
         protected readonly ApiCalls Api;
@@ -68,7 +63,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealService realService = new RealService(Configuration, Api, mainEmbedColor);
+                    RealService realService = new RealService(Configuration, Api);
                     RealResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetRealPrice(RealTypes.Nacion),
                                                                    Api.DolarArgentina.GetRealPrice(RealTypes.BBVA),
                                                                    Api.DolarArgentina.GetRealPrice(RealTypes.Chaco)).ConfigureAwait(false);

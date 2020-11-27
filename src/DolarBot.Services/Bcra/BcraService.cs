@@ -27,11 +27,6 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         protected readonly ApiCalls Api;
 
-        /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color EmbedColor;
-
         #endregion
 
         #region Constructors
@@ -41,11 +36,9 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        /// <param name="embedColor">The color to use for embed messages.</param>
-        public BcraService(IConfiguration configuration, ApiCalls api, Color embedColor)
+        public BcraService(IConfiguration configuration, ApiCalls api)
         {
             Configuration = configuration;
-            EmbedColor = embedColor;
             Api = api;
         }
 
@@ -61,7 +54,7 @@ namespace DolarBot.Services.Bcra
         public EmbedBuilder CreateRiesgoPaisEmbed(RiesgoPaisResponse riesgoPaisResponse)
         {
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
-            string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];
+            string riskImageUrl = Configuration.GetSection("images").GetSection("risk")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out double valor);
             string value;
@@ -75,10 +68,10 @@ namespace DolarBot.Services.Bcra
                 value = "No informado";
             }
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Riesgo País")
                                                    .WithDescription($"Valor del {Format.Bold("riesgo país")} argentino.".AppendLineBreak())
-                                                   .WithThumbnailUrl(chartImageUrl)
+                                                   .WithThumbnailUrl(riskImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
                                                        Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
@@ -112,7 +105,7 @@ namespace DolarBot.Services.Bcra
                 text = $"{Format.Bold($"{moneyBagEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} No informado")}";
             }
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Reservas BCRA")
                                                    .WithDescription($"Reservas totales del {Format.Bold("BCRA (Banco Central de la República Argentina)")} expresado en {Format.Bold("dólares estadounidenses")}.".AppendLineBreak())
                                                    .WithThumbnailUrl(reservesImageUrl)
@@ -149,7 +142,7 @@ namespace DolarBot.Services.Bcra
                 text = $"{Format.Bold($"{circulatingMoneyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} No informado")}";
             }
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Pesos en circulación")
                                                    .WithDescription($"Cantidad total de {Format.Bold("pesos argentinos")} en circulación.".AppendLineBreak())
                                                    .WithThumbnailUrl(reservesImageUrl)

@@ -38,11 +38,6 @@ namespace DolarBot.Services.Dolar
         /// </summary>
         protected readonly ApiCalls Api;
 
-        /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color EmbedColor;
-
         #endregion
 
         #region Constructors
@@ -52,11 +47,9 @@ namespace DolarBot.Services.Dolar
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        /// <param name="embedColor">The color to use for embed messages.</param>
-        public DolarService(IConfiguration configuration, ApiCalls api, Color embedColor)
+        public DolarService(IConfiguration configuration, ApiCalls api)
         {
             Configuration = configuration;
-            EmbedColor = embedColor;
             Api = api;
         }
 
@@ -89,7 +82,7 @@ namespace DolarBot.Services.Dolar
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Cotizaciones del Dólar")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
@@ -120,7 +113,7 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for a single dollar response specifying a custom description, title and thumbnail URL.
         /// </summary>
-        /// <param name="dollarResponse">>The dollar response to show.</param>
+        /// <param name="dollarResponse">The dollar response to show.</param>
         /// <param name="description">The embed's description.</param>
         /// <param name="title">Optional. The embed's title.</param>
         /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
@@ -136,7 +129,7 @@ namespace DolarBot.Services.Dolar
             string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
             string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(dollarImageUrl)

@@ -28,11 +28,6 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color mainEmbedColor = new Color(43, 71, 157);
-
-        /// <summary>
         /// Provides access to the different APIs.
         /// </summary>
         protected readonly ApiCalls Api;
@@ -68,7 +63,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    EuroService euroService = new EuroService(Configuration, Api, mainEmbedColor);
+                    EuroService euroService = new EuroService(Configuration, Api);
                     EuroResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetEuroPrice(EuroTypes.Nacion),
                                                                    Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia),
                                                                    Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA),

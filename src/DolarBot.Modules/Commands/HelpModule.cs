@@ -34,11 +34,6 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color helpEmbedColor = Color.Blue;
-
-        /// <summary>
         /// Service which provides access to the available commands.
         /// </summary>
         private readonly CommandService Commands;
@@ -126,7 +121,7 @@ namespace DolarBot.Modules.Commands
                                                        .OrderBy(m => (m.GetAttribute<HelpOrderAttribute>()?.Order))
                                                        .ToList();
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(helpEmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
                                                    .WithTitle(Format.Bold("Comandos Disponibles"))
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                                    .WithThumbnailUrl(helpImageUrl);
@@ -184,7 +179,7 @@ namespace DolarBot.Modules.Commands
 
             CommandInfo commandInfo = Commands.Commands.GetCommand(command);
             EmbedBuilder embed = new EmbedBuilder().WithTitle($"Comando {commandTitle}")
-                                                   .WithColor(helpEmbedColor)
+                                                   .WithColor(GlobalConfiguration.Colors.Help)
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                                    .WithThumbnailUrl(helpImageUrl)
                                                    .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary));

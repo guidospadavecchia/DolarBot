@@ -59,7 +59,7 @@ namespace DolarBot.Util
             }
             else
             {
-                return $"{Format.Bold("Oops!")} Ocurrió un error al ejecutar el comando. Probablemente se trate de algo temporal. Si el problema persiste, reportá el problema en el {Format.Url("servidor de soporte", supportServerUrl)} o contactate con {Format.Bold("Svenjörn#9806")}.";
+                return $"{Format.Bold("Oops!")} Ocurrió un error al ejecutar el comando. Probablemente se trate de algo temporal. Si el problema persiste, reportalo en el servidor de soporte ({supportServerUrl}) o contactate con {Format.Bold("Svenjörn#9806")}.";
             }
         }
 
@@ -73,6 +73,33 @@ namespace DolarBot.Util
         public static class Constants
         {
             public const string BLANK_SPACE = "\u200B";
+        }
+
+        /// <summary>
+        /// Contains the color palette for each module.
+        /// </summary>
+        public static class Colors
+        {
+            /// <summary>
+            /// The main color for commands.
+            /// </summary>
+            public static readonly Color Main = new Color(40, 150, 75);
+            /// <summary>
+            /// The color for Euro-related commands.
+            /// </summary>
+            public static readonly Color Euro = new Color(43, 71, 157);
+            /// <summary>
+            /// The color for Real-related commands.
+            /// </summary>
+            public static readonly Color Real = new Color(255, 218, 68);
+            /// <summary>
+            /// The color for help-related commands.
+            /// </summary>
+            public static readonly Color Help = Color.Blue;
+            /// <summary>
+            /// The color for information-related commands.
+            /// </summary>
+            public static readonly Color Info = new Color(23, 99, 154);
         }
         #endregion
     }

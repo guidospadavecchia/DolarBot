@@ -45,6 +45,27 @@ namespace DolarBot.Util.Extensions
         }
 
         /// <summary>
+        /// Capitalizes the first letter of the current string.
+        /// </summary>
+        /// <param name="text">The current string.</param>
+        /// <returns>The same string with the first letter capitalized.</returns>
+        public static string Capitalize(this string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
+            else if (text.Length == 1)
+            {
+                return text.ToUpper();
+            }
+            else
+            {
+                return $"{char.ToUpper(text[0])}{text.Substring(1)}";
+            }
+        }
+
+        /// <summary>
         /// Removes Bold, Italic, Strikethrough, Code and Spoiler formatting.
         /// </summary>
         /// <param name="text">The current string.</param>

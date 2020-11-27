@@ -29,11 +29,6 @@ namespace DolarBot.Services.Euro
         /// </summary>
         protected readonly ApiCalls Api;
 
-        /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color EmbedColor;
-
         #endregion
 
         #region Constructors
@@ -43,11 +38,9 @@ namespace DolarBot.Services.Euro
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        /// <param name="embedColor">The color to use for embed messages.</param>
-        public EuroService(IConfiguration configuration, ApiCalls api, Color embedColor)
+        public EuroService(IConfiguration configuration, ApiCalls api)
         {
             Configuration = configuration;
-            EmbedColor = embedColor;
             Api = api;
         }
 
@@ -80,7 +73,7 @@ namespace DolarBot.Services.Euro
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle("Cotizaciones del Euro")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
@@ -127,7 +120,7 @@ namespace DolarBot.Services.Euro
             string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
             string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : null;
 
-            EmbedBuilder embed = new EmbedBuilder().WithColor(EmbedColor)
+            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(euroImageUrl)

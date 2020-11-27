@@ -31,11 +31,6 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color mainEmbedColor = new Color(40, 150, 75);
-
-        /// <summary>
         /// Provides access to the different APIs.
         /// </summary>
         protected readonly ApiCalls Api;
@@ -73,7 +68,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
 
                     if (banco != null)
                     {
@@ -172,7 +167,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
                     DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
                     if (result != null)
                     {
@@ -202,7 +197,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
                     DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Ahorro).ConfigureAwait(false);
                     if (result != null)
                     {
@@ -232,7 +227,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
                     DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Blue).ConfigureAwait(false);
                     if (result != null)
                     {
@@ -262,7 +257,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
                     DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Promedio).ConfigureAwait(false);
                     if (result != null)
                     {
@@ -292,7 +287,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
                     DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Bolsa).ConfigureAwait(false);
                     if (result != null)
                     {
@@ -322,7 +317,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api, mainEmbedColor);
+                    DolarService dolarService = new DolarService(Configuration, Api);
                     DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
                     if (result != null)
                     {

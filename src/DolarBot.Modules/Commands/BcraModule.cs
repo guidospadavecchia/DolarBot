@@ -27,11 +27,6 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color mainEmbedColor = new Color(40, 150, 75);
-
-        /// <summary>
         /// Provides access to the different APIs.
         /// </summary>
         protected readonly ApiCalls Api;
@@ -70,7 +65,7 @@ namespace DolarBot.Modules.Commands
                     RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
                     if (result != null)
                     {
-                        BcraService bcraService = new BcraService(Configuration, Api, mainEmbedColor);
+                        BcraService bcraService = new BcraService(Configuration, Api);
                         EmbedBuilder embed = bcraService.CreateRiesgoPaisEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
@@ -101,7 +96,7 @@ namespace DolarBot.Modules.Commands
                     BcraResponse result = await Api.DolarArgentina.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
                     if (result != null)
                     {
-                        BcraService bcraService = new BcraService(Configuration, Api, mainEmbedColor);
+                        BcraService bcraService = new BcraService(Configuration, Api);
                         EmbedBuilder embed = bcraService.CreateReservasEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
@@ -132,7 +127,7 @@ namespace DolarBot.Modules.Commands
                     BcraResponse result = await Api.DolarArgentina.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
                     if (result != null)
                     {
-                        BcraService bcraService = new BcraService(Configuration, Api, mainEmbedColor);
+                        BcraService bcraService = new BcraService(Configuration, Api);
                         EmbedBuilder embed = bcraService.CreateCirculanteEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }

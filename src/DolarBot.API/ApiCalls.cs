@@ -102,6 +102,12 @@ namespace DolarBot.API
             private const string CIRCULANTE_ENDPOINT = "/api/bcra/circulante";
             private const string RIESGO_PAIS_ENDPOINT = "/api/riesgopais";
             private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
+
+            //Historical Rates
+            private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolaroficial";
+            private const string EVOLUCION_DOLAR_BLUE_ENDPOINT = "/api/evolucion/dolarblue";
+            private const string EVOLUCION_EURO_OFICIAL_ENDPOINT = "/api/evolucion/eurooficial";
+            private const string EVOLUCION_REAL_OFICIAL_ENDPOINT = "/api/evolucion/realoficial";
             #endregion
 
             #region Vars
@@ -215,6 +221,21 @@ namespace DolarBot.API
                 Reservas,
                 [Description(CIRCULANTE_ENDPOINT)]
                 Circulante
+            }
+
+            /// <summary>
+            /// Represents the different API endpoints for historical rates.
+            /// </summary>
+            public enum HistoricalRatesParams
+            {
+                [Description(EVOLUCION_DOLAR_OFICIAL_ENDPOINT)]
+                Dolar,
+                [Description(EVOLUCION_DOLAR_BLUE_ENDPOINT)]
+                DolarBlue,
+                [Description(EVOLUCION_EURO_OFICIAL_ENDPOINT)]
+                Euro,
+                [Description(EVOLUCION_REAL_OFICIAL_ENDPOINT)]
+                Real
             }
             #endregion
 
@@ -395,6 +416,35 @@ namespace DolarBot.API
                     if (response.IsSuccessful)
                     {
                         cache.SaveObject(bcraValue, response.Data);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys the API endpoint asynchronously and returns a <see cref="HistoricalRatesResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="HistoricalRatesResponse"/> object.</returns>
+            public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParams historicalRatesParam)
+            {
+                HistoricalRatesResponse cachedResponse = cache.GetObject<HistoricalRatesResponse>(historicalRatesParam);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = historicalRatesParam.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<HistoricalRatesResponse> response = await client.ExecuteGetAsync<HistoricalRatesResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        cache.SaveObject(historicalRatesParam, response.Data);
                         return response.Data;
                     }
                     else

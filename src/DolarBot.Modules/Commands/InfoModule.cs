@@ -16,16 +16,11 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains information related commands.
     /// </summary>
-    [HelpOrder(6)]
+    [HelpOrder(7)]
     [HelpTitle("Información")]
     public class InfoModule : BaseInteractiveModule
     {
         #region Vars
-        /// <summary>
-        /// Color for the embed messages.
-        /// </summary>
-        private readonly Color infoEmbedColor = new Color(23, 99, 154);
-
         /// <summary>
         /// The log4net logger.
         /// </summary>
@@ -55,7 +50,7 @@ namespace DolarBot.Modules.Commands
 
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("Fecha y Hora")
-                                     .WithColor(infoEmbedColor)
+                                     .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                      .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
@@ -81,7 +76,7 @@ namespace DolarBot.Modules.Commands
                 string sid = Format.Bold(Context.Guild.Id.ToString());
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("Server ID")
-                                     .WithColor(infoEmbedColor)
+                                     .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"El ID del servidor es {sid}");
 
@@ -106,7 +101,7 @@ namespace DolarBot.Modules.Commands
 
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("Procesando...")
-                                     .WithColor(infoEmbedColor);
+                                     .WithColor(GlobalConfiguration.Colors.Info);
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -154,7 +149,7 @@ namespace DolarBot.Modules.Commands
 
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("DolarBot")
-                                     .WithColor(infoEmbedColor)
+                                     .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"Invita al bot haciendo {Format.Url("click acá", inviteLink)}");
 
@@ -178,7 +173,7 @@ namespace DolarBot.Modules.Commands
 
             EmbedBuilder embed = new EmbedBuilder()
                                  .WithTitle("Votar")
-                                 .WithColor(infoEmbedColor)
+                                 .WithColor(GlobalConfiguration.Colors.Info)
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");
 
@@ -208,7 +203,7 @@ namespace DolarBot.Modules.Commands
 
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("DolarBot")
-                                     .WithColor(infoEmbedColor)
+                                     .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
                                      .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}".AppendLineBreak())

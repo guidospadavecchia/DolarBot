@@ -16,7 +16,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains information related commands.
     /// </summary>
-    [HelpOrder(5)]
+    [HelpOrder(6)]
     [HelpTitle("Otros")]
     public class MiscModule : BaseInteractiveModule
     {

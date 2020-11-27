@@ -3,7 +3,7 @@
 </p>
   
 <p align="center">
-<i>El bot argentino de Discord para ver las cotizaciones del dólar y riesgo país.</i>  
+<i>El bot argentino de Discord para ver las cotizaciones del dólar, euro, real, indicadores y más!.</i>  
 </p>  
 
 ***    
@@ -16,7 +16,7 @@
 [![PullRequests](https://img.shields.io/github/issues-pr-closed/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/pulls)  
 
 ## Descripción  
-**DolarBot** te permite ver todas las cotizaciones del dólar en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
+**DolarBot** te permite ver todas las cotizaciones del dólar, Euro, Real y distintos indicadores económicos como riesgo país, reservas del BCRA y otros, en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
 La cantidad de comandos que puede ejecutar cada usuario está limitada a **1 comando cada 5 segundos**, ayudando a evitar problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema temporal.
 
 ## Discord
@@ -31,7 +31,7 @@ A continuación se listan los comandos disponibles:
 - \[`$ayuda` | `$a`] `<comando>`: Muestra información sobre un comando particular.  
 - \[`$ayudadm` | `$adm`] `<comando>`: Envía la ayuda de un comando particular por mensaje privado.  
 
-### Cotizaciones
+### Cotizaciones del dólar
 - \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
 - \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Ver `$bancos`).  
@@ -42,7 +42,20 @@ A continuación se listan los comandos disponibles:
 - \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
 - \[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
 - \[`$contadoconliqui` | `$ccl`]: Muestra la cotización del dólar contado con liquidación.  
+
+### Cotizaciones del Euro
+- \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro para los bancos disponibles.  
+
+### Cotizaciones del Real
+- \[`$real` | `$r`]: Muestra todas las cotizaciones del Real para los bancos disponibles.  
+
+### Indicadores
 - \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  
+- \[`$reservas` | `$rs`]: Muestra la cantidad total de reservas en dólares del BCRA a la fecha.  
+- \[`$circulante` | `$c`]: Muestra la cantidad total de pesos en circulación a la fecha.  
+
+### Evolución
+- \[`$evolucion` | `$ev`]: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.  
 
 ### Información
 - \[`$hora` | `$date`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  
@@ -72,7 +85,7 @@ También podes impulsar su avance y mantenimiento con una [pequeña contribució
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  
 
 ## Licencia
-**DolarBot** está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
+**DolarBot** es *open-source*, y está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
 
 ## 
 <p align="center">

@@ -18,23 +18,23 @@ namespace DolarBot.Modules.Handlers
         /// <summary>
         /// The current Discord client instance.
         /// </summary>
-        private readonly DiscordSocketClient client;
+        private readonly DiscordSocketClient Client;
         /// <summary>
         /// Service which provides access to the available commands.
         /// </summary>
-        private readonly CommandService commands;
+        private readonly CommandService Commands;
         /// <summary>
         /// Provides access to the different services instances.
         /// </summary>
-        private readonly IServiceProvider services;
+        private readonly IServiceProvider Services;
         /// <summary>
         /// Allows access to application settings.
         /// </summary>
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration Configuration;
         /// <summary>
         /// Log4net logger.
         /// </summary>
-        private readonly ILog logger;
+        private readonly ILog Logger;
         #endregion
 
         #region Constructors
@@ -49,11 +49,11 @@ namespace DolarBot.Modules.Handlers
         /// <param name="logger">The log4net <see cref="ILog"/> instance.</param>
         public CommandHandler(DiscordSocketClient client, CommandService commands, IServiceProvider services, IConfiguration configuration, ILog logger = null)
         {
-            this.client = client;
-            this.commands = commands;
-            this.services = services;
-            this.configuration = configuration;
-            this.logger = logger;
+            Client = client;
+            Commands = commands;
+            Services = services;
+            Configuration = configuration;
+            Logger = logger;
         }
         #endregion
 
@@ -71,11 +71,11 @@ namespace DolarBot.Modules.Handlers
                 return;
             }
 
-            SocketCommandContext context = new SocketCommandContext(client, message);
+            SocketCommandContext context = new SocketCommandContext(Client, message);
             int argPos = default;
-            if (!context.IsPrivate && message.HasStringPrefix(configuration["commandPrefix"], ref argPos))
+            if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
             {
-                IResult result = await commands.ExecuteAsync(context, argPos, services).ConfigureAwait(false);
+                IResult result = await Commands.ExecuteAsync(context, argPos, Services).ConfigureAwait(false);
                 if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
                     switch (result.Error)
@@ -105,7 +105,7 @@ namespace DolarBot.Modules.Handlers
         /// <returns>The command's summary if found, otherwise null.</returns>
         private string GetCommandSummary(string commandName)
         {
-            var command = commands.Commands.FirstOrDefault(c => c.Name.ToUpper().Trim().Equals(commandName.ToUpper().Trim()) || c.Aliases.Select(a => a.ToUpper().Trim()).Contains(commandName.ToUpper().Trim()));
+            var command = Commands.Commands.FirstOrDefault(c => c.Name.ToUpper().Trim().Equals(commandName.ToUpper().Trim()) || c.Aliases.Select(a => a.ToUpper().Trim()).Contains(commandName.ToUpper().Trim()));
             return command?.Summary;
         }
 
@@ -117,8 +117,8 @@ namespace DolarBot.Modules.Handlers
         /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
         private async Task ProcessBadArgCount(SocketCommandContext context, int argPos)
         {
-            string commandPrefix = configuration["commandPrefix"];
-            string commandName = commands.Search(context, argPos).Text;
+            string commandPrefix = Configuration["commandPrefix"];
+            string commandName = Commands.Search(context, argPos).Text;
             string commandSummary = GetCommandSummary(commandName);
             if (!string.IsNullOrWhiteSpace(commandSummary))
             {
@@ -136,16 +136,16 @@ namespace DolarBot.Modules.Handlers
         /// <param name="result">The execution result.</param>
         private void ProcessCommandError(IResult result)
         {
-            if (logger != null)
+            if (Logger != null)
             {
                 if (result is ExecuteResult executeResult)
                 {
-                    logger.Error($"Error executing command: {executeResult.Exception.Message}");
-                    logger.Error(executeResult.Exception.StackTrace);
+                    Logger.Error($"Error executing command: {executeResult.Exception.Message}");
+                    Logger.Error(executeResult.Exception.StackTrace);
                 }
                 else
                 {
-                    logger.Error($"Error executing command: {result.ErrorReason}");
+                    Logger.Error($"Error executing command: {result.ErrorReason}");
                 }
             }
         }

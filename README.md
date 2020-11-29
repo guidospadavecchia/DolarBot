@@ -44,9 +44,11 @@ A continuación se listan los comandos disponibles:
 
 ### Cotizaciones del Euro
 - \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro para los bancos disponibles.  
+- \[`$euroahorro` | `$ea`]: Muestra todas las cotizaciones del Euro para los bancos disponibles incluyendo impuesto P.A.I.S. y retención de ganancias.  
 
 ### Cotizaciones del Real
 - \[`$real` | `$r`]: Muestra todas las cotizaciones del Real para los bancos disponibles.  
+- \[`$realahorro` | `$ra`]: Muestra todas las cotizaciones del Real para los bancos disponibles incluyendo impuesto P.A.I.S. y retención de ganancias.  
 
 ### Indicadores
 - \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  
@@ -85,7 +87,7 @@ También podes impulsar su avance y mantenimiento con una [pequeña contribució
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  
 
 ## Licencia
-**DolarBot** es *open-source*, y está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
+**DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
 
 ## 
 <p align="center">

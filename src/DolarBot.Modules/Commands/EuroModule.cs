@@ -65,15 +65,56 @@ namespace DolarBot.Modules.Commands
                 {
                     EuroService euroService = new EuroService(Configuration, Api);
                     EuroResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetEuroPrice(EuroTypes.Nacion),
-                                                                   Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia),
-                                                                   Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA),
-                                                                   Api.DolarArgentina.GetEuroPrice(EuroTypes.Hipotecario),
-                                                                   Api.DolarArgentina.GetEuroPrice(EuroTypes.Chaco),
-                                                                   Api.DolarArgentina.GetEuroPrice(EuroTypes.Pampa)).ConfigureAwait(false);
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Hipotecario),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Chaco),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Pampa)).ConfigureAwait(false);
                     if (responses.Any(r => r != null))
                     {
                         EuroResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                         EmbedBuilder embed = euroService.CreateEuroEmbed(successfulResponses);
+                        if (responses.Length != successfulResponses.Length)
+                        {
+                            await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
+                        }
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("euroahorro", RunMode = RunMode.Async)]
+        [Alias("ea")]
+        [Summary("Muestra todas las cotizaciones del Euro disponibles incluyendo impuesto P.A.I.S. y retención de ganancias.")]
+        [HelpUsageExample(false, "$euroahorro", "$ea")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetEuroAhorroPriceAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    EuroService euroService = new EuroService(Configuration, Api);
+                    EuroResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetEuroPrice(EuroTypes.Nacion),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Hipotecario),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Chaco),
+                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Pampa)).ConfigureAwait(false);
+                    if (responses.Any(r => r != null))
+                    {
+                        EuroResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
+                        EmbedBuilder embed = euroService.CreateEuroAhorroEmbed(successfulResponses);
                         if (responses.Length != successfulResponses.Length)
                         {
                             await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);

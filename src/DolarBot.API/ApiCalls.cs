@@ -59,7 +59,7 @@ namespace DolarBot.API
             }
         }
 
-        [Description("https://github.com/Castrogiovanni20/api-dolar-argentina")]        
+        [Description("https://github.com/guidospadavecchia/DolarBot-Api")]        
         public class DolarArgentinaApi
         {
             #region Constants
@@ -285,7 +285,7 @@ namespace DolarBot.API
                         if (type == DollarTypes.Ahorro)
                         {
                             CultureInfo apiCulture = GetApiCulture();
-                            decimal taxPercent = (decimal.Parse(configuration["dollarTaxPercent"]) / 100) + 1;
+                            decimal taxPercent = (decimal.Parse(configuration["taxPercent"]) / 100) + 1;
                             if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
                             {
                                 dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F", apiCulture);

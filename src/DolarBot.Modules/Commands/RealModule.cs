@@ -65,12 +65,50 @@ namespace DolarBot.Modules.Commands
                 {
                     RealService realService = new RealService(Configuration, Api);
                     RealResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetRealPrice(RealTypes.Nacion),
-                                                                   Api.DolarArgentina.GetRealPrice(RealTypes.BBVA),
-                                                                   Api.DolarArgentina.GetRealPrice(RealTypes.Chaco)).ConfigureAwait(false);
+                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.BBVA),
+                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.Chaco)).ConfigureAwait(false);
                     if (responses.Any(r => r != null))
                     {
                         RealResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                         EmbedBuilder embed = realService.CreateRealEmbed(successfulResponses);
+                        if (responses.Length != successfulResponses.Length)
+                        {
+                            await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
+                        }
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("realahorro", RunMode = RunMode.Async)]
+        [Alias("ra")]
+        [Summary("Muestra todas las cotizaciones del Real disponibles incluyendo impuesto P.A.I.S. y retención de ganancias.")]
+        [HelpUsageExample(false, "$realahorro", "$ra")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetRealAhorroPriceAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    RealService realService = new RealService(Configuration, Api);
+                    RealResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetRealPrice(RealTypes.Nacion),
+                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.BBVA),
+                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.Chaco)).ConfigureAwait(false);
+                    if (responses.Any(r => r != null))
+                    {
+                        RealResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
+                        EmbedBuilder embed = realService.CreateRealAhorroEmbed(successfulResponses);
                         if (responses.Length != successfulResponses.Length)
                         {
                             await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);

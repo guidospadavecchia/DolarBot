@@ -60,6 +60,28 @@ namespace DolarBot.Services.Euro
         }
 
         /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses with taxes included.
+        /// </summary>
+        /// <param name="euroResponses">The euro responses to show.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
+        public EmbedBuilder CreateEuroAhorroEmbed(EuroResponse[] euroResponses)
+        {
+            CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
+            string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
+
+            foreach (EuroResponse euroResponse in euroResponses)
+            {
+                decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
+                if (decimal.TryParse(euroResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                {
+                    euroResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F", apiCulture);
+                }
+            }
+
+            return CreateEuroEmbed(euroResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} incluyendo impuesto P.A.I.S. y retención de ganancias, expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
+        }
+
+        /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses specifying a custom description and thumbnail URL.
         /// </summary>
         /// <param name="euroResponses">The euro responses to show.</param>

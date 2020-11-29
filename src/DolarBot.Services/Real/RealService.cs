@@ -60,6 +60,28 @@ namespace DolarBot.Services.Real
         }
 
         /// <summary>
+        /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses with taxes included.
+        /// </summary>
+        /// <param name="realResponses">The Real responses to show.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
+        public EmbedBuilder CreateRealAhorroEmbed(RealResponse[] realResponses)
+        {
+            CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
+            string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
+
+            foreach (RealResponse realResponse in realResponses)
+            {
+                decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
+                if (decimal.TryParse(realResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                {
+                    realResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F", apiCulture);
+                }
+            }
+
+            return CreateRealEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} incluyendo impuesto P.A.I.S. y retención de ganancias, expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
+        }
+
+        /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses specifying a custom description and thumbnail URL.
         /// </summary>
         /// <param name="realResponses">The Real responses to show.</param>

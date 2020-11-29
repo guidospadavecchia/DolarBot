@@ -25,6 +25,10 @@ namespace DolarBot
         /// Log4Net logger.
         /// </summary>
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        /// <summary>
+        /// Provides access to application settings.
+        /// </summary>
+        protected IConfiguration Configuration;
         #endregion
 
         #region Startup
@@ -40,28 +44,21 @@ namespace DolarBot
         /// <returns></returns>
         public async Task RunAsync()
         {
-            IConfiguration configuration = ConfigureAppSettings();
+            Configuration = ConfigureAppSettings();
             ConfigureLogger();
             QuoteService.TryLoadQuotes();
 
-            ApiCalls api = new ApiCalls(configuration, logger);
+            ApiCalls api = new ApiCalls(Configuration, logger);
             DiscordSocketClient client = new DiscordSocketClient();
             CommandService commands = new CommandService();
 
-            IServiceProvider services = new ServiceCollection().AddSingleton(client)
-                                                               .AddSingleton(commands)
-                                                               .AddSingleton(configuration)
-                                                               .AddSingleton<InteractiveService>()
-                                                               .AddSingleton(api)
-                                                               .AddSingleton(logger)
-                                                               .BuildServiceProvider();
-            string commandPrefix = configuration["commandPrefix"];
-            string token = GetToken(configuration);
-
-            client.Log += LogClientEvent;
+            IServiceProvider services = ConfigureServices(client, commands, api);
+            
+            string commandPrefix = Configuration["commandPrefix"];
+            string token = GetToken(Configuration);
 
             PrintCurrentVersion();
-            await RegisterCommandsAsync(client, commands, services, configuration).ConfigureAwait(false);
+            await RegisterEventsAsync(client, commands, services).ConfigureAwait(false);
             await client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
             await client.StartAsync().ConfigureAwait(false);
             await client.SetGameAsync(GlobalConfiguration.GetStatusText(commandPrefix), type: ActivityType.Listening).ConfigureAwait(false);
@@ -102,7 +99,7 @@ namespace DolarBot
         /// Creates an <see cref="IConfiguration"/> object to access application settings.
         /// </summary>
         /// <returns></returns>
-        public IConfiguration ConfigureAppSettings()
+        private IConfiguration ConfigureAppSettings()
         {
             var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(GlobalConfiguration.GetAppSettingsFileName());
             return builder.Build();
@@ -111,10 +108,28 @@ namespace DolarBot
         /// <summary>
         /// Configures the file logger.
         /// </summary>
-        public void ConfigureLogger()
+        private void ConfigureLogger()
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo(GlobalConfiguration.GetLogConfigFileName()));
+        }
+
+        /// <summary>
+        /// Configures all the required services and returns a built service provider.
+        /// </summary>
+        /// <param name="discordClient">The <see cref="DiscordSocketClient"/> instance.</param>
+        /// <param name="commands">The <see cref="CommandService"/> instance.</param>
+        /// <param name="api">The <see cref="ApiCalls0"/> instance.</param>
+        /// <returns>A built service provider.</returns>
+        private IServiceProvider ConfigureServices(DiscordSocketClient discordClient, CommandService commands, ApiCalls api)
+        {
+            return new ServiceCollection().AddSingleton(discordClient)
+                                          .AddSingleton(commands)
+                                          .AddSingleton(Configuration)
+                                          .AddSingleton<InteractiveService>()
+                                          .AddSingleton(api)
+                                          .AddSingleton(logger)
+                                          .BuildServiceProvider();
         }
 
         /// <summary>
@@ -123,11 +138,16 @@ namespace DolarBot
         /// <param name="client">The Discord client.</param>
         /// <param name="commands">The <see cref="CommandService"/> object.</param>
         /// <param name="services">A collection of services to use throughout the application.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
         /// <returns>A task with the result of the asynchronous operation.</returns>
-        public async Task RegisterCommandsAsync(DiscordSocketClient client, CommandService commands, IServiceProvider services, IConfiguration configuration)
+        private async Task RegisterEventsAsync(DiscordSocketClient client, CommandService commands, IServiceProvider services)
         {
-            CommandHandler commandHandler = new CommandHandler(client, commands, services, configuration, logger);
+            client.Log += LogClientEvent;
+
+            GuildHandler guildHandler = new GuildHandler(client, Configuration, logger);
+            client.JoinedGuild += guildHandler.UpdateServerLog;
+            client.LeftGuild += guildHandler.UpdateServerLog;
+
+            CommandHandler commandHandler = new CommandHandler(client, commands, services, Configuration, logger);
             client.MessageReceived += commandHandler.HandleCommandAsync;
             await commands.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
         }
@@ -137,7 +157,7 @@ namespace DolarBot
         /// </summary>
         /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
         /// <returns>The retrieved token.</returns>
-        public string GetToken(IConfiguration configuration)
+        private string GetToken(IConfiguration configuration)
         {
             string token = configuration["token"];
             if (string.IsNullOrWhiteSpace(token))

@@ -100,8 +100,8 @@ namespace DolarBot.Services.Dolar
                 if (buyPrice != "?" || sellPrice != "?")
                 {
                     StringBuilder sbField = new StringBuilder()
-                                            .AppendLine($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")} {blankSpace}")
-                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")} {blankSpace}")
+                                            .AppendLine($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")}")
+                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")}")
                                             .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}  ");
                     embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
                 }

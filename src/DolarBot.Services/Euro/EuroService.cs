@@ -113,8 +113,8 @@ namespace DolarBot.Services.Euro
                 if (buyPrice != "?" || sellPrice != "?")
                 {
                     StringBuilder sbField = new StringBuilder()
-                                            .AppendLine($"{euroEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")} {blankSpace}")
-                                            .AppendLine($"{euroEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")} {blankSpace}")
+                                            .AppendLine($"{euroEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")}")
+                                            .AppendLine($"{euroEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")}")
                                             .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}  ");
                     embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
                 }

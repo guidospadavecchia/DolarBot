@@ -77,8 +77,11 @@ namespace DolarBot.Services.Dolar
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses, string description, string thumbnailUrl)
         {
+            var emojis = Configuration.GetSection("customEmojis");
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             Emoji clockEmoji = new Emoji("\u23F0");
+            Emoji buyEmoji = new Emoji(emojis["buyGreen"]);
+            Emoji sellEmoji = new Emoji(emojis["sellGreen"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
@@ -86,7 +89,7 @@ namespace DolarBot.Services.Dolar
                                                    .WithTitle("Cotizaciones del Dólar")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($"{clockEmoji} = Última actualización ({localTimeZone.StandardName})");
+                                                   .WithFooter($" C = Compra | V = Venta | {clockEmoji} = Última actualización ({localTimeZone.StandardName})");
 
             for (int i = 0; i < dollarResponses.Length; i++)
             {
@@ -100,10 +103,10 @@ namespace DolarBot.Services.Dolar
                 if (buyPrice != "?" || sellPrice != "?")
                 {
                     StringBuilder sbField = new StringBuilder()
-                                            .AppendLine($"{dollarEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")}")
-                                            .AppendLine($"{dollarEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")}")
-                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}  ");
-                    embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
+                                            .AppendLine($"{dollarEmoji} {blankSpace} {buyEmoji} {Format.Bold($"$ {buyPrice}")}")
+                                            .AppendLine($"{dollarEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}")
+                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
+                    embed.AddInlineField(title, sbField.AppendLineBreak().ToString());
                 }
             }
 

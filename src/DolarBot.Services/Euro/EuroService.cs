@@ -92,6 +92,8 @@ namespace DolarBot.Services.Euro
         {
             Emoji euroEmoji = new Emoji(":euro:");
             Emoji clockEmoji = new Emoji("\u23F0");
+            Emoji buyEmoji = new Emoji(":regional_indicator_c:");
+            Emoji sellEmoji = new Emoji(":regional_indicator_v:");
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
@@ -99,7 +101,7 @@ namespace DolarBot.Services.Euro
                                                    .WithTitle("Cotizaciones del Euro")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($"{clockEmoji} = Última actualización ({localTimeZone.StandardName})");
+                                                   .WithFooter($" C = Compra | V = Venta | {clockEmoji} = Última actualización ({localTimeZone.StandardName})");
 
             for (int i = 0; i < euroResponses.Length; i++)
             {
@@ -113,10 +115,10 @@ namespace DolarBot.Services.Euro
                 if (buyPrice != "?" || sellPrice != "?")
                 {
                     StringBuilder sbField = new StringBuilder()
-                                            .AppendLine($"{euroEmoji} {blankSpace} Compra: {Format.Bold($"$ {buyPrice}")}")
-                                            .AppendLine($"{euroEmoji} {blankSpace} Venta: {Format.Bold($"$ {sellPrice}")}")
-                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated} {blankSpace}  ");
-                    embed.AddInlineField(title, sbField.ToString().AppendLineBreak());
+                                            .AppendLine($"{euroEmoji} {blankSpace} {buyEmoji} {Format.Bold($"$ {buyPrice}")}")
+                                            .AppendLine($"{euroEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}")
+                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
+                    embed.AddInlineField(title, sbField.AppendLineBreak().ToString());
                 }
             }
 

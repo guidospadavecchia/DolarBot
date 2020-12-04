@@ -210,7 +210,7 @@ namespace DolarBot.Modules.Commands
                                      .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor de soporte", supportServerUrl)}".AppendLineBreak())
                                      .AddField("GitHub", $"{githubEmoji} {Format.Url("DolarBot repo", githubUrl)}".AppendLineBreak())
                                      .AddField("¿Te gusta DolarBot?", $"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}".AppendLineBreak())
-                                     .WithFooter($"Hecho con {heartEmoji} en .NET Core");
+                                     .WithFooter($"Hecho con {heartEmoji} en .NET 5");
 
                 await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
             }

@@ -76,7 +76,7 @@ namespace DolarBot.Services.HistoricalRates
                 HistoricalMonthlyRate month = monthlyRates.ElementAt(i);
                 string monthName = GlobalConfiguration.GetLocalCultureInfo().DateTimeFormat.GetMonthName(Convert.ToInt32(month.Mes)).Capitalize();
                 bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal monthRate);
-                string monthRateText = monthRateIsNumeric ? monthRate.ToString("F", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string monthRateText = monthRateIsNumeric ? monthRate.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 Emoji fieldEmoji = neutralEmoji;
                 if (i > 0)

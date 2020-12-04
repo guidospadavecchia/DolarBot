@@ -288,7 +288,7 @@ namespace DolarBot.API
                             decimal taxPercent = (decimal.Parse(configuration["taxPercent"]) / 100) + 1;
                             if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
                             {
-                                dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F", apiCulture);
+                                dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
                             }
                         }
 

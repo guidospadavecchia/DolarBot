@@ -75,6 +75,7 @@ A continuación se listan los comandos disponibles:
 - [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
 - [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive) (fork propio de [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive))
 - [Castrogiovanni20/api-dolar-argentina](https://github.com/Castrogiovanni20/api-dolar-argentina)
+- [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 
 ## Contribuciones
 Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  

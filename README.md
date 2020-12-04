@@ -9,11 +9,11 @@
 ***    
 ## Status
 [![Release](https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/releases/latest)
-[![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)
+[![Status](https://top.gg/api/widget/status/752669185053818941.svg)](https://top.gg/bot/752669185053818941)
+[![Servers](https://top.gg/api/widget/servers/752669185053818941.svg)](https://top.gg/bot/752669185053818941)
 [![Invite](https://img.shields.io/badge/Discord-invitar-7289DA)](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot)
 [![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discord.gg/tCkbjuM)
-[![Issues](https://img.shields.io/github/issues/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/issues)
-[![PullRequests](https://img.shields.io/github/issues-pr-closed/guidospadavecchia/DolarBot?style=flat-square)](https://github.com/guidospadavecchia/DolarBot/pulls)  
+[![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)  
 
 ## Descripción  
 **DolarBot** te permite ver todas las cotizaciones del dólar, Euro, Real y distintos indicadores económicos como riesgo país, reservas del BCRA y otros, en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  

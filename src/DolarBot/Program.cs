@@ -143,9 +143,10 @@ namespace DolarBot
         {
             client.Log += LogClientEvent;
 
-            GuildHandler guildHandler = new GuildHandler(client, Configuration, logger);
-            client.JoinedGuild += guildHandler.UpdateServerLog;
-            client.LeftGuild += guildHandler.UpdateServerLog;
+            ClientHandler guildHandler = new ClientHandler(client, Configuration, logger);
+            client.Ready += guildHandler.OnReady;
+            client.JoinedGuild += guildHandler.OnGuildCountChanged;
+            client.LeftGuild += guildHandler.OnGuildCountChanged;
 
             CommandHandler commandHandler = new CommandHandler(client, commands, services, Configuration, logger);
             client.MessageReceived += commandHandler.HandleCommandAsync;

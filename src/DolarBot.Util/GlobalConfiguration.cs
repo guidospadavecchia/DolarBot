@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 
@@ -32,6 +33,11 @@ namespace DolarBot.Util
         /// <returns></returns>
         public static string GetTokenEnvVarName() => "DOLARBOT_TOKEN";
         /// <summary>
+        /// Gets the enviromental variable name for the token.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDblTokenEnvVarName() => "DOLARBOT_DBL_TOKEN";
+        /// <summary>
         /// Gets the enviromental variable name for the invite URL.
         /// </summary>
         /// <returns></returns>
@@ -46,6 +52,7 @@ namespace DolarBot.Util
         /// </summary>
         /// <returns></returns>
         public static CultureInfo GetLocalCultureInfo() => CultureInfo.GetCultureInfo("es-AR");
+
         /// <summary>
         /// Returns the standarized message for unhandled errors.
         /// </summary>
@@ -63,6 +70,45 @@ namespace DolarBot.Util
             }
         }
 
+        /// <summary>
+        /// Retrieves the bot's token from the application settings or operating system's enviromental variable.
+        /// </summary>
+        /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
+        /// <returns>The retrieved token.</returns>
+        public static string GetToken(IConfiguration configuration)
+        {
+            string token = configuration["token"];
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                token = Environment.GetEnvironmentVariable(GetTokenEnvVarName());
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    throw new SystemException("Missing token");
+                }
+            }
+
+            return token;
+        }
+
+        /// <summary>
+        /// Retrieves the bot's DBL token (top.gg) from the application settings or operating system's enviromental variable.
+        /// </summary>
+        /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
+        /// <returns>The retrieved token.</returns>
+        public static string GetDblToken(IConfiguration configuration)
+        {
+            string dblToken = configuration["dblToken"];
+            if (string.IsNullOrWhiteSpace(dblToken))
+            {
+                dblToken = Environment.GetEnvironmentVariable(GetDblTokenEnvVarName());
+                if (string.IsNullOrWhiteSpace(dblToken))
+                {
+                    throw new SystemException("Missing DBL token");
+                }
+            }
+
+            return dblToken;
+        }
 
         #endregion
 

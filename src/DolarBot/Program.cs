@@ -55,7 +55,7 @@ namespace DolarBot
             IServiceProvider services = ConfigureServices(client, commands, api);
             
             string commandPrefix = Configuration["commandPrefix"];
-            string token = GetToken(Configuration);
+            string token = GlobalConfiguration.GetToken(Configuration);
 
             PrintCurrentVersion();
             await RegisterEventsAsync(client, commands, services).ConfigureAwait(false);
@@ -143,34 +143,14 @@ namespace DolarBot
         {
             client.Log += LogClientEvent;
 
-            ClientHandler guildHandler = new ClientHandler(client, Configuration, logger);
-            client.Ready += guildHandler.OnReady;
-            client.JoinedGuild += guildHandler.OnGuildCountChanged;
-            client.LeftGuild += guildHandler.OnGuildCountChanged;
+            ClientHandler clientHandler = new ClientHandler(client, Configuration, logger);
+            client.Ready += clientHandler.OnReady;
+            client.JoinedGuild += clientHandler.OnGuildCountChanged;
+            client.LeftGuild += clientHandler.OnGuildCountChanged;
 
             CommandHandler commandHandler = new CommandHandler(client, commands, services, Configuration, logger);
             client.MessageReceived += commandHandler.HandleCommandAsync;
             await commands.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
-        }
-
-        /// <summary>
-        /// Retrieves the bot's token from the application settings or operating system's enviromental variable.
-        /// </summary>
-        /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
-        /// <returns>The retrieved token.</returns>
-        private string GetToken(IConfiguration configuration)
-        {
-            string token = configuration["token"];
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                token = Environment.GetEnvironmentVariable(GlobalConfiguration.GetTokenEnvVarName());
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    throw new SystemException("Missing token");
-                }
-            }
-
-            return token;
         }
 
         #endregion

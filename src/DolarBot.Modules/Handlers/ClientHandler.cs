@@ -1,7 +1,12 @@
 ﻿using Discord.WebSocket;
+using DiscordBotsList.Api;
+using DiscordBotsList.Api.Objects;
+using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,6 +60,8 @@ namespace DolarBot.Modules.Handlers
             try
             {
                 await UpdateServerLogAsync(false).ConfigureAwait(false);
+
+                await UpdateStatsDbl();
             }
             catch (Exception ex)
             {
@@ -69,14 +76,18 @@ namespace DolarBot.Modules.Handlers
         /// <returns>A completed task</returns>
         public async Task OnGuildCountChanged(SocketGuild _)
         {
-            try
+            List<Task> tasks = new List<Task>();
+            bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl;
+            if (shouldUpdateDbl)
             {
-                await UpdateServerLogAsync().ConfigureAwait(false);
+                Task updateStatsTask = UpdateStatsDbl();
+                tasks.Add(updateStatsTask);
             }
-            catch (Exception ex)
-            {
-                Logger.Error("Error updating server log", ex);
-            }
+
+            Task updateServerLogTask = UpdateServerLogAsync();
+            tasks.Add(updateServerLogTask);
+
+            await Task.WhenAll(tasks);
         }
 
         #endregion
@@ -86,30 +97,66 @@ namespace DolarBot.Modules.Handlers
         /// <summary>
         /// Updates the server log file with the current server list.
         /// </summary>
-        /// <param name="overwrite">Indicates wether to overwrite the file if exists.</param>
+        /// <param name="overwrite">Indicates whether to overwrite the file if exists, or do nothing.</param>
         private async Task UpdateServerLogAsync(bool overwrite = true)
         {
-            string serverListFile = Configuration["serverListLog"];
-            if (!string.IsNullOrEmpty(serverListFile))
+            try
             {
-                bool fileExists = File.Exists(serverListFile);
-                if (!fileExists || (fileExists && overwrite))
+                string serverListFile = Configuration["serverListLog"];
+                if (!string.IsNullOrEmpty(serverListFile))
                 {
                     await Task.Run(() =>
                     {
-                        string directory = Path.GetDirectoryName(serverListFile);
-                        if (!Directory.Exists(directory))
+                        bool fileExists = File.Exists(serverListFile);
+                        if (!fileExists || (fileExists && overwrite))
                         {
-                            Directory.CreateDirectory(directory);
+
+                            string directory = Path.GetDirectoryName(serverListFile);
+                            if (!Directory.Exists(directory))
+                            {
+                                Directory.CreateDirectory(directory);
+                            }
+                            var servers = Client.Guilds.Select(x => $"[{x.Id}] {x.Name}");
+                            File.WriteAllLines(serverListFile, servers);
                         }
-                        var servers = Client.Guilds.Select(x => $"[{x.Id}] {x.Name}");
-                        File.WriteAllLines(serverListFile, servers);
                     });
                 }
+                else
+                {
+                    Logger.Error("Cannot write to Server list log: Not configured.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Error("Cannot write to Server list log: Not configured.");
+                Logger.Error("Error updating server log", ex);
+            }
+        }
+
+        /// <summary>
+        /// Sends a request to DBL (top.gg) to update the bot stats.
+        /// </summary>
+        /// <returns>A completed task.</returns>
+        private async Task UpdateStatsDbl()
+        {
+            try
+            {
+                string dblToken = GlobalConfiguration.GetDblToken(Configuration);
+                bool isConfigured = ulong.TryParse(Configuration["botDiscordId"], out ulong botDiscordId);
+                if (isConfigured)
+                {
+                    AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(botDiscordId, dblToken);
+                    IDblSelfBot self = await dblApi.GetMeAsync();
+
+                    await self.UpdateStatsAsync(Client.Guilds.Count);
+                }
+                else
+                {
+                    Logger.Error("Cannot update DBL stats: Not configured.");
+                }
+            }
+            catch (SystemException ex)
+            {
+                Logger.Error("Error updating DBL stats.", ex);
             }
         }
 

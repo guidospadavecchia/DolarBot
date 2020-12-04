@@ -47,9 +47,12 @@ namespace DolarBot
             Configuration = ConfigureAppSettings();
             ConfigureLogger();
             QuoteService.TryLoadQuotes();
-
+            
             ApiCalls api = new ApiCalls(Configuration, logger);
-            DiscordSocketClient client = new DiscordSocketClient();
+            DiscordSocketClient client = new DiscordSocketClient(new DiscordSocketConfig()
+            {
+                ExclusiveBulkDelete = true,
+            });
             CommandService commands = new CommandService();
 
             IServiceProvider services = ConfigureServices(client, commands, api);

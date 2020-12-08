@@ -78,7 +78,7 @@ A continuación se listan los comandos disponibles:
 - [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 
 ## Contribuciones
-Reportá problemas o sugerencias [acá](https://github.com/guidospadavecchia/DolarBot/issues).  
+Reportá problemas en la sección [issues](https://github.com/guidospadavecchia/DolarBot/issues), y utilizá la sección [discussions](https://github.com/guidospadavecchia/DolarBot/discussions) para preguntas y sugerencias.  
 Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls).  
 
 ¿Te gusta **DolarBot**? Apoyalo votándolo en [top.gg](https://top.gg/bot/752669185053818941/vote).  

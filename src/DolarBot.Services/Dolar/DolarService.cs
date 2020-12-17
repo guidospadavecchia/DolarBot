@@ -111,7 +111,8 @@ namespace DolarBot.Services.Dolar
                 if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
                 {
                     dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
-                } 
+                }
+                dolarResponse.Type = DollarTypes.Ahorro;
             }
 
             return dolarResponse;

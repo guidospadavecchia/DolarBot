@@ -22,7 +22,7 @@ namespace DolarBot.Modules.Commands
     public class RealModule : BaseInteractiveModule
     {
         #region Constants
-        private const string REQUEST_ERROR_MESSAGE = "Error: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
+        private const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
         #endregion
 
         #region Vars

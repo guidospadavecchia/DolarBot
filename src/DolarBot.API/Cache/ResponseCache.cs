@@ -53,7 +53,7 @@ namespace DolarBot.API.Cache
         public void SaveObject(object key, object data)
         {
             int cacheExpiration = int.Parse(configuration["requestCacheExpirationMinutes"]);
-            cache.Set(key, data, TimeSpan.FromMinutes(cacheExpiration));
+            cache.Set(key, data, TimeSpan.FromMinutes(cacheExpiration > 0 ? cacheExpiration : int.MaxValue));
         }
         #endregion
     }

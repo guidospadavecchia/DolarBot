@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using EuroTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.EuroTypes;
 
 namespace DolarBot.Modules.Commands
 {
@@ -28,9 +27,9 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Provides access to the different APIs.
+        /// Provides methods to retrieve information about euro rates.
         /// </summary>
-        protected readonly ApiCalls Api;
+        private readonly EuroService EuroService;
 
         /// <summary>
         /// The log4net logger.
@@ -48,7 +47,7 @@ namespace DolarBot.Modules.Commands
         public EuroModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
-            Api = api;
+            EuroService = new EuroService(configuration, api);
         }
         #endregion
 
@@ -63,17 +62,13 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    EuroService euroService = new EuroService(Configuration, Api);
-                    EuroResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetEuroPrice(EuroTypes.Nacion),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Hipotecario),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Chaco),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Pampa)).ConfigureAwait(false);
+                    EuroResponse[] responses = await EuroService.GetAllEuroPrices().ConfigureAwait(false);
                     if (responses.Any(r => r != null))
                     {
                         EuroResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                        EmbedBuilder embed = euroService.CreateEuroEmbed(successfulResponses);
+
+                        string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
+                        EmbedBuilder embed = EuroService.CreateEuroEmbed(successfulResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
                         if (responses.Length != successfulResponses.Length)
                         {
                             await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
@@ -104,17 +99,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    EuroService euroService = new EuroService(Configuration, Api);
-                    EuroResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetEuroPrice(EuroTypes.Nacion),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Hipotecario),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Chaco),
-                                                                  Api.DolarArgentina.GetEuroPrice(EuroTypes.Pampa)).ConfigureAwait(false);
+                    EuroResponse[] responses = await EuroService.GetAllEuroAhorroPrices().ConfigureAwait(false);
+
                     if (responses.Any(r => r != null))
                     {
                         EuroResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                        EmbedBuilder embed = euroService.CreateEuroAhorroEmbed(successfulResponses);
+
+                        string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
+                        EmbedBuilder embed = EuroService.CreateEuroEmbed(successfulResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} incluyendo impuesto P.A.I.S. y retención de ganancias, expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
                         if (responses.Length != successfulResponses.Length)
                         {
                             await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarArgentinaApi.HistoricalRatesParams;
 
 namespace DolarBot.Services.HistoricalRates
@@ -15,38 +17,36 @@ namespace DolarBot.Services.HistoricalRates
     /// <summary>
     /// Contains several methods to process historical rates commands.
     /// </summary>
-    public class HistoricalRatesService
+    public class HistoricalRatesService : BaseService
     {
-        #region Vars
-
-        /// <summary>
-        /// Provides access to application settings.
-        /// </summary>
-        protected readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// Provides access to the different APIs.
-        /// </summary>
-        protected readonly ApiCalls Api;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="HistoricalRatesService"/> object with the provided configuration, api object and embed color.
+        /// Creates a new <see cref="HistoricalRatesService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public HistoricalRatesService(IConfiguration configuration, ApiCalls api)
-        {
-            Configuration = configuration;
-            Api = api;
-        }
+        public HistoricalRatesService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
 
         #endregion
 
         #region Methods
+
+        #region API Calls
+
+        /// <summary>
+        /// Fetches historical rates for a particular type, specified by the <paramref name="historicalRateParam"/> parameter.
+        /// </summary>
+        /// <param name="historicalRateParam">The type of historical rates to retrieve.</param>
+        /// <returns>A single <see cref="HistoricalRatesResponse"/> object.</returns>
+        public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParams historicalRateParam)
+        {
+            return await Api.DolarArgentina.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Embed
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for a single dollar response specifying a custom description, title and thumbnail URL.
@@ -164,7 +164,8 @@ namespace DolarBot.Services.HistoricalRates
                 HistoricalRatesParams.Real => GlobalConfiguration.Colors.Real,
                 _ => throw new NotImplementedException()
             };
-        }
+        } 
+        #endregion
 
         #endregion
     }

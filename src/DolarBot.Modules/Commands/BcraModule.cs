@@ -10,7 +10,6 @@ using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
-using BcraValues = DolarBot.API.ApiCalls.DolarArgentinaApi.BcraValues;
 
 namespace DolarBot.Modules.Commands
 {
@@ -27,9 +26,9 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Provides access to the different APIs.
+        /// Provides methods to retrieve information about BCRA rates and values.
         /// </summary>
-        protected readonly ApiCalls Api;
+        private readonly BcraService BcraService;
 
         /// <summary>
         /// The log4net logger.
@@ -47,7 +46,7 @@ namespace DolarBot.Modules.Commands
         public BcraModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
-            Api = api;
+            BcraService = new BcraService(configuration, api);
         }
         #endregion
 
@@ -62,11 +61,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RiesgoPaisResponse result = await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
+                    RiesgoPaisResponse result = await BcraService.GetCountryRisk().ConfigureAwait(false);
                     if (result != null)
                     {
-                        BcraService bcraService = new BcraService(Configuration, Api);
-                        EmbedBuilder embed = bcraService.CreateRiesgoPaisEmbed(result);
+                        EmbedBuilder embed = BcraService.CreateCountryRiskEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -93,11 +91,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    BcraResponse result = await Api.DolarArgentina.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
+                    BcraResponse result = await BcraService.GetReserves().ConfigureAwait(false);
                     if (result != null)
                     {
-                        BcraService bcraService = new BcraService(Configuration, Api);
-                        EmbedBuilder embed = bcraService.CreateReservasEmbed(result);
+                        EmbedBuilder embed = BcraService.CreateReservesEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -124,11 +121,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    BcraResponse result = await Api.DolarArgentina.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
+                    BcraResponse result = await BcraService.GetCirculatingMoney().ConfigureAwait(false);
                     if (result != null)
                     {
-                        BcraService bcraService = new BcraService(Configuration, Api);
-                        EmbedBuilder embed = bcraService.CreateCirculanteEmbed(result);
+                        EmbedBuilder embed = BcraService.CreateCirculatingMoneyEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

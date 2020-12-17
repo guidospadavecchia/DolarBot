@@ -2,84 +2,133 @@
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Services.Banking;
+using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 using System.Text;
-using static DolarBot.API.ApiCalls.DolarArgentinaApi;
+using System.Threading.Tasks;
+using EuroTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.EuroTypes;
 
 namespace DolarBot.Services.Euro
 {
     /// <summary>
     /// Contains several methods to process Euro commands.
     /// </summary>
-    public class EuroService
+    public class EuroService : BaseService
     {
-        #region Vars
-
-        /// <summary>
-        /// Provides access to application settings.
-        /// </summary>
-        protected readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// Provides access to the different APIs.
-        /// </summary>
-        protected readonly ApiCalls Api;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="EuroService"/> object with the provided configuration, api object and embed color.
+        /// Creates a new <see cref="EuroService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public EuroService(IConfiguration configuration, ApiCalls api)
-        {
-            Configuration = configuration;
-            Api = api;
-        }
+        public EuroService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
 
         #endregion
 
         #region Methods
 
+        #region API Calls
+
         /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses.
+        /// Fetches all available euro prices.
         /// </summary>
-        /// <param name="euroResponses">The euro responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateEuroEmbed(EuroResponse[] euroResponses)
+        /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
+        public async Task<EuroResponse[]> GetAllEuroPrices()
         {
-            string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
-            return CreateEuroEmbed(euroResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
+            return await Task.WhenAll(GetEuroNacion(),
+                                      GetEuroGalicia(),
+                                      GetEuroBBVA(),
+                                      GetEuroHipotecario(),
+                                      GetEuroChaco(),
+                                      GetEuroPampa()).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses with taxes included.
+        /// Fetches all available euro Ahorro prices.
         /// </summary>
-        /// <param name="euroResponses">The euro responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateEuroAhorroEmbed(EuroResponse[] euroResponses)
+        /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
+        public async Task<EuroResponse[]> GetAllEuroAhorroPrices()
         {
             CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
-            string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
+            EuroResponse[] euroResponses = await GetAllEuroPrices().ConfigureAwait(false);
 
             foreach (EuroResponse euroResponse in euroResponses)
             {
-                decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
-                if (decimal.TryParse(euroResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                if (euroResponse != null)
                 {
-                    euroResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
+                    decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
+                    if (decimal.TryParse(euroResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                    {
+                        euroResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
+                    }
                 }
             }
 
-            return CreateEuroEmbed(euroResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} incluyendo impuesto P.A.I.S. y retención de ganancias, expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
+            return euroResponses;
         }
+
+        /// <summary>
+        /// Fetches the price for euro from bank Nacion.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroNacion()
+        {
+            return await Api.DolarArgentina.GetEuroPrice(EuroTypes.Nacion).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for euro from bank Galicia.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroGalicia()
+        {
+            return await Api.DolarArgentina.GetEuroPrice(EuroTypes.Galicia).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for euro from bank BBVA.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroBBVA()
+        {
+            return await Api.DolarArgentina.GetEuroPrice(EuroTypes.BBVA).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for euro from bank Hipotecario.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroHipotecario()
+        {
+            return await Api.DolarArgentina.GetEuroPrice(EuroTypes.Hipotecario).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for euro from bank Nuevo Banco del Chaco.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroChaco()
+        {
+            return await Api.DolarArgentina.GetEuroPrice(EuroTypes.Chaco).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for euro from bank Banco de La Pampa.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroPampa()
+        {
+            return await Api.DolarArgentina.GetEuroPrice(EuroTypes.Pampa).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Embed
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses specifying a custom description and thumbnail URL.
@@ -171,7 +220,9 @@ namespace DolarBot.Services.Euro
                 EuroTypes.Pampa => Banks.Pampa.GetDescription(),
                 _ => throw new ArgumentException($"Unable to get title from '{euroResponse.Type}'.")
             };
-        }
+        } 
+
+        #endregion
 
         #endregion
     }

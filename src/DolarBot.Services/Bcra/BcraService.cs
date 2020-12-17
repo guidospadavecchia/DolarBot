@@ -1,57 +1,74 @@
 ﻿using Discord;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
-using System.Text;
+using System.Threading.Tasks;
+using BcraValues = DolarBot.API.ApiCalls.DolarArgentinaApi.BcraValues;
 
 namespace DolarBot.Services.Bcra
 {
     /// <summary>
     /// Contains several methods to process Argentine Central Bank related commands.
     /// </summary>
-    public class BcraService
+    public class BcraService : BaseService
     {
-        #region Vars
-
-        /// <summary>
-        /// Provides access to application settings.
-        /// </summary>
-        protected readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// Provides access to the different APIs.
-        /// </summary>
-        protected readonly ApiCalls Api;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="BcraService"/> object with the provided configuration, api object and embed color.
+        /// Creates a new <see cref="BcraService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public BcraService(IConfiguration configuration, ApiCalls api)
-        {
-            Configuration = configuration;
-            Api = api;
-        }
+        public BcraService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
 
         #endregion
 
         #region Methods
+
+        #region API Calls
+
+        /// <summary>
+        /// Fetches the country-risk rate.
+        /// </summary>
+        /// <returns>A <see cref="RiesgoPaisResponse"/> object.</returns>
+        public async Task<RiesgoPaisResponse> GetCountryRisk()
+        {
+            return await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the BCRA federal reserves.
+        /// </summary>
+        /// <returns>A <see cref="BcraResponse"/> object.</returns>
+        public async Task<BcraResponse> GetReserves()
+        {
+            return await Api.DolarArgentina.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the total circulating money.
+        /// </summary>
+        /// <returns>A <see cref="BcraResponse"/> object.</returns>
+        public async Task<BcraResponse> GetCirculatingMoney()
+        {
+            return await Api.DolarArgentina.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Embeds
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for a <see cref="RiesgoPaisResponse"/>.
         /// </summary>
         /// <param name="riesgoPaisResponse">The Riesgo Pais response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRiesgoPaisEmbed(RiesgoPaisResponse riesgoPaisResponse)
+        public EmbedBuilder CreateCountryRiskEmbed(RiesgoPaisResponse riesgoPaisResponse)
         {
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             string riskImageUrl = Configuration.GetSection("images").GetSection("risk")["64"];
@@ -86,7 +103,7 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         /// <param name="bcraResponse">The BCRA response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateReservasEmbed(BcraResponse bcraResponse)
+        public EmbedBuilder CreateReservesEmbed(BcraResponse bcraResponse)
         {
             Emoji moneyBagEmoji = new Emoji(":moneybag:");
             string reservesImageUrl = Configuration.GetSection("images").GetSection("reserves")["64"];
@@ -123,7 +140,7 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         /// <param name="bcraResponse">The BCRA response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateCirculanteEmbed(BcraResponse bcraResponse)
+        public EmbedBuilder CreateCirculatingMoneyEmbed(BcraResponse bcraResponse)
         {
             Emoji circulatingMoneyEmoji = new Emoji(":money_with_wings:");
             string reservesImageUrl = Configuration.GetSection("images").GetSection("money")["64"];
@@ -154,6 +171,8 @@ namespace DolarBot.Services.Bcra
                                                    .AddInlineField($"Valor", text.AppendLineBreak());
             return embed;
         }
+
+        #endregion
 
         #endregion
     }

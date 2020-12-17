@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using RealTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.RealTypes;
 
 namespace DolarBot.Modules.Commands
 {
@@ -28,9 +27,9 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Provides access to the different APIs.
+        /// Provides methods to retrieve information about real rates.
         /// </summary>
-        protected readonly ApiCalls Api;
+        private readonly RealService RealService;
 
         /// <summary>
         /// The log4net logger.
@@ -48,7 +47,7 @@ namespace DolarBot.Modules.Commands
         public RealModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
-            Api = api;
+            RealService = new RealService(configuration, api);
         }
         #endregion
 
@@ -63,14 +62,13 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealService realService = new RealService(Configuration, Api);
-                    RealResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetRealPrice(RealTypes.Nacion),
-                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.BBVA),
-                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.Chaco)).ConfigureAwait(false);
+                    RealResponse[] responses = await RealService.GetAllRealPrices().ConfigureAwait(false);
                     if (responses.Any(r => r != null))
                     {
                         RealResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                        EmbedBuilder embed = realService.CreateRealEmbed(successfulResponses);
+
+                        string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
+                        EmbedBuilder embed = RealService.CreateRealEmbed(successfulResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
                         if (responses.Length != successfulResponses.Length)
                         {
                             await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
@@ -101,14 +99,13 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealService realService = new RealService(Configuration, Api);
-                    RealResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetRealPrice(RealTypes.Nacion),
-                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.BBVA),
-                                                                  Api.DolarArgentina.GetRealPrice(RealTypes.Chaco)).ConfigureAwait(false);
+                    RealResponse[] responses = await RealService.GetAllRealAhorroPrices().ConfigureAwait(false);
                     if (responses.Any(r => r != null))
                     {
                         RealResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                        EmbedBuilder embed = realService.CreateRealAhorroEmbed(successfulResponses);
+
+                        string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
+                        EmbedBuilder embed = RealService.CreateRealEmbed(successfulResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} incluyendo impuesto P.A.I.S. y retención de ganancias, expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
                         if (responses.Length != successfulResponses.Length)
                         {
                             await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);

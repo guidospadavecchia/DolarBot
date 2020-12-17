@@ -29,19 +29,14 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Provides access to the different APIs.
+        /// Provides methods to retrieve information about historical rates.
         /// </summary>
-        protected readonly ApiCalls Api;
+        private readonly HistoricalRatesService HistoricalRatesService;
 
         /// <summary>
         /// The log4net logger.
         /// </summary>
         private readonly ILog Logger;
-
-        /// <summary>
-        /// Specifies all available parameter values for historical rates.
-        /// </summary>
-        private readonly string[] historicalRatesParams = new string[] { "DolarOficial", "DolarBlue", "Euro", "Real" };
         #endregion
 
         #region Constructor
@@ -54,7 +49,7 @@ namespace DolarBot.Modules.Commands
         public HistoricalRatesModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
-            Api = api;
+            HistoricalRatesService = new HistoricalRatesService(configuration, api);
         }
         #endregion
 
@@ -69,21 +64,19 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    HistoricalRatesService historicalRatesService = new HistoricalRatesService(Configuration, Api);
                     if(cotizacion == null)
                     {
-                        string message = GetEvolucionInvalidParamsMessage();
-                        await ReplyAsync(message).ConfigureAwait(false);
+                        await ReplyAsync(GetEvolucionInvalidParamsMessage()).ConfigureAwait(false);
                     }
                     else
                     {
                         string userInput = Format.Sanitize(cotizacion).RemoveFormat(true);
                         if (Enum.TryParse(userInput, true, out HistoricalRatesParams historicalRateParam))
                         {
-                            HistoricalRatesResponse result = await Api.DolarArgentina.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
+                            HistoricalRatesResponse result = await HistoricalRatesService.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
                             if (result != null && result.Meses != null && result.Meses.Count > 0)
                             {
-                                EmbedBuilder embed = historicalRatesService.CreateHistoricalRatesEmbed(result, historicalRateParam);
+                                EmbedBuilder embed = HistoricalRatesService.CreateHistoricalRatesEmbed(result, historicalRateParam);
                                 await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                             }
                             else
@@ -93,8 +86,7 @@ namespace DolarBot.Modules.Commands
                         }
                         else
                         {
-                            string message = GetEvolucionInvalidParamsMessage();
-                            await ReplyAsync(message).ConfigureAwait(false);
+                            await ReplyAsync(GetEvolucionInvalidParamsMessage()).ConfigureAwait(false);
                         }
                     }
                 }
@@ -114,8 +106,8 @@ namespace DolarBot.Modules.Commands
         {
             string commandPrefix = Configuration["commandPrefix"];
             string parameters = string.Join(", ", Enum.GetNames(typeof(HistoricalRatesParams)).Select(x => Format.Code(x.ToLower())));
-            string message = $"Debe especificar un parámetro válido para este comando. Las opciones disponibles son: {parameters}. Para más información, ejecute {Format.Code($"{commandPrefix}ayuda evolucion")}.";
-            return message;
+            
+            return $"Debe especificar un parámetro válido para este comando. Las opciones disponibles son: {parameters}. Para más información, ejecute {Format.Code($"{commandPrefix}ayuda evolucion")}.";
         }
     }
 }

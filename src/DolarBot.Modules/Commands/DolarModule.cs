@@ -11,10 +11,8 @@ using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DollarTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarTypes;
 
 namespace DolarBot.Modules.Commands
 {
@@ -31,9 +29,9 @@ namespace DolarBot.Modules.Commands
 
         #region Vars
         /// <summary>
-        /// Provides access to the different APIs.
+        /// Provides methods to retrieve information about dollar rates.
         /// </summary>
-        protected readonly ApiCalls Api;
+        private readonly DolarService DolarService;
 
         /// <summary>
         /// The log4net logger.
@@ -51,7 +49,7 @@ namespace DolarBot.Modules.Commands
         public DolarModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
-            Api = api;
+            DolarService = new DolarService(configuration, api);
         }
         #endregion
 
@@ -68,8 +66,6 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-
                     if (banco != null)
                     {
                         string userInput = Format.Sanitize(banco).RemoveFormat(true);
@@ -77,21 +73,12 @@ namespace DolarBot.Modules.Commands
                         {
                             if (bank == Banks.Bancos)
                             {
-                                //Show all private banks prices
-                                List<Banks> banks = Enum.GetValues(typeof(Banks)).Cast<Banks>().Where(b => b != Banks.Bancos).ToList();
-                                Task<DolarResponse>[] tasks = new Task<DolarResponse>[banks.Count];
-                                for (int i = 0; i < banks.Count; i++)
-                                {
-                                    DollarTypes dollarType = dolarService.GetBankInformation(banks[i], out string _);
-                                    tasks[i] = Api.DolarArgentina.GetDollarPrice(dollarType);
-                                }
-
-                                DolarResponse[] responses = await Task.WhenAll(tasks).ConfigureAwait(false);
+                                DolarResponse[] responses = await DolarService.GetAllBankPrices().ConfigureAwait(false);
                                 if (responses.Any(r => r != null))
                                 {
                                     string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
                                     DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                                    EmbedBuilder embed = dolarService.CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
+                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
                                     if (responses.Length != successfulResponses.Length)
                                     {
                                         await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
@@ -105,11 +92,11 @@ namespace DolarBot.Modules.Commands
                             }
                             else
                             {   //Show individual bank price
-                                DollarTypes dollarType = dolarService.GetBankInformation(bank, out string thumbnailUrl);
-                                DolarResponse result = await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
+                                string thumbnailUrl = DolarService.GetBankThumbnailUrl(bank);
+                                DolarResponse result = await DolarService.GetBankPrice(bank).ConfigureAwait(false);
                                 if (result != null)
                                 {
-                                    EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
+                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
                                     await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                                 }
                                 else
@@ -127,16 +114,11 @@ namespace DolarBot.Modules.Commands
                     }
                     else
                     {   //Show all dollar types (not banks)
-                        DolarResponse[] responses = await Task.WhenAll(Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial),
-                                                                       Api.DolarArgentina.GetDollarPrice(DollarTypes.Ahorro),
-                                                                       Api.DolarArgentina.GetDollarPrice(DollarTypes.Blue),
-                                                                       Api.DolarArgentina.GetDollarPrice(DollarTypes.Bolsa),
-                                                                       Api.DolarArgentina.GetDollarPrice(DollarTypes.Promedio),
-                                                                       Api.DolarArgentina.GetDollarPrice(DollarTypes.ContadoConLiqui)).ConfigureAwait(false);
+                        DolarResponse[] responses = await DolarService.GetAllDollarPrices().ConfigureAwait(false);
                         if (responses.Any(r => r != null))
                         {
                             DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                            EmbedBuilder embed = dolarService.CreateDollarEmbed(successfulResponses);
+                            EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses);
                             if (responses.Length != successfulResponses.Length)
                             {
                                 await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
@@ -167,11 +149,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-                    DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
+                    DolarResponse result = await DolarService.GetDollarOficial().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -197,11 +178,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-                    DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Ahorro).ConfigureAwait(false);
+                    DolarResponse result = await DolarService.GetDollarAhorro().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -227,11 +207,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-                    DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Blue).ConfigureAwait(false);
+                    DolarResponse result = await DolarService.GetDollarBlue().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -257,11 +236,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-                    DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Promedio).ConfigureAwait(false);
+                    DolarResponse result = await DolarService.GetDollarPromedio().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -287,11 +265,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-                    DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Bolsa).ConfigureAwait(false);
+                    DolarResponse result = await DolarService.GetDollarBolsa().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -317,11 +294,10 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarService dolarService = new DolarService(Configuration, Api);
-                    DolarResponse result = await Api.DolarArgentina.GetDollarPrice(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
+                    DolarResponse result = await DolarService.GetDollarContadoConLiqui().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = dolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

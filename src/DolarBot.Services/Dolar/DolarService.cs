@@ -2,20 +2,24 @@
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Services.Banking;
+using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
-using static DolarBot.API.ApiCalls.DolarArgentinaApi;
+using System.Threading.Tasks;
+using DollarTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarTypes;
 
 namespace DolarBot.Services.Dolar
 {
     /// <summary>
     /// Contains several methods to process dollar commands.
     /// </summary>
-    public class DolarService
+    public class DolarService : BaseService
     {
         #region Constants
         private const string DOLAR_OFICIAL_TITLE = "Dólar Oficial";
@@ -26,36 +30,132 @@ namespace DolarBot.Services.Dolar
         private const string DOLAR_CCL_TITLE = "Contado con Liqui";
         #endregion
 
-        #region Vars
-
-        /// <summary>
-        /// Provides access to application settings.
-        /// </summary>
-        protected readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// Provides access to the different APIs.
-        /// </summary>
-        protected readonly ApiCalls Api;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="DolarService"/> object with the provided configuration, api object and embed color.
+        /// Creates a new <see cref="DolarService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public DolarService(IConfiguration configuration, ApiCalls api)
-        {
-            Configuration = configuration;
-            Api = api;
-        }
+        public DolarService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
 
         #endregion
 
         #region Methods
+
+        #region API Calls
+
+        /// <summary>
+        /// Fetches all dollar prices from <see cref="Banks"/>.
+        /// </summary>
+        /// <returns>An array of <see cref="DolarResponse"/> objects.</returns>
+        public async Task<DolarResponse[]> GetAllBankPrices()
+        {
+            List<Banks> banks = Enum.GetValues(typeof(Banks)).Cast<Banks>().Where(b => b != Banks.Bancos).ToList();
+            Task<DolarResponse>[] tasks = new Task<DolarResponse>[banks.Count];
+            for (int i = 0; i < banks.Count; i++)
+            {
+                DollarTypes dollarType = ConvertToDollarType(banks[i]);
+                tasks[i] = Api.DolarArgentina.GetDollarPrice(dollarType);
+            }
+
+            return await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches all available dollar prices.
+        /// </summary>
+        /// <returns>An array of <see cref="DolarResponse"/> objects.</returns>
+        public async Task<DolarResponse[]> GetAllDollarPrices()
+        {
+            return await Task.WhenAll(GetDollarOficial(),
+                                      GetDollarAhorro(),
+                                      GetDollarBlue(),
+                                      GetDollarBolsa(),
+                                      GetDollarPromedio(),
+                                      GetDollarContadoConLiqui()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for the specified dollar type.
+        /// </summary>
+        /// <param name="bank">The bank who's price is to be retrieved.</param>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetBankPrice(Banks bank)
+        {
+            DollarTypes dollarType = ConvertToDollarType(bank);
+            return await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Oficial.
+        /// </summary>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetDollarOficial()
+        {
+            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Ahorro.
+        /// </summary>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetDollarAhorro()
+        {
+            CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
+            DolarResponse dolarResponse = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
+
+            if (dolarResponse != null)
+            {
+                decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
+                if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                {
+                    dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
+                } 
+            }
+
+            return dolarResponse;
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Blue.
+        /// </summary>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetDollarBlue()
+        {
+            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Blue).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Promedio.
+        /// </summary>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetDollarPromedio()
+        {
+            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Promedio).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Bolsa.
+        /// </summary>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetDollarBolsa()
+        {
+            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Bolsa).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Contado con Liquidación.
+        /// </summary>
+        /// <returns>A single <see cref="DolarResponse"/>.</returns>
+        public async Task<DolarResponse> GetDollarContadoConLiqui()
+        {
+            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Embeds
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple dollar responses.
@@ -143,64 +243,6 @@ namespace DolarBot.Services.Dolar
         }
 
         /// <summary>
-        /// Converts a <see cref="Banks"/> object to its <see cref="DollarTypes"/> equivalent and returns its thumbnail URL.
-        /// </summary>
-        /// <param name="bank">The value to convert.</param>
-        /// <param name="thumbnailUrl">The thumbnail URL corresponding to the bank.</param>
-        /// <returns>The converted value as <see cref="DollarTypes"/>.</returns>
-        public DollarTypes GetBankInformation(Banks bank, out string thumbnailUrl)
-        {
-            switch (bank)
-            {
-                case Banks.Nacion:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["nacion"];
-                    return DollarTypes.Nacion;
-                case Banks.BBVA:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["bbva"];
-                    return DollarTypes.BBVA;
-                case Banks.Piano:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["piano"];
-                    return DollarTypes.Piano;
-                case Banks.Hipotecario:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["hipotecario"];
-                    return DollarTypes.Hipotecario;
-                case Banks.Galicia:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["galicia"];
-                    return DollarTypes.Galicia;
-                case Banks.Santander:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["santander"];
-                    return DollarTypes.Santander;
-                case Banks.Ciudad:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["ciudad"];
-                    return DollarTypes.Ciudad;
-                case Banks.Supervielle:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["supervielle"];
-                    return DollarTypes.Supervielle;
-                case Banks.Patagonia:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["patagonia"];
-                    return DollarTypes.Patagonia;
-                case Banks.Comafi:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["comafi"];
-                    return DollarTypes.Comafi;
-                case Banks.BIND:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["bind"];
-                    return DollarTypes.BIND;
-                case Banks.Bancor:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["bancor"];
-                    return DollarTypes.Bancor;
-                case Banks.Chaco:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["chaco"];
-                    return DollarTypes.Chaco;
-                case Banks.Pampa:
-                    thumbnailUrl = Configuration.GetSection("images").GetSection("banks")["pampa"];
-                    return DollarTypes.Pampa;
-                default:
-                    thumbnailUrl = string.Empty;
-                    return DollarTypes.Oficial;
-            }
-        }
-
-        /// <summary>
         /// Returns the title depending on the response type.
         /// </summary>
         /// <param name="dollarResponse">The dollar response.</param>
@@ -230,6 +272,35 @@ namespace DolarBot.Services.Dolar
                 DollarTypes.Chaco => Banks.Chaco.GetDescription(),
                 DollarTypes.Pampa => Banks.Pampa.GetDescription(),
                 _ => throw new ArgumentException($"Unable to get title from '{dollarResponse.Type}'.")
+            };
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Converts a <see cref="Banks"/> object to its <see cref="DollarTypes"/> equivalent.
+        /// </summary>
+        /// <param name="bank">The value to convert.</param>
+        /// <returns>The converted value as <see cref="DollarTypes"/>.</returns>
+        public DollarTypes ConvertToDollarType(Banks bank)
+        {
+            return bank switch
+            {
+                Banks.Nacion => DollarTypes.Nacion,
+                Banks.BBVA => DollarTypes.BBVA,
+                Banks.Piano => DollarTypes.Piano,
+                Banks.Hipotecario => DollarTypes.Hipotecario,
+                Banks.Galicia => DollarTypes.Galicia,
+                Banks.Santander => DollarTypes.Santander,
+                Banks.Ciudad => DollarTypes.Ciudad,
+                Banks.Supervielle => DollarTypes.Supervielle,
+                Banks.Patagonia => DollarTypes.Patagonia,
+                Banks.Comafi => DollarTypes.Comafi,
+                Banks.BIND => DollarTypes.BIND,
+                Banks.Bancor => DollarTypes.Bancor,
+                Banks.Chaco => DollarTypes.Chaco,
+                Banks.Pampa => DollarTypes.Pampa,
+                _ => DollarTypes.Oficial,
             };
         }
 

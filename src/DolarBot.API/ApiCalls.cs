@@ -282,17 +282,8 @@ namespace DolarBot.API
                     {
                         DolarResponse dolarResponse = response.Data;
                         dolarResponse.Type = type;
-                        if (type == DollarTypes.Ahorro)
-                        {
-                            CultureInfo apiCulture = GetApiCulture();
-                            decimal taxPercent = (decimal.Parse(configuration["taxPercent"]) / 100) + 1;
-                            if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
-                            {
-                                dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
-                            }
-                        }
-
                         cache.SaveObject(type, dolarResponse);
+
                         return response.Data;
                     }
                     else
@@ -324,8 +315,8 @@ namespace DolarBot.API
                     {
                         EuroResponse euroResponse = response.Data;
                         euroResponse.Type = type;
-                        
                         cache.SaveObject(type, euroResponse);
+                        
                         return response.Data;
                     }
                     else
@@ -357,8 +348,8 @@ namespace DolarBot.API
                     {
                         RealResponse realResponse = response.Data;
                         realResponse.Type = type;
-
                         cache.SaveObject(type, realResponse);
+                        
                         return response.Data;
                     }
                     else

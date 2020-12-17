@@ -2,84 +2,103 @@
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Services.Banking;
+using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 using System.Text;
-using static DolarBot.API.ApiCalls.DolarArgentinaApi;
+using System.Threading.Tasks;
+using RealTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.RealTypes;
 
 namespace DolarBot.Services.Real
 {
     /// <summary>
     /// Contains several methods to process Real (Brazil) commands.
     /// </summary>
-    public class RealService
+    public class RealService : BaseService
     {
-        #region Vars
-
-        /// <summary>
-        /// Provides access to application settings.
-        /// </summary>
-        protected readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// Provides access to the different APIs.
-        /// </summary>
-        protected readonly ApiCalls Api;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="RealService"/> object with the provided configuration, api object and embed color.
+        /// Creates a new <see cref="RealService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public RealService(IConfiguration configuration, ApiCalls api)
-        {
-            Configuration = configuration;
-            Api = api;
-        }
+        public RealService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
 
         #endregion
 
         #region Methods
 
+        #region API Calls
+
         /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses.
+        /// Fetches all available Real prices.
         /// </summary>
-        /// <param name="realResponses">The Real responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRealEmbed(RealResponse[] realResponses)
+        /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
+        public async Task<RealResponse[]> GetAllRealPrices()
         {
-            string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
-            return CreateRealEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
+            return await Task.WhenAll(GetRealNacion(),
+                                      GetRealBBVA(),
+                                      GetRealChaco()).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses with taxes included.
+        /// Fetches all available Real Ahorro prices.
         /// </summary>
-        /// <param name="realResponses">The Real responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRealAhorroEmbed(RealResponse[] realResponses)
+        /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
+        public async Task<RealResponse[]> GetAllRealAhorroPrices()
         {
             CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
-            string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
+            RealResponse[] realResponses = await GetAllRealPrices().ConfigureAwait(false);
 
             foreach (RealResponse realResponse in realResponses)
             {
-                decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
-                if (decimal.TryParse(realResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                if (realResponse != null)
                 {
-                    realResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
+                    decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
+                    if (decimal.TryParse(realResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
+                    {
+                        realResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
+                    } 
                 }
             }
 
-            return CreateRealEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} incluyendo impuesto P.A.I.S. y retención de ganancias, expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
+            return realResponses;
         }
+
+        /// <summary>
+        /// Fetches the price for Real from bank Nacion.
+        /// </summary>
+        /// <returns>A single <see cref="RealResponse"/>.</returns>
+        public async Task<RealResponse> GetRealNacion()
+        {
+            return await Api.DolarArgentina.GetRealPrice(RealTypes.Nacion).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Real from bank BBVA.
+        /// </summary>
+        /// <returns>A single <see cref="RealResponse"/>.</returns>
+        public async Task<RealResponse> GetRealBBVA()
+        {
+            return await Api.DolarArgentina.GetRealPrice(RealTypes.BBVA).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Real from Nuevo Banco del Chaco.
+        /// </summary>
+        /// <returns>A single <see cref="RealResponse"/>.</returns>
+        public async Task<RealResponse> GetRealChaco()
+        {
+            return await Api.DolarArgentina.GetRealPrice(RealTypes.Chaco).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region Embed
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses specifying a custom description and thumbnail URL.
@@ -171,6 +190,8 @@ namespace DolarBot.Services.Real
                 _ => throw new ArgumentException($"Unable to get title from '{realResponse.Type}'.")
             };
         }
+        
+        #endregion
 
         #endregion
     }

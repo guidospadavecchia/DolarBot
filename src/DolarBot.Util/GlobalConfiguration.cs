@@ -62,11 +62,11 @@ namespace DolarBot.Util
         {
             if (string.IsNullOrEmpty(supportServerUrl))
             {
-                return $"{Format.Bold("Oops!")} Ocurrió un error al ejecutar el comando. Probablemente se trate de algo temporal. Si el problema persiste, contactate con {Format.Bold("Svenjörn#9806")}.";
+                return $"{Format.Bold("Oops!")} Ocurrió un error inesperado. Si el problema persiste, contactate con {Format.Bold("Svenjörn#9806")}.";
             }
             else
             {
-                return $"{Format.Bold("Oops!")} Ocurrió un error al ejecutar el comando. Probablemente se trate de algo temporal. Si el problema persiste, reportalo en el servidor de soporte ({supportServerUrl}) o contactate con {Format.Bold("Svenjörn#9806")}.";
+                return $"{Format.Bold("Oops!")} Ocurrió un error inesperado. Si el problema persiste, reportalo en el servidor de soporte (<{supportServerUrl}>) o contactate con {Format.Bold("Svenjörn#9806")}.";
             }
         }
 

@@ -19,7 +19,7 @@ namespace DolarBot.Services.Dolar
     /// <summary>
     /// Contains several methods to process dollar commands.
     /// </summary>
-    public class DolarService : BaseService
+    public class DolarService : BaseCurrencyService
     {
         #region Constants
         private const string DOLAR_OFICIAL_TITLE = "Dólar Oficial";
@@ -102,19 +102,9 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarAhorro()
         {
-            CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
             DolarResponse dolarResponse = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
-
-            if (dolarResponse != null)
-            {
-                decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
-                if (decimal.TryParse(dolarResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
-                {
-                    dolarResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
-                }
-                dolarResponse.Type = DollarTypes.Ahorro;
-            }
-
+            dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
+            dolarResponse.Type = DollarTypes.Ahorro;
             return dolarResponse;
         }
 

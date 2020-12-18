@@ -8,6 +8,7 @@ using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EuroTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.EuroTypes;
@@ -17,7 +18,7 @@ namespace DolarBot.Services.Euro
     /// <summary>
     /// Contains several methods to process Euro commands.
     /// </summary>
-    public class EuroService : BaseService
+    public class EuroService : BaseCurrencyService
     {
         #region Constructors
 
@@ -54,22 +55,8 @@ namespace DolarBot.Services.Euro
         /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
         public async Task<EuroResponse[]> GetAllEuroAhorroPrices()
         {
-            CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
             EuroResponse[] euroResponses = await GetAllEuroPrices().ConfigureAwait(false);
-
-            foreach (EuroResponse euroResponse in euroResponses)
-            {
-                if (euroResponse != null)
-                {
-                    decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
-                    if (decimal.TryParse(euroResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
-                    {
-                        euroResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
-                    }
-                }
-            }
-
-            return euroResponses;
+            return euroResponses.Select(x => (EuroResponse)ApplyTaxes(x)).ToArray();
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RealTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.RealTypes;
@@ -17,7 +18,7 @@ namespace DolarBot.Services.Real
     /// <summary>
     /// Contains several methods to process Real (Brazil) commands.
     /// </summary>
-    public class RealService : BaseService
+    public class RealService : BaseCurrencyService
     {
         #region Constructors
 
@@ -51,22 +52,8 @@ namespace DolarBot.Services.Real
         /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
         public async Task<RealResponse[]> GetAllRealAhorroPrices()
         {
-            CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
             RealResponse[] realResponses = await GetAllRealPrices().ConfigureAwait(false);
-
-            foreach (RealResponse realResponse in realResponses)
-            {
-                if (realResponse != null)
-                {
-                    decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
-                    if (decimal.TryParse(realResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
-                    {
-                        realResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
-                    } 
-                }
-            }
-
-            return realResponses;
+            return realResponses.Select(x => (RealResponse)ApplyTaxes(x)).ToArray();
         }
 
         /// <summary>

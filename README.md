@@ -33,11 +33,11 @@ A continuación se listan los comandos disponibles:
 
 ### Cotizaciones del dólar
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial para un banco en particular (Ver `$bancos dolar`).  
+- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos`).  
 - \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial del Banco Nación.  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar ahorro (dólar oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$dolarahorro` | `$da`] `<banco>`: Muestra la cotización del dólar ahorro para un banco en particular (Ver `$bancos dolar`).  
+- \[`$dolarahorro` | `$da`] `<banco>`: Muestra la cotización del dólar ahorro para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
 - \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
 - \[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
@@ -45,15 +45,15 @@ A continuación se listan los comandos disponibles:
 
 ### Cotizaciones del Euro
 - \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro oficial para los bancos disponibles.  
-- \[`$euro` | `$e`] `<banco>`: Muestra la cotización del Euro oficial para un banco en particular (Ver `$bancos euro`).  
+- \[`$euro` | `$e`] `<banco>`: Muestra la cotización del Euro oficial para un banco puntual (Ver `$bancos euro`).  
 - \[`$euroahorro` | `$ea`]: Muestra todas las cotizaciones del Euro ahorro para los bancos disponibles (Euro oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$euroahorro` | `$ea`] `<banco>`: Muestra la cotización del Euro ahorro para un banco en particular (Ver `$bancos euro`).  
+- \[`$euroahorro` | `$ea`] `<banco>`: Muestra la cotización del Euro ahorro para un banco puntual (Ver `$bancos euro`).  
 
 ### Cotizaciones del Real
 - \[`$real` | `$r`]: Muestra todas las cotizaciones del Real oficial para los bancos disponibles.  
-- \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco en particular (Ver `$bancos real`).  
+- \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco puntual (Ver `$bancos real`).  
 - \[`$realahorro` | `$ra`]: Muestra todas las cotizaciones del Real ahorro para los bancos disponibles (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$realahorro` | `$ra`] `<banco>`: Muestra la cotización del Real ahorro para un banco en particular (Ver `$bancos real`).  
+- \[`$realahorro` | `$ra`] `<banco>`: Muestra la cotización del Real ahorro para un banco puntual (Ver `$bancos real`).  
 
 ### Indicadores
 - \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  

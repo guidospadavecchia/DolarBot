@@ -83,14 +83,7 @@ namespace DolarBot.Services.Dolar
             }
 
             DolarResponse[] dolarResponses = await Task.WhenAll(tasks).ConfigureAwait(false);
-            for (int i = 0; i < dolarResponses.Count(); i++)
-            {
-                DolarResponse dolarResponse = dolarResponses[i];
-                dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
-                dolarResponse.Type = DollarTypes.Ahorro;
-            }
-
-            return dolarResponses;
+            return dolarResponses.Select(x => (DolarResponse)ApplyTaxes(x)).ToArray();
         }
 
         /// <summary>

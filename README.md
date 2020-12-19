@@ -33,22 +33,27 @@ A continuación se listan los comandos disponibles:
 
 ### Cotizaciones del dólar
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial del banco especificado (Ver `$bancos`).  
+- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos`).  
 - \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial del Banco Nación.  
-- \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar oficial más impuesto P.A.I.S. y retención de ganancias.  
+- \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar ahorro (dólar oficial más impuesto P.A.I.S. y retención de ganancias).  
+- \[`$dolarahorro` | `$da`] `<banco>`: Muestra la cotización del dólar ahorro para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
 - \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
 - \[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
 - \[`$contadoconliqui` | `$ccl`]: Muestra la cotización del dólar contado con liquidación.  
 
 ### Cotizaciones del Euro
-- \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro para los bancos disponibles.  
-- \[`$euroahorro` | `$ea`]: Muestra todas las cotizaciones del Euro para los bancos disponibles incluyendo impuesto P.A.I.S. y retención de ganancias.  
+- \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro oficial para los bancos disponibles.  
+- \[`$euro` | `$e`] `<banco>`: Muestra la cotización del Euro oficial para un banco puntual (Ver `$bancos euro`).  
+- \[`$euroahorro` | `$ea`]: Muestra todas las cotizaciones del Euro ahorro para los bancos disponibles (Euro oficial más impuesto P.A.I.S. y retención de ganancias).  
+- \[`$euroahorro` | `$ea`] `<banco>`: Muestra la cotización del Euro ahorro para un banco puntual (Ver `$bancos euro`).  
 
 ### Cotizaciones del Real
-- \[`$real` | `$r`]: Muestra todas las cotizaciones del Real para los bancos disponibles.  
-- \[`$realahorro` | `$ra`]: Muestra todas las cotizaciones del Real para los bancos disponibles incluyendo impuesto P.A.I.S. y retención de ganancias.  
+- \[`$real` | `$r`]: Muestra todas las cotizaciones del Real oficial para los bancos disponibles.  
+- \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco puntual (Ver `$bancos real`).  
+- \[`$realahorro` | `$ra`]: Muestra todas las cotizaciones del Real ahorro para los bancos disponibles (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
+- \[`$realahorro` | `$ra`] `<banco>`: Muestra la cotización del Real ahorro para un banco puntual (Ver `$bancos real`).  
 
 ### Indicadores
 - \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  
@@ -67,13 +72,15 @@ A continuación se listan los comandos disponibles:
 - \[`$votar` | `$vote`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
 
 ### Otros
-- \[`$bancos`]: Muestra la lista de bancos disponibles para obtener sus cotizaciones.  
+- \[`$monedas`]: Muestra la lista de monedas soportadas.  
+- \[`$bancos`]: Muestra la lista de bancos disponibles para cada una de las monedas (Ver `$monedas`).  
+- \[`$bancos`] `<moneda>`: Muestra la lista de bancos disponibles la moneda especificada (Ver `$monedas`).  
 - \[`$frase` | `$f`]: Muestra una frase célebre acerca de la economía argentina.  
 
 ## Librerías y APIS
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
-- [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive) (fork propio de [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive))
+- [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive) (fork de [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive))
 - [Castrogiovanni20/api-dolar-argentina](https://github.com/Castrogiovanni20/api-dolar-argentina)
 - [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 

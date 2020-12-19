@@ -1,6 +1,6 @@
 ﻿using DolarBot.API;
 using DolarBot.API.Models.Base;
-using DolarBot.Util.Extensions;
+using DolarBot.Services.Banking;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
@@ -24,6 +24,12 @@ namespace DolarBot.Services.Base
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Returns a collection of valid banks for the currency.
+        /// </summary>
+        /// <returns>Collection of valid banks.</returns>
+        public abstract Banks[] GetValidBanks();
 
         /// <summary>
         /// Applies all taxes to the <see cref="CurrencyResponse"/> object.

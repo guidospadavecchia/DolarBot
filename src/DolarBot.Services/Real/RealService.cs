@@ -33,13 +33,51 @@ namespace DolarBot.Services.Real
 
         #region Methods
 
+        /// <inheritdoc/>
+        public override Banks[] GetValidBanks()
+        {
+            return new[]
+            {
+                Banks.Nacion,
+                Banks.BBVA,
+                Banks.Chaco,
+            };
+        }
+
         #region API Calls
+
+        /// <summary>
+        /// Fetches a single rate by bank. Only accepts banks returned by <see cref="GetValidBanks"/>.
+        /// </summary>
+        /// <param name="bank">The bank who's rate is to be retrieved.</param>
+        /// <returns>A single <see cref="RealResponse"/>.</returns>
+        public async Task<RealResponse> GetRealByBank(Banks bank)
+        {
+            return bank switch
+            {
+                Banks.Nacion => await GetRealNacion().ConfigureAwait(false),
+                Banks.BBVA => await GetRealBBVA().ConfigureAwait(false),
+                Banks.Chaco => await GetRealChaco().ConfigureAwait(false),
+                _ => throw new ArgumentException("Invalid bank for currency.")
+            };
+        }
+
+        /// <summary>
+        /// Fetches a single rate by bank with taxes applied. Only accepts banks returned by <see cref="GetValidBanks"/>.
+        /// </summary>
+        /// <param name="bank">The bank who's rate is to be retrieved.</param>
+        /// <returns>A single <see cref="RealResponse"/>.</returns>
+        public async Task<RealResponse> GetRealAhorroByBank(Banks bank)
+        {
+            RealResponse realResponse = await GetRealByBank(bank).ConfigureAwait(false);
+            return (RealResponse)ApplyTaxes(realResponse);
+        }
 
         /// <summary>
         /// Fetches all available Real prices.
         /// </summary>
         /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
-        public async Task<RealResponse[]> GetAllRealPrices()
+        public async Task<RealResponse[]> GetAllRealRates()
         {
             return await Task.WhenAll(GetRealNacion(),
                                       GetRealBBVA(),
@@ -50,9 +88,9 @@ namespace DolarBot.Services.Real
         /// Fetches all available Real Ahorro prices.
         /// </summary>
         /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
-        public async Task<RealResponse[]> GetAllRealAhorroPrices()
+        public async Task<RealResponse[]> GetAllRealAhorroRates()
         {
-            RealResponse[] realResponses = await GetAllRealPrices().ConfigureAwait(false);
+            RealResponse[] realResponses = await GetAllRealRates().ConfigureAwait(false);
             return realResponses.Select(x => (RealResponse)ApplyTaxes(x)).ToArray();
         }
 
@@ -149,8 +187,8 @@ namespace DolarBot.Services.Real
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(realResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(realResponse.Fecha, localTimeZone).ToString(realResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : null;
-            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : null;
+            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle(embedTitle)

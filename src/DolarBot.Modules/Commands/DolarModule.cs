@@ -5,6 +5,7 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Banking;
+using DolarBot.Services.Currencies;
 using DolarBot.Services.Dolar;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -59,7 +60,7 @@ namespace DolarBot.Modules.Commands
         [HelpUsageExample(false, "$dolar", "$d", "$dolar bancos", "$dolar santander", "$d galicia")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetDolarPriceAsync(
-            [Summary("Indica la cotización del banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos`.")]
+            [Summary("Opcional. Indica el banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos dolar`. Si no se especifica, mostrará todas las cotizaciones no bancarias.")]
             string banco = null)
         {
             try
@@ -73,12 +74,12 @@ namespace DolarBot.Modules.Commands
                         {
                             if (bank == Banks.Bancos)
                             {
-                                DolarResponse[] responses = await DolarService.GetAllBankPrices().ConfigureAwait(false);
+                                DolarResponse[] responses = await DolarService.GetAllBankRates().ConfigureAwait(false);
                                 if (responses.Any(r => r != null))
                                 {
                                     string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
                                     DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} expresados en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
+                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("dólar oficial")} expresadas en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
                                     if (responses.Length != successfulResponses.Length)
                                     {
                                         await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
@@ -91,9 +92,9 @@ namespace DolarBot.Modules.Commands
                                 }
                             }
                             else
-                            {   //Show individual bank price
+                            {   //Show individual bank rate
                                 string thumbnailUrl = DolarService.GetBankThumbnailUrl(bank);
-                                DolarResponse result = await DolarService.GetBankPrice(bank).ConfigureAwait(false);
+                                DolarResponse result = await DolarService.GetByBank(bank).ConfigureAwait(false);
                                 if (result != null)
                                 {
                                     EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
@@ -109,12 +110,12 @@ namespace DolarBot.Modules.Commands
                         {   //Unknown parameter
                             string commandPrefix = Configuration["commandPrefix"];
                             string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand}")}.").ConfigureAwait(false);
+                            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Dolar.GetDescription().ToLower()}")}.").ConfigureAwait(false);
                         }
                     }
                     else
                     {   //Show all dollar types (not banks)
-                        DolarResponse[] responses = await DolarService.GetAllDollarPrices().ConfigureAwait(false);
+                        DolarResponse[] responses = await DolarService.GetAllDollarRates().ConfigureAwait(false);
                         if (responses.Any(r => r != null))
                         {
                             DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
@@ -172,21 +173,76 @@ namespace DolarBot.Modules.Commands
         [Alias("da")]
         [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y ganancias.")]
         [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetDolarAhorroPriceAsync()
+        [HelpUsageExample(false, "$dolarahorro", "$da", "$dolar bancos", "$dolar santander", "$d galicia")]
+        public async Task GetDolarAhorroPriceAsync(
+            [Summary("Opcional. Indica el banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos dolar`. Si no se especifica, mostrará la cotización estándar.")]
+            string banco = null)
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DolarResponse result = await DolarService.GetDollarAhorro().ConfigureAwait(false);
-                    if (result != null)
+                    if (banco != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        //Show bank rate
+                        string userInput = Format.Sanitize(banco).RemoveFormat(true);
+                        if (Enum.TryParse(userInput, true, out Banks bank))
+                        {
+                            if (bank == Banks.Bancos)
+                            {
+                                DolarResponse[] responses = await DolarService.GetAllAhorroBankRates().ConfigureAwait(false);
+                                if (responses.Any(r => r != null))
+                                {
+                                    string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
+                                    DolarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
+                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("dólar ahorro")} expresadas en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
+                                    if (responses.Length != successfulResponses.Length)
+                                    {
+                                        await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
+                                    }
+                                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                                }
+                            }
+                            else
+                            {
+                                //Show individual bank rate
+                                string thumbnailUrl = DolarService.GetBankThumbnailUrl(bank);
+                                DolarResponse result = await DolarService.GetDollarAhorroByBank(bank).ConfigureAwait(false);
+                                if (result != null)
+                                {
+                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
+                                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Unknown parameter
+                            string commandPrefix = Configuration["commandPrefix"];
+                            string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+                            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Dolar.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+                        }
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        DolarResponse result = await DolarService.GetDollarAhorro().ConfigureAwait(false);
+                        if (result != null)
+                        {
+                            EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
+                            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        }
                     }
                 }
             }

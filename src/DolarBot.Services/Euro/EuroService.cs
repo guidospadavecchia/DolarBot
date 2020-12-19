@@ -33,13 +33,57 @@ namespace DolarBot.Services.Euro
 
         #region Methods
 
+        /// <inheritdoc/>
+        public override Banks[] GetValidBanks()
+        {
+            return new[]
+            {
+                Banks.Nacion,
+                Banks.Galicia,
+                Banks.BBVA,
+                Banks.Hipotecario,
+                Banks.Chaco,
+                Banks.Pampa
+            };
+        }
+
         #region API Calls
+
+        /// <summary>
+        /// Fetches a single rate by bank. Only accepts banks returned by <see cref="GetValidBanks"/>.
+        /// </summary>
+        /// <param name="bank">The bank who's rate is to be retrieved.</param>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroByBank(Banks bank)
+        {
+            return bank switch
+            {
+                Banks.Nacion => await GetEuroNacion().ConfigureAwait(false),
+                Banks.Galicia => await GetEuroGalicia().ConfigureAwait(false),
+                Banks.BBVA => await GetEuroBBVA().ConfigureAwait(false),
+                Banks.Hipotecario => await GetEuroHipotecario().ConfigureAwait(false),
+                Banks.Chaco => await GetEuroChaco().ConfigureAwait(false),
+                Banks.Pampa => await GetEuroPampa().ConfigureAwait(false),
+                _ => throw new ArgumentException("Invalid bank for currency.")
+            };
+        }
+
+        /// <summary>
+        /// Fetches a single rate by bank with taxes applied. Only accepts banks returned by <see cref="GetValidBanks"/>.
+        /// </summary>
+        /// <param name="bank">The bank who's rate is to be retrieved.</param>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroAhorroByBank(Banks bank) 
+        {
+            EuroResponse euroResponse = await GetEuroByBank(bank).ConfigureAwait(false);
+            return (EuroResponse)ApplyTaxes(euroResponse);
+        }
 
         /// <summary>
         /// Fetches all available euro prices.
         /// </summary>
         /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
-        public async Task<EuroResponse[]> GetAllEuroPrices()
+        public async Task<EuroResponse[]> GetAllEuroRates()
         {
             return await Task.WhenAll(GetEuroNacion(),
                                       GetEuroGalicia(),
@@ -50,12 +94,12 @@ namespace DolarBot.Services.Euro
         }
 
         /// <summary>
-        /// Fetches all available euro Ahorro prices.
+        /// Fetches all available euro rates with taxes applied.
         /// </summary>
         /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
-        public async Task<EuroResponse[]> GetAllEuroAhorroPrices()
+        public async Task<EuroResponse[]> GetAllEuroAhorroRates()
         {
-            EuroResponse[] euroResponses = await GetAllEuroPrices().ConfigureAwait(false);
+            EuroResponse[] euroResponses = await GetAllEuroRates().ConfigureAwait(false);
             return euroResponses.Select(x => (EuroResponse)ApplyTaxes(x)).ToArray();
         }
 
@@ -177,8 +221,8 @@ namespace DolarBot.Services.Euro
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(euroResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(euroResponse.Fecha, localTimeZone).ToString(euroResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : null;
-            string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : null;
+            string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle(embedTitle)

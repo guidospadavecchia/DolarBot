@@ -1,10 +1,18 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
+using DolarBot.API;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Banking;
+using DolarBot.Services.Base;
+using DolarBot.Services.Currencies;
+using DolarBot.Services.Dolar;
+using DolarBot.Services.Euro;
 using DolarBot.Services.Quotes;
+using DolarBot.Services.Real;
 using DolarBot.Util;
+using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -25,6 +33,10 @@ namespace DolarBot.Modules.Commands
         /// The log4net logger.
         /// </summary>
         private readonly ILog Logger;
+        /// <summary>
+        /// Provides several methods to interact with the different APIs.
+        /// </summary>
+        private readonly ApiCalls Api;
         #endregion
 
         #region Constructor
@@ -33,23 +45,77 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">Provides access to the different APIs.</param>
-        public MiscModule(IConfiguration configuration, ILog logger) : base(configuration)
+        public MiscModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
+            Api = api;
         }
         #endregion
 
-        [Command("bancos")]
-        [Alias("b")]
-        [Summary("Muestra la lista de bancos disponibles para obtener las cotizaciones.")]
+        [Command("monedas")]
+        [Alias("m")]
+        [Summary("Muestra la lista de monedas soportadas.")]
         [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetBanks()
+        public async Task GetCurrencies()
         {
             try
             {
                 string commandPrefix = Configuration["commandPrefix"];
-                string banks = string.Join(", ", Enum.GetNames(typeof(Banks)).Select(b => Format.Bold(b)));
-                await ReplyAsync($"Parámetros disponibles del comando {Format.Code($"{commandPrefix}dolar <banco>")}: {banks}.").ConfigureAwait(false);
+                string currencies = string.Join(", ", Enum.GetValues(typeof(Currencies)).Cast<Currencies>().Select(x => Format.Bold(x.GetDescription())));
+                await ReplyAsync($"Monedas disponibles: {currencies}.").ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("bancos")]
+        [Alias("b")]
+        [Summary("Muestra la lista de bancos disponibles para cada moneda.")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetBanks(
+            [Summary("Opcional. Indica la moneda para listar sus bancos disponibles. Los valores posibles son aquellos devueltos por el comando `$monedas`.")]
+            string moneda = null)
+        {
+            try
+            {
+                string commandPrefix = Configuration["commandPrefix"];
+                string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+
+                if (moneda != null)
+                {
+                    string userInput = Format.Sanitize(moneda).RemoveFormat(true);
+                    if (Enum.TryParse(userInput, true, out Currencies currency))
+                    {
+                        BaseCurrencyService currencyService = GetCurrencyService(currency);
+                        Banks[] banks = currencyService.GetValidBanks();
+                        string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
+                        await ReplyAsync($"Parametros disponibles para utilizar en comandos de {Format.Bold(currency.GetDescription())}:".AppendLineBreak().AppendLineBreak() + $"{bankList}.").ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        //Unknown parameter
+                        await ReplyAsync($"Moneda '{Format.Bold(userInput)}' inexistente. Verifique las monedas disponibles con {Format.Code($"{commandPrefix}{currencyCommand}")}.").ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    //Parameter not specified
+                    Emoji bankEmoji = new Emoji(":bank:");
+                    string message = $"Parametros de {Format.Bold("bancos disponibles por moneda")}:".AppendLineBreak().AppendLineBreak();
+                    Currencies[] currencies = Enum.GetValues(typeof(Currencies)).Cast<Currencies>().ToArray();
+                    foreach (Currencies currency in currencies)
+                    {
+                        BaseCurrencyService currencyService = GetCurrencyService(currency);
+                        Banks[] banks = currencyService.GetValidBanks();
+                        string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
+                        message += $"{bankEmoji} {Format.Bold(currency.GetDescription())}: {bankList}.".AppendLineBreak();
+                    }
+
+                    await ReplyAsync(message);
+                }
             }
             catch (Exception ex)
             {
@@ -81,6 +147,22 @@ namespace DolarBot.Modules.Commands
                 await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
                 Logger.Error("Error al ejecutar comando.", ex);
             }
+        }
+
+        /// <summary>
+        /// Creates a new instance of the corresponding currency service according to <paramref name="currency"/>.
+        /// </summary>
+        /// <param name="currency">The currency type.</param>
+        /// <returns>An instantiated service.</returns>
+        private BaseCurrencyService GetCurrencyService(Currencies currency)
+        {
+            return currency switch
+            {
+                Currencies.Dolar => new DolarService(Configuration, Api),
+                Currencies.Euro => new EuroService(Configuration, Api),
+                Currencies.Real => new RealService(Configuration, Api),
+                _ => throw new ArgumentException("Invalid currency.")
+            };
         }
     }
 }

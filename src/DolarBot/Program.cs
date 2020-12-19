@@ -44,7 +44,7 @@ namespace DolarBot
         /// <returns></returns>
         public async Task RunAsync()
         {
-            Configuration = ConfigureAppSettings();
+            ConfigureAppSettings();
             ConfigureLogger();
             QuoteService.TryLoadQuotes();
             
@@ -101,11 +101,10 @@ namespace DolarBot
         /// <summary>
         /// Creates an <see cref="IConfiguration"/> object to access application settings.
         /// </summary>
-        /// <returns></returns>
-        private IConfiguration ConfigureAppSettings()
+        private void ConfigureAppSettings()
         {
             var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(GlobalConfiguration.GetAppSettingsFileName());
-            return builder.Build();
+            Configuration = builder.Build();
         }
 
         /// <summary>

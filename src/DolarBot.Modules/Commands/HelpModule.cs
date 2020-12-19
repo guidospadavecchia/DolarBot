@@ -257,8 +257,8 @@ namespace DolarBot.Modules.Commands
             {
                 Forward = true,
                 Backward = true,
-                First = true,
-                Last = true,
+                First = false,
+                Last = false,
                 Info = false,
                 Jump = false,
                 Trash = false

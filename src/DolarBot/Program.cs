@@ -44,6 +44,7 @@ namespace DolarBot
         /// <returns></returns>
         public async Task RunAsync()
         {
+            GlobalConfiguration.Initialize();
             ConfigureAppSettings();
             ConfigureLogger();
             QuoteService.TryLoadQuotes();

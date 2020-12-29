@@ -195,6 +195,7 @@ namespace DolarBot.Modules.Commands
                 Emoji coffeeEmoji = new Emoji("\u2615");
                 Emoji checkEmoji = new Emoji("\u2705");
                 Emoji voteEmoji = new Emoji("\uD83D\uDC8C");
+                Emoji hourglassEmoji = new Emoji("\u23F3");
 
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
                 string githubUrl = Configuration["githubUrl"];
@@ -203,6 +204,7 @@ namespace DolarBot.Modules.Commands
                 string voteUrl = Configuration["voteUrl"];
                 string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
                 int serverCount = Context.Client.Guilds.Count;
+                TimeSpan uptime = GlobalConfiguration.GetUptime();
 
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("DolarBot")
@@ -210,6 +212,7 @@ namespace DolarBot.Modules.Commands
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
                                      .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}".AppendLineBreak())
+                                     .AddField("Uptime", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
                                      .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor de soporte", supportServerUrl)}".AppendLineBreak())
                                      .AddField("GitHub", $"{githubEmoji} {Format.Url("DolarBot repo", githubUrl)}".AppendLineBreak())
                                      .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLine($"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}").AppendLineBreak())

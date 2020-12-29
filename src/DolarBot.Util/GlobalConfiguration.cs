@@ -10,6 +10,10 @@ namespace DolarBot.Util
     /// </summary>
     public static class GlobalConfiguration
     {
+        #region Vars
+        private static DateTime _bootTime;
+        #endregion
+
         #region Global
 
         /// <summary>
@@ -52,6 +56,18 @@ namespace DolarBot.Util
         /// </summary>
         /// <returns></returns>
         public static CultureInfo GetLocalCultureInfo() => CultureInfo.GetCultureInfo("es-AR");
+        /// <summary>
+        /// Gets the date and time for application's boot.
+        /// </summary>
+        /// <returns></returns>
+        public static TimeSpan GetUptime() => DateTime.Now - _bootTime;
+        /// <summary>
+        /// Sets the date and time for application's boot.
+        /// </summary>
+        public static void Initialize()
+        {
+            _bootTime = DateTime.Now;
+        }
 
         /// <summary>
         /// Returns the standarized message for unhandled errors.

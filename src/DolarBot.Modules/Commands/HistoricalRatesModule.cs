@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarArgentinaApi.HistoricalRatesParams;
+using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarBotApi.HistoricalRatesParams;
 
 namespace DolarBot.Modules.Commands
 {

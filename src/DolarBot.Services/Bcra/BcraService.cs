@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using BcraValues = DolarBot.API.ApiCalls.DolarArgentinaApi.BcraValues;
+using BcraValues = DolarBot.API.ApiCalls.DolarBotApi.BcraValues;
 
 namespace DolarBot.Services.Bcra
 {
@@ -38,7 +38,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="RiesgoPaisResponse"/> object.</returns>
         public async Task<RiesgoPaisResponse> GetCountryRisk()
         {
-            return await Api.DolarArgentina.GetRiesgoPais().ConfigureAwait(false);
+            return await Api.DolarBot.GetRiesgoPais().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="BcraResponse"/> object.</returns>
         public async Task<BcraResponse> GetReserves()
         {
-            return await Api.DolarArgentina.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
+            return await Api.DolarBot.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="BcraResponse"/> object.</returns>
         public async Task<BcraResponse> GetCirculatingMoney()
         {
-            return await Api.DolarArgentina.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
+            return await Api.DolarBot.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace DolarBot.Services.Bcra
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             string riskImageUrl = Configuration.GetSection("images").GetSection("risk")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out double valor);
             string value;
             if (isNumber)
             {
@@ -109,7 +109,7 @@ namespace DolarBot.Services.Bcra
             string reservesImageUrl = Configuration.GetSection("images").GetSection("reserves")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
-            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out double valor);
             string text;
             if (isNumber)
             {
@@ -146,7 +146,7 @@ namespace DolarBot.Services.Bcra
             string reservesImageUrl = Configuration.GetSection("images").GetSection("money")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
-            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out double valor);
             string text;
             if (isNumber)
             {

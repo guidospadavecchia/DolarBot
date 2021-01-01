@@ -8,6 +8,7 @@ using RestSharp.Serializers.NewtonsoftJson;
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace DolarBot.API
@@ -28,7 +29,7 @@ namespace DolarBot.API
         private readonly ResponseCache cache;
 
         #region Apis        
-        public DolarArgentinaApi DolarArgentina { get; private set; }
+        public DolarBotApi DolarBot { get; private set; }
         #endregion
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace DolarBot.API
         {
             this.logger = logger;
             cache = new ResponseCache(configuration);
-            DolarArgentina = new DolarArgentinaApi(configuration, cache, LogError);
+            DolarBot = new DolarBotApi(configuration, cache, LogError);
         }
 
         /// <summary>
@@ -60,10 +61,11 @@ namespace DolarBot.API
         }
 
         [Description("https://github.com/guidospadavecchia/DolarBot-Api")]
-        public class DolarArgentinaApi
+        public class DolarBotApi
         {
             #region Constants
             private const string API_KEY_NAME = "DOLARBOT_APIKEY";
+            private const string ROOT_ENDPOINT = "/api/status";
 
             //Dólar
             private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolaroficial";
@@ -242,12 +244,12 @@ namespace DolarBot.API
             #endregion
 
             /// <summary>
-            /// Creats a <see cref="DolarArgentinaApi"/> object using the provided configuration, cache and error action.
+            /// Creats a <see cref="DolarBotApi"/> object using the provided configuration, cache and error action.
             /// </summary>
             /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
             /// <param name="cache">A cache of in-memory objects.</param>
             /// <param name="onError">An action to execute in case of error.</param>
-            internal DolarArgentinaApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
+            internal DolarBotApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
             {
                 Configuration = configuration;
                 Cache = cache;
@@ -264,10 +266,21 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Gets the <see cref="DolarArgentinaApi"/> current culture.
+            /// Gets the <see cref="DolarBotApi"/> current culture.
             /// </summary>
             /// <returns>A <see cref="CultureInfo"/> object that represents the API culture.</returns>
             public CultureInfo GetApiCulture() => CultureInfo.GetCultureInfo("en-US");
+
+            /// <summary>
+            /// Querys the API and returns its current status.
+            /// </summary>
+            /// <returns></returns>
+            public async Task<HttpStatusCode?> GetApiStatus()
+            {
+                RestRequest request = new RestRequest(ROOT_ENDPOINT);
+                var response = await Client.ExecuteGetAsync(request);
+                return response?.StatusCode;
+            }
 
             /// <summary>
             /// Querys an API endpoint asynchronously and returs its result.

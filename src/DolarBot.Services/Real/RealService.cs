@@ -11,7 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RealTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.RealTypes;
+using RealTypes = DolarBot.API.ApiCalls.DolarBotApi.RealTypes;
 
 namespace DolarBot.Services.Real
 {
@@ -100,7 +100,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealNacion()
         {
-            return await Api.DolarArgentina.GetRealPrice(RealTypes.Nacion).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealPrice(RealTypes.Nacion).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealBBVA()
         {
-            return await Api.DolarArgentina.GetRealPrice(RealTypes.BBVA).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealPrice(RealTypes.BBVA).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealChaco()
         {
-            return await Api.DolarArgentina.GetRealPrice(RealTypes.Chaco).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealPrice(RealTypes.Chaco).ConfigureAwait(false);
         }
 
         #endregion
@@ -154,8 +154,8 @@ namespace DolarBot.Services.Real
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 if (buyPrice != "?" || sellPrice != "?")
                 {
@@ -187,8 +187,8 @@ namespace DolarBot.Services.Real
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(realResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(realResponse.Fecha, localTimeZone).ToString(realResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle(embedTitle)

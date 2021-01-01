@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DollarTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarTypes;
+using DollarTypes = DolarBot.API.ApiCalls.DolarBotApi.DollarTypes;
 
 namespace DolarBot.Services.Dolar
 {
@@ -62,7 +62,7 @@ namespace DolarBot.Services.Dolar
             for (int i = 0; i < banks.Count; i++)
             {
                 DollarTypes dollarType = ConvertToDollarType(banks[i]);
-                tasks[i] = Api.DolarArgentina.GetDollarPrice(dollarType);
+                tasks[i] = Api.DolarBot.GetDollarPrice(dollarType);
             }
 
             return await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -79,7 +79,7 @@ namespace DolarBot.Services.Dolar
             for (int i = 0; i < banks.Count; i++)
             {
                 DollarTypes dollarType = ConvertToDollarType(banks[i]);
-                tasks[i] = Api.DolarArgentina.GetDollarPrice(dollarType);
+                tasks[i] = Api.DolarBot.GetDollarPrice(dollarType);
             }
 
             DolarResponse[] dolarResponses = await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -108,7 +108,7 @@ namespace DolarBot.Services.Dolar
         public async Task<DolarResponse> GetByBank(Banks bank)
         {
             DollarTypes dollarType = ConvertToDollarType(bank);
-            return await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarPrice(dollarType).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace DolarBot.Services.Dolar
         public async Task<DolarResponse> GetDollarAhorroByBank(Banks bank)
         {
             DollarTypes dollarType = ConvertToDollarType(bank);
-            DolarResponse dolarResponse = await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
+            DolarResponse dolarResponse = await Api.DolarBot.GetDollarPrice(dollarType).ConfigureAwait(false);
             dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
             if (dolarResponse != null)
             {
@@ -134,7 +134,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarOficial()
         {
-            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarAhorro()
         {
-            DolarResponse dolarResponse = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
+            DolarResponse dolarResponse = await Api.DolarBot.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
             dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
             if (dolarResponse != null)
             {
@@ -158,7 +158,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarBlue()
         {
-            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Blue).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarPrice(DollarTypes.Blue).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarPromedio()
         {
-            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Promedio).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarPrice(DollarTypes.Promedio).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarBolsa()
         {
-            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.Bolsa).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarPrice(DollarTypes.Bolsa).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DolarResponse"/>.</returns>
         public async Task<DolarResponse> GetDollarContadoConLiqui()
         {
-            return await Api.DolarArgentina.GetDollarPrice(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarPrice(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
         }
 
         #endregion
@@ -232,8 +232,8 @@ namespace DolarBot.Services.Dolar
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response.Type);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 if (buyPrice != "?" || sellPrice != "?")
                 {
@@ -264,8 +264,8 @@ namespace DolarBot.Services.Dolar
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(dollarResponse.Type);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(dollarResponse.Fecha, localTimeZone).ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle(embedTitle)

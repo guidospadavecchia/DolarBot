@@ -1,7 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
+using DolarBot.API;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
+using DolarBot.Services.Info;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
@@ -23,15 +25,26 @@ namespace DolarBot.Modules.Commands
     {
         #region Vars
         /// <summary>
+        /// Provides methods to retrieve information about euro rates.
+        /// </summary>
+        private readonly InfoService InfoService;
+        /// <summary>
         /// The log4net logger.
         /// </summary>
         private readonly ILog Logger;
         #endregion
 
         #region Constructor
-        public InfoModule(IConfiguration configuration, ILog logger) : base(configuration) 
+        /// <summary>
+        /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
+        /// </summary>
+        /// <param name="configuration">Provides access to application settings.</param>
+        /// <param name="api">Provides access to the different APIs.</param>
+        /// <param name="logger">The log4net logger.</param>
+        public InfoModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration) 
         {
             Logger = logger;
+            InfoService = new InfoService(configuration, api);
         }
         #endregion
 
@@ -225,6 +238,16 @@ namespace DolarBot.Modules.Commands
                 await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
                 Logger.Error("Error al ejecutar comando.", ex);
             }
+        }
+
+        [Command("status", RunMode = RunMode.Async)]
+        [Summary("Obtiene el estado actual del bot.")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetApiStatus()
+        {
+            string statusText = await InfoService.GetApiStatus();
+            EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, Context.Client.Latency);
+            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
     }
 }

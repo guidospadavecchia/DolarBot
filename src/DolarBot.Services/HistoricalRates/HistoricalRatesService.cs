@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarArgentinaApi.HistoricalRatesParams;
+using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarBotApi.HistoricalRatesParams;
 
 namespace DolarBot.Services.HistoricalRates
 {
@@ -41,7 +41,7 @@ namespace DolarBot.Services.HistoricalRates
         /// <returns>A single <see cref="HistoricalRatesResponse"/> object.</returns>
         public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParams historicalRateParam)
         {
-            return await Api.DolarArgentina.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
+            return await Api.DolarBot.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
         }
 
         #endregion
@@ -75,14 +75,14 @@ namespace DolarBot.Services.HistoricalRates
             {
                 HistoricalMonthlyRate month = monthlyRates.ElementAt(i);
                 string monthName = GlobalConfiguration.GetLocalCultureInfo().DateTimeFormat.GetMonthName(Convert.ToInt32(month.Mes)).Capitalize();
-                bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal monthRate);
+                bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal monthRate);
                 string monthRateText = monthRateIsNumeric ? monthRate.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 Emoji fieldEmoji = neutralEmoji;
                 if (i > 0)
                 {
                     HistoricalMonthlyRate previousMonth = monthlyRates.ElementAt(i - 1);
-                    bool previousMonthRateIsNumeric = decimal.TryParse(previousMonth.Valor, NumberStyles.Any, Api.DolarArgentina.GetApiCulture(), out decimal previousMonthRate);
+                    bool previousMonthRateIsNumeric = decimal.TryParse(previousMonth.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal previousMonthRate);
                     if (monthRateIsNumeric && previousMonthRateIsNumeric)
                     {
                         if (monthRate >= previousMonthRate)

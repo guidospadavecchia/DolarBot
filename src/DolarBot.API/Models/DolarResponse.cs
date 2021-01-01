@@ -1,7 +1,7 @@
 ﻿using DolarBot.API.Models.Base;
 using Newtonsoft.Json;
 using System;
-using DollarTypes = DolarBot.API.ApiCalls.DolarArgentinaApi.DollarTypes;
+using DollarTypes = DolarBot.API.ApiCalls.DolarBotApi.DollarTypes;
 
 namespace DolarBot.API.Models
 {

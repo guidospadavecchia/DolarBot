@@ -41,7 +41,7 @@ namespace DolarBot.Services.Base
             if (response != null)
             {
                 CurrencyResponse clonedResponse = response.Clone() as CurrencyResponse;
-                CultureInfo apiCulture = Api.DolarArgentina.GetApiCulture();
+                CultureInfo apiCulture = Api.DolarBot.GetApiCulture();
                 decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
                 if (decimal.TryParse(clonedResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
                 {

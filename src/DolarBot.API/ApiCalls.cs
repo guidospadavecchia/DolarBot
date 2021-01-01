@@ -63,6 +63,8 @@ namespace DolarBot.API
         public class DolarArgentinaApi
         {
             #region Constants
+            private const string API_KEY_NAME = "DOLARBOT_APIKEY";
+
             //Dólar
             private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolaroficial";
             private const string DOLAR_BLUE_ENDPOINT = "/api/dolarblue";
@@ -253,7 +255,8 @@ namespace DolarBot.API
 
                 Client = new RestClient(Configuration["apiUrl"]);
                 Client.UseNewtonsoftJson();
-
+                Client.AddDefaultHeader(API_KEY_NAME, !string.IsNullOrEmpty(Configuration["apiKey"]) ? Configuration["apiKey"] : Environment.GetEnvironmentVariable(API_KEY_NAME));
+                
                 if (int.TryParse(Configuration["apiRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
                 {
                     Client.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);

@@ -68,50 +68,50 @@ namespace DolarBot.API
             private const string ROOT_ENDPOINT = "/api/status";
 
             //Dólar
-            private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolaroficial";
-            private const string DOLAR_BLUE_ENDPOINT = "/api/dolarblue";
-            private const string DOLAR_CONTADO_LIQUI_ENDPOINT = "/api/contadoliqui";
-            private const string DOLAR_PROMEDIO_ENDPOINT = "/api/dolarpromedio";
-            private const string DOLAR_BOLSA_ENDPOINT = "/api/dolarbolsa";
-            private const string DOLAR_NACION_ENDPOINT = "/api/nacion";
-            private const string DOLAR_BBVA_ENDPOINT = "/api/bbva";
-            private const string DOLAR_PIANO_ENDPOINT = "/api/piano";
-            private const string DOLAR_HIPOTECARIO_ENDPOINT = "/api/hipotecario";
-            private const string DOLAR_GALICIA_ENDPOINT = "/api/galicia";
-            private const string DOLAR_SANTANDER_ENDPOINT = "/api/santander";
-            private const string DOLAR_CIUDAD_ENDPOINT = "/api/ciudad";
-            private const string DOLAR_SUPERVIELLE_ENDPOINT = "/api/supervielle";
-            private const string DOLAR_PATAGONIA_ENDPOINT = "/api/patagonia";
-            private const string DOLAR_COMAFI_ENDPOINT = "/api/comafi";
-            private const string DOLAR_BIND_ENDPOINT = "/api/bind";
-            private const string DOLAR_BANCOR_ENDPOINT = "/api/bancor";
-            private const string DOLAR_CHACO_ENDPOINT = "/api/chaco";
-            private const string DOLAR_PAMPA_ENDPOINT = "/api/pampa";
+            private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolar/oficial";
+            private const string DOLAR_BLUE_ENDPOINT = "/api/dolar/blue";
+            private const string DOLAR_CONTADO_LIQUI_ENDPOINT = "/api/dolar/contadoliqui";
+            private const string DOLAR_PROMEDIO_ENDPOINT = "/api/dolar/promedio";
+            private const string DOLAR_BOLSA_ENDPOINT = "/api/dolar/bolsa";
+            private const string DOLAR_NACION_ENDPOINT = "/api/dolar/bancos/nacion";
+            private const string DOLAR_BBVA_ENDPOINT = "/api/dolar/bancos/bbva";
+            private const string DOLAR_PIANO_ENDPOINT = "/api/dolar/bancos/piano";
+            private const string DOLAR_HIPOTECARIO_ENDPOINT = "/api/dolar/bancos/hipotecario";
+            private const string DOLAR_GALICIA_ENDPOINT = "/api/dolar/bancos/galicia";
+            private const string DOLAR_SANTANDER_ENDPOINT = "/api/dolar/bancos/santander";
+            private const string DOLAR_CIUDAD_ENDPOINT = "/api/dolar/bancos/ciudad";
+            private const string DOLAR_SUPERVIELLE_ENDPOINT = "/api/dolar/bancos/supervielle";
+            private const string DOLAR_PATAGONIA_ENDPOINT = "/api/dolar/bancos/patagonia";
+            private const string DOLAR_COMAFI_ENDPOINT = "/api/dolar/bancos/comafi";
+            private const string DOLAR_BIND_ENDPOINT = "/api/dolar/bancos/bind";
+            private const string DOLAR_BANCOR_ENDPOINT = "/api/dolar/bancos/bancor";
+            private const string DOLAR_CHACO_ENDPOINT = "/api/dolar/bancos/chaco";
+            private const string DOLAR_PAMPA_ENDPOINT = "/api/dolar/bancos/pampa";
 
             //Euro
-            private const string EURO_NACION_ENDPOINT = "/api/euro/nacion";
-            private const string EURO_GALICIA_ENDPOINT = "/api/euro/galicia";
-            private const string EURO_BBVA_ENDPOINT = "/api/euro/bbva";
-            private const string EURO_HIPOTECARIO_ENDPOINT = "/api/euro/hipotecario";
-            private const string EURO_CHACO_ENDPOINT = "/api/euro/chaco";
-            private const string EURO_PAMPA_ENDPOINT = "/api/euro/pampa";
+            private const string EURO_NACION_ENDPOINT = "/api/euro/bancos/nacion";
+            private const string EURO_GALICIA_ENDPOINT = "/api/euro/bancos/galicia";
+            private const string EURO_BBVA_ENDPOINT = "/api/euro/bancos/bbva";
+            private const string EURO_HIPOTECARIO_ENDPOINT = "/api/euro/bancos/hipotecario";
+            private const string EURO_CHACO_ENDPOINT = "/api/euro/bancos/chaco";
+            private const string EURO_PAMPA_ENDPOINT = "/api/euro/bancos/pampa";
 
             //Real
-            private const string REAL_NACION_ENDPOINT = "/api/real/nacion";
-            private const string REAL_BBVA_ENDPOINT = "/api/real/bbva";
-            private const string REAL_CHACO_ENDPOINT = "/api/real/chaco";
+            private const string REAL_NACION_ENDPOINT = "/api/real/bancos/nacion";
+            private const string REAL_BBVA_ENDPOINT = "/api/real/bancos/bbva";
+            private const string REAL_CHACO_ENDPOINT = "/api/real/bancos/chaco";
 
             //BCRA
             private const string RESERVAS_ENDPOINT = "/api/bcra/reservas";
             private const string CIRCULANTE_ENDPOINT = "/api/bcra/circulante";
-            private const string RIESGO_PAIS_ENDPOINT = "/api/riesgopais";
+            private const string RIESGO_PAIS_ENDPOINT = "/api/bcra/riesgopais";
             private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
 
             //Historical Rates
-            private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolaroficial";
-            private const string EVOLUCION_DOLAR_BLUE_ENDPOINT = "/api/evolucion/dolarblue";
-            private const string EVOLUCION_EURO_OFICIAL_ENDPOINT = "/api/evolucion/eurooficial";
-            private const string EVOLUCION_REAL_OFICIAL_ENDPOINT = "/api/evolucion/realoficial";
+            private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolar/oficial";
+            private const string EVOLUCION_DOLAR_BLUE_ENDPOINT = "/api/evolucion/dolar/blue";
+            private const string EVOLUCION_EURO_OFICIAL_ENDPOINT = "/api/evolucion/euro/oficial";
+            private const string EVOLUCION_REAL_OFICIAL_ENDPOINT = "/api/evolucion/real/oficial";
             #endregion
 
             #region Vars

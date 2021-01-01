@@ -3,7 +3,7 @@
 </p>
   
 <p align="center">
-<i>El bot argentino de Discord para ver las cotizaciones del dólar, euro, real, indicadores y más!.</i>  
+<i>El bot argentino de Discord para ver las cotizaciones del dólar, euro, real, indicadores y más!</i>  
 </p>  
 
 ***    

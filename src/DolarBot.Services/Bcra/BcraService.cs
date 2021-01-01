@@ -87,7 +87,7 @@ namespace DolarBot.Services.Bcra
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Riesgo País")
-                                                   .WithDescription($"Valor del {Format.Bold("riesgo país")} argentino.".AppendLineBreak())
+                                                   .WithDescription($"Valor del {Format.Bold("riesgo país")} de la República Argentina.".AppendLineBreak())
                                                    .WithThumbnailUrl(riskImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {

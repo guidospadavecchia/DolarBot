@@ -82,7 +82,7 @@ A continuación se listan los comandos disponibles:
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
 - [guidospadavecchia/DolarBot-Api](https://github.com/guidospadavecchia/DolarBot-Api)
-- [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive) (fork de [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive))
+- [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive)
 - [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 
 ## Contribuciones

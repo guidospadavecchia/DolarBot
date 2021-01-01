@@ -13,7 +13,7 @@
 [![Release](https://img.shields.io/github/v/release/guidospadavecchia/DolarBot?&label=version&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/releases/latest)
 [![API](https://img.shields.io/github/package-json/v/guidospadavecchia/DolarBot-Api?color=teal&label=api&style=flat-square)](https://dolarbot-api.herokuapp.com/)
 [![Invite](https://img.shields.io/badge/Discord-invitar-7289DA)](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot)
-[![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Discord%20Support%20Server&style=flat-square)](https://discord.gg/tCkbjuM)
+[![Discord](https://img.shields.io/discord/752312522769694780?color=7289DA&label=Support%20Server&style=flat-square)](https://discord.gg/tCkbjuM)
 [![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)  
 
 ## Descripción  

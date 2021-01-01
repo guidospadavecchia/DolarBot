@@ -24,10 +24,6 @@ namespace DolarBot.Modules.Commands
     [HelpTitle("Cotizaciones del Real")]
     public class RealModule : BaseInteractiveModule
     {
-        #region Constants
-        private const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
-        #endregion
-
         #region Vars
         /// <summary>
         /// Provides methods to retrieve information about real rates.

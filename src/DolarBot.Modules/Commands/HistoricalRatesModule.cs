@@ -23,10 +23,6 @@ namespace DolarBot.Modules.Commands
     [HelpTitle("Evolución Anual")]
     public class HistoricalRatesModule : BaseInteractiveModule
     {
-        #region Constants
-        private const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización. Intente nuevamente en más tarde.";
-        #endregion
-
         #region Vars
         /// <summary>
         /// Provides methods to retrieve information about historical rates.

@@ -121,7 +121,10 @@ namespace DolarBot.Services.Dolar
             DollarTypes dollarType = ConvertToDollarType(bank);
             DolarResponse dolarResponse = await Api.DolarArgentina.GetDollarPrice(dollarType).ConfigureAwait(false);
             dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
-            dolarResponse.Type = DollarTypes.Ahorro;
+            if (dolarResponse != null)
+            {
+                dolarResponse.Type = DollarTypes.Ahorro;
+            }
             return dolarResponse;
         }
 
@@ -142,7 +145,10 @@ namespace DolarBot.Services.Dolar
         {
             DolarResponse dolarResponse = await Api.DolarArgentina.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
             dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
-            dolarResponse.Type = DollarTypes.Ahorro;
+            if (dolarResponse != null)
+            {
+                dolarResponse.Type = DollarTypes.Ahorro;
+            }
             return dolarResponse;
         }
 

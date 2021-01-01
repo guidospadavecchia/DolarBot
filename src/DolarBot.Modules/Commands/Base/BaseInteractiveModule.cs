@@ -9,6 +9,10 @@ namespace DolarBot.Modules.Commands.Base
     /// </summary>
     public class BaseInteractiveModule : InteractiveBase<SocketCommandContext>
     {
+        #region Constants
+        protected const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización ya que el servicio se encuentra inaccesible. Intente nuevamente en más tarde.";
+        #endregion
+
         #region Vars
         /// <summary>
         /// Provides access to application settings.

@@ -20,10 +20,6 @@ namespace DolarBot.Modules.Commands
     [HelpTitle("Indicadores BCRA")]
     public class BcraModule : BaseInteractiveModule
     {
-        #region Constants
-        private const string REQUEST_ERROR_MESSAGE = "Error: No se pudo obtener el valor solicitado. Intente nuevamente en más tarde.";
-        #endregion
-
         #region Vars
         /// <summary>
         /// Provides methods to retrieve information about BCRA rates and values.

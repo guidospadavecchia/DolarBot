@@ -69,6 +69,7 @@ A continuación se listan los comandos disponibles:
 - \[`$ping`]: Muestra la latencia del bot de Discord.  
 - \[`$invite` | `$invitar`]: Devuelve el link de invitación del bot en Discord.  
 - \[`$bot`]: Muestra información acerca del bot.  
+- \[`$status`]: Muestra el estado actual del bot y sus servicios.  
 - \[`$votar` | `$vote`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
 
 ### Otros
@@ -80,8 +81,8 @@ A continuación se listan los comandos disponibles:
 ## Librerías y APIS
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
+- [guidospadavecchia/DolarBot-Api](https://github.com/guidospadavecchia/DolarBot-Api)
 - [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive) (fork de [PassiveModding/Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive))
-- [Castrogiovanni20/api-dolar-argentina](https://github.com/Castrogiovanni20/api-dolar-argentina)
 - [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 
 ## Contribuciones
@@ -95,7 +96,7 @@ También podes impulsar su avance y mantenimiento con una [pequeña contribució
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  
 
 ## Licencia
-**DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/SteamBuddy/blob/master/LICENSE).
+**DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE).
 
 ## 
 <p align="center">

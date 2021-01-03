@@ -382,12 +382,12 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="RiesgoPaisResponse"/> object.
+            /// Querys the API endpoint asynchronously and returns a <see cref="CountryRiskResponse"/> object.
             /// </summary>
-            /// <returns>A task that contains a normalized <see cref="RiesgoPaisResponse"/> object.</returns>
-            public async Task<RiesgoPaisResponse> GetRiesgoPais()
+            /// <returns>A task that contains a normalized <see cref="CountryRiskResponse"/> object.</returns>
+            public async Task<CountryRiskResponse> GetRiesgoPais()
             {
-                RiesgoPaisResponse cachedResponse = Cache.GetObject<RiesgoPaisResponse>(RIESGO_PAIS_CACHE_KEY);
+                CountryRiskResponse cachedResponse = Cache.GetObject<CountryRiskResponse>(RIESGO_PAIS_CACHE_KEY);
                 if (cachedResponse != null)
                 {
                     return cachedResponse;
@@ -395,7 +395,7 @@ namespace DolarBot.API
                 else
                 {
                     RestRequest request = new RestRequest(RIESGO_PAIS_ENDPOINT, DataFormat.Json);
-                    IRestResponse<RiesgoPaisResponse> response = await Client.ExecuteGetAsync<RiesgoPaisResponse>(request).ConfigureAwait(false);
+                    IRestResponse<CountryRiskResponse> response = await Client.ExecuteGetAsync<CountryRiskResponse>(request).ConfigureAwait(false);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);

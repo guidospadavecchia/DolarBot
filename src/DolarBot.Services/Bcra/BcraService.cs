@@ -35,8 +35,8 @@ namespace DolarBot.Services.Bcra
         /// <summary>
         /// Fetches the country-risk rate.
         /// </summary>
-        /// <returns>A <see cref="RiesgoPaisResponse"/> object.</returns>
-        public async Task<RiesgoPaisResponse> GetCountryRisk()
+        /// <returns>A <see cref="CountryRiskResponse"/> object.</returns>
+        public async Task<CountryRiskResponse> GetCountryRisk()
         {
             return await Api.DolarBot.GetRiesgoPais().ConfigureAwait(false);
         }
@@ -64,11 +64,11 @@ namespace DolarBot.Services.Bcra
         #region Embeds
 
         /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for a <see cref="RiesgoPaisResponse"/>.
+        /// Creates an <see cref="EmbedBuilder"/> object for a <see cref="CountryRiskResponse"/>.
         /// </summary>
         /// <param name="riesgoPaisResponse">The Riesgo Pais response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateCountryRiskEmbed(RiesgoPaisResponse riesgoPaisResponse)
+        public EmbedBuilder CreateCountryRiskEmbed(CountryRiskResponse riesgoPaisResponse)
         {
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             string riskImageUrl = Configuration.GetSection("images").GetSection("risk")["64"];

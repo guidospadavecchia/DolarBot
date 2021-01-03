@@ -57,7 +57,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RiesgoPaisResponse result = await BcraService.GetCountryRisk().ConfigureAwait(false);
+                    CountryRiskResponse result = await BcraService.GetCountryRisk().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = BcraService.CreateCountryRiskEmbed(result);

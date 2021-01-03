@@ -6,7 +6,7 @@ using DollarTypes = DolarBot.API.ApiCalls.DolarBotApi.DollarTypes;
 namespace DolarBot.API.Models
 {
     [Serializable]
-    public class DolarResponse : CurrencyResponse
+    public class DollarResponse : CurrencyResponse
     {
         [JsonIgnore]
         public DollarTypes Type { get; set; }

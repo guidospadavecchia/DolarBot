@@ -54,11 +54,11 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches all oficial dollar rates from <see cref="Banks"/>.
         /// </summary>
-        /// <returns>An array of <see cref="DolarResponse"/> objects.</returns>
-        public async Task<DolarResponse[]> GetAllBankRates()
+        /// <returns>An array of <see cref="DollarResponse"/> objects.</returns>
+        public async Task<DollarResponse[]> GetAllBankRates()
         {
             List<Banks> banks = Enum.GetValues(typeof(Banks)).Cast<Banks>().Where(b => b != Banks.Bancos).ToList();
-            Task<DolarResponse>[] tasks = new Task<DolarResponse>[banks.Count];
+            Task<DollarResponse>[] tasks = new Task<DollarResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {
                 DollarTypes dollarType = ConvertToDollarType(banks[i]);
@@ -71,26 +71,26 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches all Ahorro dollar rates from <see cref="Banks"/>.
         /// </summary>
-        /// <returns>An array of <see cref="DolarResponse"/> objects.</returns>
-        public async Task<DolarResponse[]> GetAllAhorroBankRates()
+        /// <returns>An array of <see cref="DollarResponse"/> objects.</returns>
+        public async Task<DollarResponse[]> GetAllAhorroBankRates()
         {
             List<Banks> banks = Enum.GetValues(typeof(Banks)).Cast<Banks>().Where(b => b != Banks.Bancos).ToList();
-            Task<DolarResponse>[] tasks = new Task<DolarResponse>[banks.Count];
+            Task<DollarResponse>[] tasks = new Task<DollarResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {
                 DollarTypes dollarType = ConvertToDollarType(banks[i]);
                 tasks[i] = Api.DolarBot.GetDollarPrice(dollarType);
             }
 
-            DolarResponse[] dolarResponses = await Task.WhenAll(tasks).ConfigureAwait(false);
-            return dolarResponses.Select(x => (DolarResponse)ApplyTaxes(x)).ToArray();
+            DollarResponse[] dolarResponses = await Task.WhenAll(tasks).ConfigureAwait(false);
+            return dolarResponses.Select(x => (DollarResponse)ApplyTaxes(x)).ToArray();
         }
 
         /// <summary>
         /// Fetches all available dollar prices.
         /// </summary>
-        /// <returns>An array of <see cref="DolarResponse"/> objects.</returns>
-        public async Task<DolarResponse[]> GetAllDollarRates()
+        /// <returns>An array of <see cref="DollarResponse"/> objects.</returns>
+        public async Task<DollarResponse[]> GetAllDollarRates()
         {
             return await Task.WhenAll(GetDollarOficial(),
                                       GetDollarAhorro(),
@@ -104,8 +104,8 @@ namespace DolarBot.Services.Dolar
         /// Fetches the official dollar rate for the specified bank.
         /// </summary>
         /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetByBank(Banks bank)
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetByBank(Banks bank)
         {
             DollarTypes dollarType = ConvertToDollarType(bank);
             return await Api.DolarBot.GetDollarPrice(dollarType).ConfigureAwait(false);
@@ -115,12 +115,12 @@ namespace DolarBot.Services.Dolar
         /// Fetches the dollar Ahorro rate for the specified bank.
         /// </summary>
         /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarAhorroByBank(Banks bank)
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarAhorroByBank(Banks bank)
         {
             DollarTypes dollarType = ConvertToDollarType(bank);
-            DolarResponse dolarResponse = await Api.DolarBot.GetDollarPrice(dollarType).ConfigureAwait(false);
-            dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
+            DollarResponse dolarResponse = await Api.DolarBot.GetDollarPrice(dollarType).ConfigureAwait(false);
+            dolarResponse = (DollarResponse)ApplyTaxes(dolarResponse);
             if (dolarResponse != null)
             {
                 dolarResponse.Type = DollarTypes.Ahorro;
@@ -131,8 +131,8 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches the price for dollar Oficial.
         /// </summary>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarOficial()
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarOficial()
         {
             return await Api.DolarBot.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
         }
@@ -140,11 +140,11 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches the price for dollar Ahorro.
         /// </summary>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarAhorro()
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarAhorro()
         {
-            DolarResponse dolarResponse = await Api.DolarBot.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
-            dolarResponse = (DolarResponse)ApplyTaxes(dolarResponse);
+            DollarResponse dolarResponse = await Api.DolarBot.GetDollarPrice(DollarTypes.Oficial).ConfigureAwait(false);
+            dolarResponse = (DollarResponse)ApplyTaxes(dolarResponse);
             if (dolarResponse != null)
             {
                 dolarResponse.Type = DollarTypes.Ahorro;
@@ -155,8 +155,8 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches the price for dollar Blue.
         /// </summary>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarBlue()
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarBlue()
         {
             return await Api.DolarBot.GetDollarPrice(DollarTypes.Blue).ConfigureAwait(false);
         }
@@ -164,8 +164,8 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches the price for dollar Promedio.
         /// </summary>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarPromedio()
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarPromedio()
         {
             return await Api.DolarBot.GetDollarPrice(DollarTypes.Promedio).ConfigureAwait(false);
         }
@@ -173,8 +173,8 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches the price for dollar Bolsa.
         /// </summary>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarBolsa()
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarBolsa()
         {
             return await Api.DolarBot.GetDollarPrice(DollarTypes.Bolsa).ConfigureAwait(false);
         }
@@ -182,8 +182,8 @@ namespace DolarBot.Services.Dolar
         /// <summary>
         /// Fetches the price for dollar Contado con Liquidación.
         /// </summary>
-        /// <returns>A single <see cref="DolarResponse"/>.</returns>
-        public async Task<DolarResponse> GetDollarContadoConLiqui()
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarContadoConLiqui()
         {
             return await Api.DolarBot.GetDollarPrice(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
         }
@@ -197,7 +197,7 @@ namespace DolarBot.Services.Dolar
         /// </summary>
         /// <param name="dollarResponses">The dollar responses to show.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses)
+        public EmbedBuilder CreateDollarEmbed(DollarResponse[] dollarResponses)
         {
             string dollarImageUrl = Configuration.GetSection("images").GetSection("dollar")["64"];
             return CreateDollarEmbed(dollarResponses, $"Cotizaciones disponibles del {Format.Bold("dólar")} expresadas en {Format.Bold("pesos argentinos")}.", dollarImageUrl);
@@ -210,7 +210,7 @@ namespace DolarBot.Services.Dolar
         /// <param name="description">The embed's description.</param>
         /// <param name="thumbnailUrl">The URL of the embed's thumbnail image.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateDollarEmbed(DolarResponse[] dollarResponses, string description, string thumbnailUrl)
+        public EmbedBuilder CreateDollarEmbed(DollarResponse[] dollarResponses, string description, string thumbnailUrl)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
@@ -228,7 +228,7 @@ namespace DolarBot.Services.Dolar
 
             for (int i = 0; i < dollarResponses.Length; i++)
             {
-                DolarResponse response = dollarResponses[i];
+                DollarResponse response = dollarResponses[i];
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response.Type);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
@@ -256,7 +256,7 @@ namespace DolarBot.Services.Dolar
         /// <param name="title">Optional. The embed's title.</param>
         /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateDollarEmbed(DolarResponse dollarResponse, string description, string title = null, string thumbnailUrl = null)
+        public EmbedBuilder CreateDollarEmbed(DollarResponse dollarResponse, string description, string title = null, string thumbnailUrl = null)
         {
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();

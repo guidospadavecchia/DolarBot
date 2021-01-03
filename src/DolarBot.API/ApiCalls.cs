@@ -286,10 +286,10 @@ namespace DolarBot.API
             /// Querys an API endpoint asynchronously and returs its result.
             /// </summary>
             /// <param name="type">The type of dollar (endpoint) to query.</param>
-            /// <returns>A task that contains a normalized <see cref="DolarResponse"/> object.</returns>
-            public async Task<DolarResponse> GetDollarPrice(DollarTypes type)
+            /// <returns>A task that contains a normalized <see cref="DollarResponse"/> object.</returns>
+            public async Task<DollarResponse> GetDollarPrice(DollarTypes type)
             {
-                DolarResponse cachedResponse = Cache.GetObject<DolarResponse>(type);
+                DollarResponse cachedResponse = Cache.GetObject<DollarResponse>(type);
                 if (cachedResponse != null)
                 {
                     return cachedResponse;
@@ -298,10 +298,10 @@ namespace DolarBot.API
                 {
                     string endpoint = type.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<DolarResponse> response = await Client.ExecuteGetAsync<DolarResponse>(request).ConfigureAwait(false);
+                    IRestResponse<DollarResponse> response = await Client.ExecuteGetAsync<DollarResponse>(request).ConfigureAwait(false);
                     if (response.IsSuccessful)
                     {
-                        DolarResponse dolarResponse = response.Data;
+                        DollarResponse dolarResponse = response.Data;
                         dolarResponse.Type = type;
                         Cache.SaveObject(type, dolarResponse);
 

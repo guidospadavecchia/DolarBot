@@ -155,6 +155,18 @@ namespace DolarBot.Util
             /// </summary>
             public static readonly Color Real = new Color(255, 218, 68);
             /// <summary>
+            /// The color for Gold-related commands.
+            /// </summary>
+            public static readonly Color Gold = new Color(255, 193, 7);
+            /// <summary>
+            /// The color for Silver-related commands.
+            /// </summary>
+            public static readonly Color Silver = new Color(197, 197, 197);
+            /// <summary>
+            /// The color for Copper-related commands.
+            /// </summary>
+            public static readonly Color Copper = new Color(172, 124, 2);
+            /// <summary>
             /// The color for help-related commands.
             /// </summary>
             public static readonly Color Help = Color.Blue;

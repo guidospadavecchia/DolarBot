@@ -19,7 +19,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains information related commands.
     /// </summary>
-    [HelpOrder(7)]
+    [HelpOrder(99)]
     [HelpTitle("Información")]
     public class InfoModule : BaseInteractiveModule
     {

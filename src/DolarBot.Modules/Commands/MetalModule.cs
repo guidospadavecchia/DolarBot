@@ -4,7 +4,7 @@ using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
-using DolarBot.Services.Bcra;
+using DolarBot.Services.Metals;
 using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -14,17 +14,17 @@ using System.Threading.Tasks;
 namespace DolarBot.Modules.Commands
 {
     /// <summary>
-    /// Contains the BCRA (Argentine Republic Central Bank) related commands.
+    /// Contains precious metal related commands.
     /// </summary>
-    [HelpOrder(5)]
-    [HelpTitle("Indicadores BCRA")]
-    public class BcraModule : BaseInteractiveModule
+    [HelpOrder(4)]
+    [HelpTitle("Metales")]
+    public class MetalModule : BaseInteractiveModule
     {
         #region Vars
         /// <summary>
         /// Provides methods to retrieve information about BCRA rates and values.
         /// </summary>
-        private readonly BcraService BcraService;
+        private readonly MetalService MetalService;
 
         /// <summary>
         /// The log4net logger.
@@ -39,28 +39,26 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public BcraModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
+        public MetalModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
         {
             Logger = logger;
-            BcraService = new BcraService(configuration, api);
+            MetalService = new MetalService(configuration, api);
         }
         #endregion
 
-        [Command("riesgopais", RunMode = RunMode.Async)]
-        [Alias("rp")]
-        [Summary("Muestra el valor del riesgo país.")]
-        [HelpUsageExample(false, "$riesgopais", "$rp")]
+        [Command("oro", RunMode = RunMode.Async)]
+        [Summary("Muestra la cotización internacional del oro.")]
         [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetRiesgoPaisValueAsync()
+        public async Task GetGoldPriceAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CountryRiskResponse result = await BcraService.GetCountryRisk().ConfigureAwait(false);
+                    MetalResponse result = await MetalService.GetGoldPrice().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = BcraService.CreateCountryRiskEmbed(result);
+                        EmbedBuilder embed = MetalService.CreateMetalEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -76,21 +74,19 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("reservas", RunMode = RunMode.Async)]
-        [Alias("rs")]
-        [Summary("Muestra las reservas de dólares del Banco Central a la fecha.")]
-        [HelpUsageExample(false, "$reservas", "$rs")]
+        [Command("plata", RunMode = RunMode.Async)]
+        [Summary("Muestra la cotización internacional de la plata.")]
         [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetReservasAsync()
+        public async Task GetSilverPriceAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    BcraResponse result = await BcraService.GetReserves().ConfigureAwait(false);
+                    MetalResponse result = await MetalService.GetSilverPrice().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = BcraService.CreateReservesEmbed(result);
+                        EmbedBuilder embed = MetalService.CreateMetalEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -106,21 +102,19 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("circulante", RunMode = RunMode.Async)]
-        [Alias("c")]
-        [Summary("Muestra la cantidad total de pesos en circulación a la fecha.")]
-        [HelpUsageExample(false, "$circulante", "$c")]
+        [Command("cobre", RunMode = RunMode.Async)]
+        [Summary("Muestra la cotización internacional del cobre.")]
         [RateLimit(1, 5, Measure.Seconds)]
-        public async Task GetCirculanteAsync()
+        public async Task GetCopperPriceAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    BcraResponse result = await BcraService.GetCirculatingMoney().ConfigureAwait(false);
+                    MetalResponse result = await MetalService.GetCopperPrice().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = BcraService.CreateCirculatingMoneyEmbed(result);
+                        EmbedBuilder embed = MetalService.CreateMetalEmbed(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

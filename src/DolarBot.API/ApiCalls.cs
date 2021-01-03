@@ -107,6 +107,11 @@ namespace DolarBot.API
             private const string RIESGO_PAIS_ENDPOINT = "/api/bcra/riesgopais";
             private const string RIESGO_PAIS_CACHE_KEY = "RiesgoPais";
 
+            //Metales
+            private const string ORO_ENDPOINT = "/api/metales/oro";
+            private const string PLATA_ENDPOINT = "/api/metales/plata";
+            private const string COBRE_ENDPOINT = "/api/metales/cobre";
+
             //Historical Rates
             private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolar/oficial";
             private const string EVOLUCION_DOLAR_BLUE_ENDPOINT = "/api/evolucion/dolar/blue";
@@ -225,6 +230,19 @@ namespace DolarBot.API
                 Reservas,
                 [Description(CIRCULANTE_ENDPOINT)]
                 Circulante
+            }
+
+            /// <summary>
+            /// Represents the different API endpoints for BCRA values.
+            /// </summary>
+            public enum Metals
+            {
+                [Description(ORO_ENDPOINT)]
+                Gold,
+                [Description(PLATA_ENDPOINT)]
+                Silver,
+                [Description(COBRE_ENDPOINT)]
+                Copper
             }
 
             /// <summary>
@@ -429,6 +447,38 @@ namespace DolarBot.API
                     {
                         Cache.SaveObject(bcraValue, response.Data);
                         return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys the API endpoint asynchronously and returns a <see cref="MetalResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="MetalResponse"/> object.</returns>
+            public async Task<MetalResponse> GetMetalPrice(Metals metal)
+            {
+                MetalResponse cachedResponse = Cache.GetObject<MetalResponse>(metal);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = metal.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<MetalResponse> response = await Client.ExecuteGetAsync<MetalResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        MetalResponse metalResponse = response.Data;
+                        metalResponse.Type = metal;
+                        Cache.SaveObject(metal, metalResponse);
+
+                        return metalResponse;
                     }
                     else
                     {

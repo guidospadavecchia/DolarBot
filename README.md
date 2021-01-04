@@ -17,8 +17,8 @@
 [![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)  
 
 ## Descripción  
-**DolarBot** te permite ver todas las cotizaciones del dólar, Euro, Real y distintos indicadores económicos como riesgo país, reservas del BCRA y otros, en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
-La cantidad de comandos que puede ejecutar cada usuario está limitada a **1 comando cada 5 segundos**, ayudando a evitar problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema temporal.
+**DolarBot** te permite ver todas las cotizaciones del **Dólar**, **Euro**, **Real**, metales preciosos, criptomonedas, indicadores económicos como riesgo país, reservas del BCRA y mucho más, en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
+La cantidad de comandos que puede ejecutar cada usuario está limitada a **1 comando cada 5 segundos**, ayudando a evitar sobrecargas que lleven a problemas de performance. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún problema temporal ajeno al mismo.
 
 ## Discord
 Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
@@ -36,7 +36,7 @@ A continuación se listan los comandos disponibles:
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
 - \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos`).  
-- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial del Banco Nación.  
+- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial.  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar ahorro (dólar oficial más impuesto P.A.I.S. y retención de ganancias).  
 - \[`$dolarahorro` | `$da`] `<banco>`: Muestra la cotización del dólar ahorro para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
@@ -55,6 +55,20 @@ A continuación se listan los comandos disponibles:
 - \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco puntual (Ver `$bancos real`).  
 - \[`$realahorro` | `$ra`]: Muestra todas las cotizaciones del Real ahorro para los bancos disponibles (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
 - \[`$realahorro` | `$ra`] `<banco>`: Muestra la cotización del Real ahorro para un banco puntual (Ver `$bancos real`).  
+
+### Metales
+- \[`$oro`]: Muestra la cotización internacional del Oro.  
+- \[`$plata`]: Muestra la cotización internacional de la Plata.  
+- \[`$cobre`]: Muestra la cotización internacional del Cobre.  
+
+### Criptomonedas
+- \[`$bitcoin` | `$btc`]: Muestra la cotización del **Bitcoin (BTC)** en pesos y dólares.  
+- \[`$bitcoincash` | `$bch`]: Muestra la cotización del **Bitcoin Cash (BCH)** en pesos y dólares.  
+- \[`$ethereum` | `$eth`]: Muestra la cotización del **Ethereum (ETH)** en pesos y dólares.  
+- \[`$dash`]: Muestra la cotización del **Dash (DASH)** en pesos y dólares.  
+- \[`$litecoin` | `$ltc`]: Muestra la cotización del **Litecoin (LTC)** en pesos y dólares.  
+- \[`$monero` | `$xmr`]: Muestra la cotización del **Monero (XMR)** en pesos y dólares.  
+- \[`$ripple` | `$xrp`]: Muestra la cotización del **Ripple (XRP)** en pesos y dólares.  
 
 ### Indicadores
 - \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  

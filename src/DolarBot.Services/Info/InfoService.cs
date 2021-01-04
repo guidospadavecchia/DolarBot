@@ -83,7 +83,7 @@ namespace DolarBot.Services.Info
                      .WithDescription($"Estado general del bot".AppendLineBreak())
                      .AddField("DolarBot", $"{okEmoji} {Format.Bold(API_STATUS_OK)}".AppendLineBreak())
                      .AddField("DolarBot API", $"{apiStatusEmoji} {Format.Bold(apiStatus)}".AppendLineBreak())
-                     .AddField("Discord Gateway", $"{discordStatusEmoji} {Format.Bold(discordStatus)}")
+                     .AddField("Discord Gateway", $"{discordStatusEmoji} {Format.Bold(discordStatus)}".AppendLineBreak())
                      .WithCurrentTimestamp();
 
             return embed;

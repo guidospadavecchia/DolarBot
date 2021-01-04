@@ -45,7 +45,7 @@ namespace DolarBot.Services.Base
                 decimal taxPercent = (decimal.Parse(Configuration["taxPercent"]) / 100) + 1;
                 if (decimal.TryParse(clonedResponse.Venta, NumberStyles.Any, apiCulture, out decimal venta))
                 {
-                    clonedResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("F2", apiCulture);
+                    clonedResponse.Venta = Convert.ToDecimal(venta * taxPercent, apiCulture).ToString("N2", apiCulture);
                 }
 
                 return clonedResponse;

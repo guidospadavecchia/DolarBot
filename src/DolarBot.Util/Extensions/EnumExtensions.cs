@@ -27,5 +27,17 @@ namespace DolarBot.Util.Extensions
                 return source.ToString();
             }
         }
+
+        /// <summary>
+        /// Retrieves the current enum's specified attribute and, if found, returns it.
+        /// </summary>
+        /// <typeparam name="T">The attribute's type.</typeparam>
+        /// <param name="source">The current enum's value.</param>
+        /// <returns>The enum's attribute if found, otherwise null.</returns>
+        public static T GetAttribute<T>(this Enum source) where T : Attribute
+        {
+            FieldInfo fi = source.GetType().GetField(source.ToString());
+            return fi.GetCustomAttribute<T>(false);
+        }
     }
 }

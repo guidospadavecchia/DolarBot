@@ -147,26 +147,6 @@ namespace DolarBot.Util
             /// </summary>
             public static readonly Color Main = new Color(40, 150, 75);
             /// <summary>
-            /// The color for Euro-related commands.
-            /// </summary>
-            public static readonly Color Euro = new Color(43, 71, 157);
-            /// <summary>
-            /// The color for Real-related commands.
-            /// </summary>
-            public static readonly Color Real = new Color(255, 218, 68);
-            /// <summary>
-            /// The color for Gold-related commands.
-            /// </summary>
-            public static readonly Color Gold = new Color(255, 193, 7);
-            /// <summary>
-            /// The color for Silver-related commands.
-            /// </summary>
-            public static readonly Color Silver = new Color(197, 197, 197);
-            /// <summary>
-            /// The color for Copper-related commands.
-            /// </summary>
-            public static readonly Color Copper = new Color(172, 124, 2);
-            /// <summary>
             /// The color for help-related commands.
             /// </summary>
             public static readonly Color Help = Color.Blue;
@@ -174,6 +154,54 @@ namespace DolarBot.Util
             /// The color for information-related commands.
             /// </summary>
             public static readonly Color Info = new Color(23, 99, 154);
+            /// <summary>
+            /// The color for Euro.
+            /// </summary>
+            public static readonly Color Euro = new Color(43, 71, 157);
+            /// <summary>
+            /// The color for Real.
+            /// </summary>
+            public static readonly Color Real = new Color(255, 218, 68);
+            /// <summary>
+            /// The color for Gold.
+            /// </summary>
+            public static readonly Color Gold = new Color(255, 193, 7);
+            /// <summary>
+            /// The color for Silver.
+            /// </summary>
+            public static readonly Color Silver = new Color(197, 197, 197);
+            /// <summary>
+            /// The color for Copper.
+            /// </summary>
+            public static readonly Color Copper = new Color(172, 124, 2);
+            /// <summary>
+            /// The color for Bitcoin.
+            /// </summary>
+            public static readonly Color Bitcoin = new Color(247, 148, 19);
+            /// <summary>
+            /// The color for Bitcoin Cash.
+            /// </summary>
+            public static readonly Color BitcoinCash = new Color(250, 139, 49);
+            /// <summary>
+            /// The color for Dash.
+            /// </summary>
+            public static readonly Color Dash = new Color(24, 118, 189);
+            /// <summary>
+            /// The color for Dash.
+            /// </summary>
+            public static readonly Color Ethereum = new Color(98, 104, 143);
+            /// <summary>
+            /// The color for Litecoin.
+            /// </summary>
+            public static readonly Color Litecoin = new Color(125, 178, 255);
+            /// <summary>
+            /// The color for Monero.
+            /// </summary>
+            public static readonly Color Monero = new Color(255, 107, 0);
+            /// <summary>
+            /// The color for Ripple.
+            /// </summary>
+            public static readonly Color Ripple = new Color(23, 154, 245);
         }
         #endregion
     }

@@ -38,7 +38,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetGoldPrice()
         {
-            return await Api.DolarBot.GetMetalPrice(Metal.Gold).ConfigureAwait(false);
+            return await Api.DolarBot.GetMetalRate(Metal.Gold).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetSilverPrice()
         {
-            return await Api.DolarBot.GetMetalPrice(Metal.Silver).ConfigureAwait(false);
+            return await Api.DolarBot.GetMetalRate(Metal.Silver).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetCopperPrice()
         {
-            return await Api.DolarBot.GetMetalPrice(Metal.Copper).ConfigureAwait(false);
+            return await Api.DolarBot.GetMetalRate(Metal.Copper).ConfigureAwait(false);
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace DolarBot.Services.Metals
             Emoji metalEmoji = GetEmoji(metalResponse.Type);
             string thumbnailUrl = GetThumbnailUrl(metalResponse.Type);
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? Format.Bold($"US$ {valor.ToString("F2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
+            string value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? Format.Bold($"US$ {valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
             string title = $"Cotización {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {GetName(metalResponse.Type).Capitalize()}";
             string description = $"Valor internacional {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {Format.Bold(GetName(metalResponse.Type).ToLower())} expresado en {Format.Bold("dólares")} por {Format.Bold(metalResponse.Unidad.ToLower())}.";
 

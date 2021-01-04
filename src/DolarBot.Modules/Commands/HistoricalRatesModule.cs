@@ -19,7 +19,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains the historical rates related commands.
     /// </summary>
-    [HelpOrder(6)]
+    [HelpOrder(7)]
     [HelpTitle("Evolución Anual")]
     public class HistoricalRatesModule : BaseInteractiveModule
     {

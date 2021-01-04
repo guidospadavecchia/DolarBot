@@ -1,4 +1,5 @@
-﻿using DolarBot.API.Cache;
+﻿using DolarBot.API.Attributes;
+using DolarBot.API.Cache;
 using DolarBot.API.Models;
 using DolarBot.Util.Extensions;
 using log4net;
@@ -111,6 +112,16 @@ namespace DolarBot.API
             private const string ORO_ENDPOINT = "/api/metales/oro";
             private const string PLATA_ENDPOINT = "/api/metales/plata";
             private const string COBRE_ENDPOINT = "/api/metales/cobre";
+
+            //Crypto
+            private const string BITCOIN_ENDPOINT = "/api/crypto/bitcoin";
+            private const string BITCOINCASH_ENDPOINT = "/api/crypto/bitcoincash";
+            private const string ETHEREUM_ENDPOINT = "/api/crypto/ethereum";
+            private const string MONERO_ENDPOINT = "/api/crypto/monero";
+            private const string LITECOIN_ENDPOINT = "/api/crypto/litecoin";
+            private const string RIPPLE_ENDPOINT = "/api/crypto/ripple";
+            private const string DASH_ENDPOINT = "/api/crypto/dash";
+
 
             //Historical Rates
             private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolar/oficial";
@@ -233,7 +244,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Represents the different API endpoints for BCRA values.
+            /// Represents the different API endpoints for precious metals rates.
             /// </summary>
             public enum Metals
             {
@@ -243,6 +254,34 @@ namespace DolarBot.API
                 Silver,
                 [Description(COBRE_ENDPOINT)]
                 Copper
+            }
+
+            /// <summary>
+            /// Represents the different API endpoints for cryptocurrencies rates.
+            /// </summary>
+            public enum CryptoCurrencies
+            {
+                [Description(BITCOIN_ENDPOINT)]
+                [CryptoCurrencyCode("BTC")]
+                Bitcoin,
+                [Description(BITCOINCASH_ENDPOINT)]
+                [CryptoCurrencyCode("BCH")]
+                BitcoinCash,
+                [Description(ETHEREUM_ENDPOINT)]
+                [CryptoCurrencyCode("ETH")]
+                Ethereum,
+                [Description(MONERO_ENDPOINT)]
+                [CryptoCurrencyCode("XMR")]
+                Monero,
+                [Description(LITECOIN_ENDPOINT)]
+                [CryptoCurrencyCode("LTC")]
+                Litecoin,
+                [Description(RIPPLE_ENDPOINT)]
+                [CryptoCurrencyCode("XRP")]
+                Ripple,
+                [Description(DASH_ENDPOINT)]
+                [CryptoCurrencyCode("DASH")]
+                Dash
             }
 
             /// <summary>
@@ -305,7 +344,7 @@ namespace DolarBot.API
             /// </summary>
             /// <param name="type">The type of dollar (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="DollarResponse"/> object.</returns>
-            public async Task<DollarResponse> GetDollarPrice(DollarTypes type)
+            public async Task<DollarResponse> GetDollarRate(DollarTypes type)
             {
                 DollarResponse cachedResponse = Cache.GetObject<DollarResponse>(type);
                 if (cachedResponse != null)
@@ -323,7 +362,7 @@ namespace DolarBot.API
                         dolarResponse.Type = type;
                         Cache.SaveObject(type, dolarResponse);
 
-                        return response.Data;
+                        return dolarResponse;
                     }
                     else
                     {
@@ -338,7 +377,7 @@ namespace DolarBot.API
             /// </summary>
             /// <param name="type">The type of euro (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="EuroResponse"/> object.</returns>
-            public async Task<EuroResponse> GetEuroPrice(EuroTypes type)
+            public async Task<EuroResponse> GetEuroRate(EuroTypes type)
             {
                 EuroResponse cachedResponse = Cache.GetObject<EuroResponse>(type);
                 if (cachedResponse != null)
@@ -356,7 +395,7 @@ namespace DolarBot.API
                         euroResponse.Type = type;
                         Cache.SaveObject(type, euroResponse);
 
-                        return response.Data;
+                        return euroResponse;
                     }
                     else
                     {
@@ -371,7 +410,7 @@ namespace DolarBot.API
             /// </summary>
             /// <param name="type">The type of Real (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="RealResponse"/> object.</returns>
-            public async Task<RealResponse> GetRealPrice(RealTypes type)
+            public async Task<RealResponse> GetRealRate(RealTypes type)
             {
                 RealResponse cachedResponse = Cache.GetObject<RealResponse>(type);
                 if (cachedResponse != null)
@@ -389,7 +428,7 @@ namespace DolarBot.API
                         realResponse.Type = type;
                         Cache.SaveObject(type, realResponse);
 
-                        return response.Data;
+                        return realResponse;
                     }
                     else
                     {
@@ -403,7 +442,7 @@ namespace DolarBot.API
             /// Querys the API endpoint asynchronously and returns a <see cref="CountryRiskResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="CountryRiskResponse"/> object.</returns>
-            public async Task<CountryRiskResponse> GetRiesgoPais()
+            public async Task<CountryRiskResponse> GetCountryRiskValue()
             {
                 CountryRiskResponse cachedResponse = Cache.GetObject<CountryRiskResponse>(RIESGO_PAIS_CACHE_KEY);
                 if (cachedResponse != null)
@@ -460,7 +499,7 @@ namespace DolarBot.API
             /// Querys the API endpoint asynchronously and returns a <see cref="MetalResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="MetalResponse"/> object.</returns>
-            public async Task<MetalResponse> GetMetalPrice(Metals metal)
+            public async Task<MetalResponse> GetMetalRate(Metals metal)
             {
                 MetalResponse cachedResponse = Cache.GetObject<MetalResponse>(metal);
                 if (cachedResponse != null)
@@ -479,6 +518,39 @@ namespace DolarBot.API
                         Cache.SaveObject(metal, metalResponse);
 
                         return metalResponse;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
+            public async Task<CryptoResponse> GetCryptoCurrencyRate(CryptoCurrencies cryptoCurrency)
+            {
+                CryptoResponse cachedResponse = Cache.GetObject<CryptoResponse>(cryptoCurrency);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = cryptoCurrency.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        CryptoResponse cryptoResponse = response.Data;
+                        cryptoResponse.Currency = cryptoCurrency;
+                        cryptoResponse.CurrencyCode = cryptoCurrency.GetAttribute<CryptoCurrencyCodeAttribute>()?.Code;
+                        Cache.SaveObject(cryptoCurrency, cryptoResponse);
+
+                        return cryptoResponse;
                     }
                     else
                     {

@@ -38,7 +38,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="CountryRiskResponse"/> object.</returns>
         public async Task<CountryRiskResponse> GetCountryRisk()
         {
-            return await Api.DolarBot.GetRiesgoPais().ConfigureAwait(false);
+            return await Api.DolarBot.GetCountryRiskValue().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace DolarBot.Services.Bcra
             if (isNumber)
             {
                 long convertedValue = (long)Math.Round(valor, MidpointRounding.AwayFromZero);
-                string value = convertedValue.ToString("n0", GlobalConfiguration.GetLocalCultureInfo());
+                string value = convertedValue.ToString("n2", GlobalConfiguration.GetLocalCultureInfo());
                 text = $"{Format.Bold($"{moneyBagEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} US$ {value}")}";
             }
             else
@@ -151,7 +151,7 @@ namespace DolarBot.Services.Bcra
             if (isNumber)
             {
                 long convertedValue = (long)Math.Round(valor, MidpointRounding.AwayFromZero);
-                string value = convertedValue.ToString("n0", GlobalConfiguration.GetLocalCultureInfo());
+                string value = convertedValue.ToString("n2", GlobalConfiguration.GetLocalCultureInfo());
                 text = $"{Format.Bold($"{circulatingMoneyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {value}")}";
             }
             else

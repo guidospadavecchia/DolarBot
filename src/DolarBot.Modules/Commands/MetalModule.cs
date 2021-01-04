@@ -22,7 +22,7 @@ namespace DolarBot.Modules.Commands
     {
         #region Vars
         /// <summary>
-        /// Provides methods to retrieve information about BCRA rates and values.
+        /// Provides methods to retrieve information about precious metals rates and values.
         /// </summary>
         private readonly MetalService MetalService;
 

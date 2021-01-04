@@ -109,7 +109,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroNacion()
         {
-            return await Api.DolarBot.GetEuroPrice(EuroTypes.Nacion).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Nacion).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroGalicia()
         {
-            return await Api.DolarBot.GetEuroPrice(EuroTypes.Galicia).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Galicia).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroBBVA()
         {
-            return await Api.DolarBot.GetEuroPrice(EuroTypes.BBVA).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.BBVA).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroHipotecario()
         {
-            return await Api.DolarBot.GetEuroPrice(EuroTypes.Hipotecario).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Hipotecario).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroChaco()
         {
-            return await Api.DolarBot.GetEuroPrice(EuroTypes.Chaco).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Chaco).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroPampa()
         {
-            return await Api.DolarBot.GetEuroPrice(EuroTypes.Pampa).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Pampa).ConfigureAwait(false);
         }
 
         #endregion
@@ -189,8 +189,8 @@ namespace DolarBot.Services.Euro
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response);
                 string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(response.Fecha, localTimeZone).ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 if (buyPrice != "?" || sellPrice != "?")
                 {
@@ -221,8 +221,8 @@ namespace DolarBot.Services.Euro
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(euroResponse);
             string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(euroResponse.Fecha, localTimeZone).ToString(euroResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("F2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle(embedTitle)

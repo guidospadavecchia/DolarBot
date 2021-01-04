@@ -124,7 +124,8 @@ namespace DolarBot.Modules.Commands
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
                                                    .WithTitle(Format.Bold("Comandos Disponibles"))
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
-                                                   .WithThumbnailUrl(helpImageUrl);
+                                                   .WithThumbnailUrl(helpImageUrl)
+                                                   .WithCurrentTimestamp();
 
             string helpCommands = new StringBuilder()
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)

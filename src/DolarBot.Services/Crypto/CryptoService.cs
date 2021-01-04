@@ -1,15 +1,12 @@
 ﻿using Discord;
 using DolarBot.API;
 using DolarBot.API.Models;
-using DolarBot.Services.Banking;
 using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CryptoCurrencies = DolarBot.API.ApiCalls.DolarBotApi.CryptoCurrencies;
 

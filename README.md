@@ -93,12 +93,17 @@ A continuación se listan los comandos disponibles:
 - \[`$bancos`] `<moneda>`: Muestra la lista de bancos disponibles la moneda especificada (Ver `$monedas`).  
 - \[`$frase` | `$f`]: Muestra una frase célebre acerca de la economía argentina.  
 
-## Librerías y APIS
+## Librerías
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [Joe4evr/Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
-- [guidospadavecchia/DolarBot-Api](https://github.com/guidospadavecchia/DolarBot-Api)
 - [guidospadavecchia/Discord.Addons.Interactive](https://github.com/guidospadavecchia/Discord.Addons.Interactive)
 - [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
+
+## APIS
+- [guidospadavecchia/DolarBot-Api](https://github.com/guidospadavecchia/DolarBot-Api)
+- [DolarSí](https://www.dolarsi.com/)
+- [DolarToday](https://dolartoday.com/api/)
+- [CoinGecko](https://www.coingecko.com/)
 
 ## Contribuciones
 Reportá problemas en la sección [issues](https://github.com/guidospadavecchia/DolarBot/issues), y utilizá la sección [discussions](https://github.com/guidospadavecchia/DolarBot/discussions) para preguntas y sugerencias.  
@@ -111,7 +116,9 @@ También podes impulsar su avance y mantenimiento con una [pequeña contribució
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  
 
 ## Licencia
-**DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE).
+**DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE).  
+
+*Disclaimer: **DolarBot** recopila y muestra información de distintas fuentes, quienes son responsables de mantenerla actualizada. **DolarBot** y su desarrollador no garantizan ni aseguran la disponibilidad, veracida y fidelidad de la información provista por terceros.*
 
 ## 
 <p align="center">

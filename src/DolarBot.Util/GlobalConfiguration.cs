@@ -202,6 +202,10 @@ namespace DolarBot.Util
             /// The color for Ripple.
             /// </summary>
             public static readonly Color Ripple = new Color(23, 154, 245);
+            /// <summary>
+            /// The color for Venezuela rates.
+            /// </summary>
+            public static readonly Color Venezuela = new Color(127, 23, 52);
         }
         #endregion
     }

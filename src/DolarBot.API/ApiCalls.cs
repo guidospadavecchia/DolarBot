@@ -122,6 +122,9 @@ namespace DolarBot.API
             private const string RIPPLE_ENDPOINT = "/api/crypto/ripple";
             private const string DASH_ENDPOINT = "/api/crypto/dash";
 
+            //Venezuela
+            private const string VZLA_DOLAR_ENDOPOINT = "/api/vzla/dolar";
+            private const string VZLA_EURO_ENDPOINT = "/api/vzla/euro";
 
             //Historical Rates
             private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolar/oficial";
@@ -297,6 +300,17 @@ namespace DolarBot.API
                 Euro,
                 [Description(EVOLUCION_REAL_OFICIAL_ENDPOINT)]
                 Real
+            }
+
+            /// <summary>
+            /// Represents the different API endpoints for Venezuela (Bolivar to Dollar) rates.
+            /// </summary>
+            public enum VenezuelaTypes
+            {
+                [Description(VZLA_DOLAR_ENDOPOINT)]
+                Dollar,
+                [Description(VZLA_EURO_ENDPOINT)]
+                Euro,
             }
             #endregion
 
@@ -551,6 +565,38 @@ namespace DolarBot.API
                         Cache.SaveObject(cryptoCurrency, cryptoResponse);
 
                         return cryptoResponse;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Querys the API endpoint asynchronously and returns a <see cref="VzlaResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="VzlaResponse"/> object.</returns>
+            public async Task<VzlaResponse> GetVzlaRates(VenezuelaTypes type)
+            {
+                VzlaResponse cachedResponse = Cache.GetObject<VzlaResponse>(type);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = type.GetDescription();
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<VzlaResponse> response = await Client.ExecuteGetAsync<VzlaResponse>(request).ConfigureAwait(false);
+                    if (response.IsSuccessful)
+                    {
+                        VzlaResponse vzlaResponse = response.Data;
+                        vzlaResponse.Type = type;
+                        Cache.SaveObject(type, vzlaResponse);
+
+                        return vzlaResponse;
                     }
                     else
                     {

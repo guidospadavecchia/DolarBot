@@ -75,6 +75,10 @@ A continuación se listan los comandos disponibles:
 - \[`$reservas` | `$rs`]: Muestra la cantidad total de reservas en dólares del BCRA a la fecha.  
 - \[`$circulante` | `$c`]: Muestra la cantidad total de pesos en circulación a la fecha.  
 
+### Cotizaciones Venezuela
+- \[`$bolivardolar` | `$bd`]: Muestra las distintas cotizaciones del dólar en Venezuela, expresadas en bolívares.  
+- \[`$bolivareuro` | `$be`]: Muestra las distintas cotizaciones del Euro en Venezuela, expresadas en bolívares.  
+
 ### Evolución
 - \[`$evolucion` | `$ev`] `<cotizacion>`: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.  
 

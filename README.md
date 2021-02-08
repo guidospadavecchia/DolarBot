@@ -1,12 +1,12 @@
 <p align="center">
   <img src="https://github.com/guidospadavecchia/DolarBot/blob/master/design/images/dolar-logo-title.png" width="600px">
 </p>
-  
+
+*** 
 <p align="center">
 <i>El bot argentino de Discord para ver las cotizaciones del dólar, euro, real, indicadores y más!</i>  
 </p>  
 
-***    
 ## Status
 [![Status](https://top.gg/api/widget/status/752669185053818941.svg)](https://top.gg/bot/752669185053818941)
 [![Servers](https://top.gg/api/widget/servers/752669185053818941.svg)](https://top.gg/bot/752669185053818941)

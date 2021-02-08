@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/guidospadavecchia/DolarBot/blob/master/design/images/dolar-logo-title.png" width="300px" height="300px">
+  <img src="https://github.com/guidospadavecchia/DolarBot/blob/master/design/images/dolar-logo-title.png" width="600px">
 </p>
   
 <p align="center">

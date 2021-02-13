@@ -21,6 +21,21 @@
   src: url('../fonts/Montserrat/Montserrat-Bold.ttf'); 
 }
 
+@font-face {
+  font-family: Raleway-Regular;
+  src: url('../fonts/Raleway/Raleway-Regular.ttf'); 
+}
+
+@font-face {
+  font-family: Raleway-SemiBold;
+  src: url('../fonts/Raleway/Raleway-SemiBold.ttf'); 
+}
+
+@font-face {
+  font-family: Raleway-Bold;
+  src: url('../fonts/Raleway/Raleway-Bold.ttf'); 
+}
+
 
 /*//////////////////////////////////////////////////////////////////
 [ RS PLUGIN ]*/
@@ -476,6 +491,10 @@ input.input100 {
 
 .logo {
   margin-bottom: 2rem;
+}
+
+.titleText {
+  font-family: Raleway-Bold !important;
 }
 
 .dolarText {

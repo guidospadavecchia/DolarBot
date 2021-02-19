@@ -150,7 +150,7 @@ namespace DolarBot.Modules.Handlers
                     AuthDiscordBotListApi dblApi = new AuthDiscordBotListApi(botDiscordId, dblToken);
                     IDblSelfBot self = await dblApi.GetMeAsync();
 
-                    await self.UpdateStatsAsync(Client.Guilds.Count);
+                    var updateStatsTask = self.UpdateStatsAsync(Client.Guilds.Count);
                 }
                 else
                 {

@@ -88,7 +88,7 @@ namespace DolarBot.Services.Venezuela
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(vzlaResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {vzlaResponse.Fecha:dd/MM/yyyy - HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"{bankEmoji} Bancos", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {bancosValue} {GlobalConfiguration.Constants.BLANK_SPACE}")

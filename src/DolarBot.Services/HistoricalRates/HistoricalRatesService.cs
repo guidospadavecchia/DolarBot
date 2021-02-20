@@ -67,7 +67,7 @@ namespace DolarBot.Services.HistoricalRates
             string embedTitle = GetTitle(historicalRatesParam);
             string embedDescription = GetDescription(historicalRatesParam);
             Color embedColor = GetColor(historicalRatesParam);
-            string lastUpdated = TimeZoneInfo.ConvertTimeFromUtc(historicalRatesResponse.Fecha, localTimeZone).ToString(historicalRatesResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
+            string lastUpdated = historicalRatesResponse.Fecha.ToString(historicalRatesResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
 
             StringBuilder sbField = new StringBuilder();
             var monthlyRates = historicalRatesResponse.Meses.OrderBy(x => Convert.ToInt32(x.Anio)).ThenBy(x => Convert.ToInt32(x.Mes));

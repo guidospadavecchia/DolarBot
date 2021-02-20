@@ -83,7 +83,7 @@ namespace DolarBot.Services.Metals
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(metalResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {metalResponse.Fecha:dd/MM/yyyy - HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}".AppendLineBreak());

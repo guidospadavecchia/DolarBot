@@ -91,7 +91,7 @@ namespace DolarBot.Services.Bcra
                                                    .WithThumbnailUrl(riskImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(riesgoPaisResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {riesgoPaisResponse.Fecha:dd/MM/yyyy - HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos".AppendLineBreak());
@@ -128,7 +128,7 @@ namespace DolarBot.Services.Bcra
                                                    .WithThumbnailUrl(reservesImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(bcraResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {bcraResponse.Fecha:dd/MM/yyyy - HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", text.AppendLineBreak());
@@ -165,7 +165,7 @@ namespace DolarBot.Services.Bcra
                                                    .WithThumbnailUrl(reservesImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {TimeZoneInfo.ConvertTimeFromUtc(bcraResponse.Fecha, GlobalConfiguration.GetLocalTimeZoneInfo()):dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {bcraResponse.Fecha:dd/MM/yyyy - HH:mm}",
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", text.AppendLineBreak());

@@ -63,17 +63,6 @@ namespace DolarBot.Services.Real
         }
 
         /// <summary>
-        /// Fetches a single rate by bank with taxes applied. Only accepts banks returned by <see cref="GetValidBanks"/>.
-        /// </summary>
-        /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="RealResponse"/>.</returns>
-        public async Task<RealResponse> GetRealAhorroByBank(Banks bank)
-        {
-            RealResponse realResponse = await GetRealByBank(bank).ConfigureAwait(false);
-            return (RealResponse)ApplyTaxes(realResponse);
-        }
-
-        /// <summary>
         /// Fetches all available Real prices.
         /// </summary>
         /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
@@ -82,16 +71,6 @@ namespace DolarBot.Services.Real
             return await Task.WhenAll(GetRealNacion(),
                                       GetRealBBVA(),
                                       GetRealChaco()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches all available Real Ahorro prices.
-        /// </summary>
-        /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
-        public async Task<RealResponse[]> GetAllRealAhorroRates()
-        {
-            RealResponse[] realResponses = await GetAllRealRates().ConfigureAwait(false);
-            return realResponses.Select(x => (RealResponse)ApplyTaxes(x)).ToArray();
         }
 
         /// <summary>
@@ -139,14 +118,16 @@ namespace DolarBot.Services.Real
             Emoji clockEmoji = new Emoji("\u23F0");
             Emoji buyEmoji = new Emoji(emojis["buyYellow"]);
             Emoji sellEmoji = new Emoji(emojis["sellYellow"]);
+            Emoji sellWithTaxesEmoji = new Emoji(emojis["sellWithTaxesYellow"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle("Cotizaciones del Real")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($" C = Compra | V = Venta | {clockEmoji} = Última actualización ({localTimeZone.StandardName})");
+                                                   .WithFooter($" C = Compra | V = Venta | A = Venta con impuestos | {clockEmoji} = Last updated (UTC {utcOffset})");
 
             for (int i = 0; i < realResponses.Length; i++)
             {
@@ -156,13 +137,19 @@ namespace DolarBot.Services.Real
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
                 string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
 
-                if (buyPrice != "?" || sellPrice != "?")
+                if (buyPrice != "?" || sellPrice != "?" || (sellWithTaxesPrice != null && sellWithTaxesPrice != "?"))
                 {
                     StringBuilder sbField = new StringBuilder()
                                             .AppendLine($"{realEmoji} {blankSpace} {buyEmoji} {Format.Bold($"$ {buyPrice}")}")
-                                            .AppendLine($"{realEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}")
-                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
+                                            .AppendLine($"{realEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}");
+                    if (sellWithTaxesPrice != null)
+                    {
+                        sbField.AppendLine($"{realEmoji} {blankSpace} {sellWithTaxesEmoji} {Format.Bold($"$ {sellWithTaxesPrice}")}");
+                    }
+                    sbField.AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
+
                     embed.AddInlineField(title, sbField.AppendLineBreak().ToString());
                 }
             }
@@ -183,6 +170,7 @@ namespace DolarBot.Services.Real
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new Emoji(emojis["real"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string realImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("real")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(realResponse);
@@ -190,13 +178,22 @@ namespace DolarBot.Services.Real
             string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
+            string buyInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}");
+            string sellInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}") + (realResponse.VentaAhorro != null ? string.Empty.AppendLineBreak() : string.Empty);
+
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(realImageUrl)
-                                                   .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
-                                                   .AddInlineField("Compra", Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}"))
-                                                   .AddInlineField("Venta", Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}".AppendLineBreak()));
+                                                   .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
+                                                   .AddInlineField("Compra", buyInlineField)
+                                                   .AddInlineField("Venta", sellInlineField);
+            if (realResponse.VentaAhorro != null)
+            {
+                string sellPriceWithTaxes = decimal.TryParse(realResponse?.VentaAhorro, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPriceWithTaxes}").AppendLineBreak();
+                embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
+            }
             return embed;
         }
 
@@ -215,7 +212,7 @@ namespace DolarBot.Services.Real
                 _ => throw new ArgumentException($"Unable to get title from '{realResponse.Type}'.")
             };
         }
-        
+
         #endregion
 
         #endregion

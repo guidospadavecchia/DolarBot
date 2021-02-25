@@ -69,17 +69,6 @@ namespace DolarBot.Services.Euro
         }
 
         /// <summary>
-        /// Fetches a single rate by bank with taxes applied. Only accepts banks returned by <see cref="GetValidBanks"/>.
-        /// </summary>
-        /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroAhorroByBank(Banks bank) 
-        {
-            EuroResponse euroResponse = await GetEuroByBank(bank).ConfigureAwait(false);
-            return (EuroResponse)ApplyTaxes(euroResponse);
-        }
-
-        /// <summary>
         /// Fetches all available euro prices.
         /// </summary>
         /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
@@ -91,16 +80,6 @@ namespace DolarBot.Services.Euro
                                       GetEuroHipotecario(),
                                       GetEuroChaco(),
                                       GetEuroPampa()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches all available euro rates with taxes applied.
-        /// </summary>
-        /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
-        public async Task<EuroResponse[]> GetAllEuroAhorroRates()
-        {
-            EuroResponse[] euroResponses = await GetAllEuroRates().ConfigureAwait(false);
-            return euroResponses.Select(x => (EuroResponse)ApplyTaxes(x)).ToArray();
         }
 
         /// <summary>
@@ -174,14 +153,16 @@ namespace DolarBot.Services.Euro
             Emoji clockEmoji = new Emoji("\u23F0");
             Emoji buyEmoji = new Emoji(":regional_indicator_c:");
             Emoji sellEmoji = new Emoji(":regional_indicator_v:");
+            Emoji sellWithTaxesEmoji = new Emoji(":regional_indicator_a:");
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle("Cotizaciones del Euro")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($" C = Compra | V = Venta | {clockEmoji} = Última actualización ({localTimeZone.StandardName})");
+                                                   .WithFooter($" C = Compra | V = Venta | A = Venta con impuestos | {clockEmoji} = Last updated (UTC {utcOffset})");
 
             for (int i = 0; i < euroResponses.Length; i++)
             {
@@ -191,13 +172,19 @@ namespace DolarBot.Services.Euro
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
                 string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
 
-                if (buyPrice != "?" || sellPrice != "?")
+                if (buyPrice != "?" || sellPrice != "?" || (sellWithTaxesPrice != null && sellWithTaxesPrice != "?"))
                 {
                     StringBuilder sbField = new StringBuilder()
                                             .AppendLine($"{euroEmoji} {blankSpace} {buyEmoji} {Format.Bold($"$ {buyPrice}")}")
-                                            .AppendLine($"{euroEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}")
-                                            .AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
+                                            .AppendLine($"{euroEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}");
+                    if (sellWithTaxesPrice != null)
+                    {
+                        sbField.AppendLine($"{euroEmoji} {blankSpace} {sellWithTaxesEmoji} {Format.Bold($"$ {sellWithTaxesPrice}")}");
+                    }
+                    sbField.AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
+
                     embed.AddInlineField(title, sbField.AppendLineBreak().ToString());
                 }
             }
@@ -215,8 +202,10 @@ namespace DolarBot.Services.Euro
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateEuroEmbed(EuroResponse euroResponse, string description, string title = null, string thumbnailUrl = null)
         {
+            //TODO
             Emoji euroEmoji = new Emoji(":euro:");
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string euroImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("euro")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(euroResponse);
@@ -224,13 +213,22 @@ namespace DolarBot.Services.Euro
             string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
+            string buyInlineField = Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}");
+            string sellInlineField = Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}") + (euroResponse.VentaAhorro != null ? string.Empty.AppendLineBreak() : string.Empty);
+
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(euroImageUrl)
-                                                   .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
-                                                   .AddInlineField("Compra", Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}"))
-                                                   .AddInlineField("Venta", Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}".AppendLineBreak()));
+                                                   .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
+                                                   .AddInlineField("Compra", buyInlineField)
+                                                   .AddInlineField("Venta", sellInlineField);
+            if (euroResponse.VentaAhorro != null)
+            {
+                string sellPriceWithTaxes = decimal.TryParse(euroResponse?.VentaAhorro, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesInlineField = Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPriceWithTaxes}").AppendLineBreak();
+                embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
+            }
             return embed;
         }
 
@@ -251,7 +249,7 @@ namespace DolarBot.Services.Euro
                 EuroTypes.Pampa => Banks.Pampa.GetDescription(),
                 _ => throw new ArgumentException($"Unable to get title from '{euroResponse.Type}'.")
             };
-        } 
+        }
 
         #endregion
 

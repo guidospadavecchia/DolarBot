@@ -8,6 +8,7 @@ namespace DolarBot.API.Models.Base
         public DateTime Fecha { get; set; }
         public string Compra { get; set; }
         public string Venta { get; set; }
+        public string VentaAhorro { get; set; }
 
         public object Clone()
         {

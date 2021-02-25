@@ -70,6 +70,7 @@ namespace DolarBot.API
 
             //Dólar
             private const string DOLAR_OFICIAL_ENDPOINT = "/api/dolar/oficial";
+            private const string DOLAR_AHORRO_ENDPOINT = "/api/dolar/ahorro";
             private const string DOLAR_BLUE_ENDPOINT = "/api/dolar/blue";
             private const string DOLAR_CONTADO_LIQUI_ENDPOINT = "/api/dolar/contadoliqui";
             private const string DOLAR_PROMEDIO_ENDPOINT = "/api/dolar/promedio";
@@ -163,7 +164,7 @@ namespace DolarBot.API
             {
                 [Description(DOLAR_OFICIAL_ENDPOINT)]
                 Oficial,
-                [Description(DOLAR_OFICIAL_ENDPOINT)]
+                [Description(DOLAR_AHORRO_ENDPOINT)]
                 Ahorro,
                 [Description(DOLAR_BLUE_ENDPOINT)]
                 Blue,

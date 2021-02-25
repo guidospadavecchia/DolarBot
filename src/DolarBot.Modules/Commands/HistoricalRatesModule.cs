@@ -52,7 +52,7 @@ namespace DolarBot.Modules.Commands
         [Command("evolucion", RunMode = RunMode.Async)]
         [Alias("ev")]
         [Summary("Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.")]
-        [HelpUsageExample(false, "$evolucion DolarOficial", "$evolucion DolarBlue", "$ev Euro", "$ev Real")]
+        [HelpUsageExample(false, "$evolucion DolarOficial", "$evolucion DolarBlue", "$evolucion DolarAhorro", "$ev Euro", "$ev EuroAhorro", "$ev Real", "$ev RealAhorro")]
         [RateLimit(1, 5, Measure.Seconds)]
         public async Task GetEvolucionAsync([Summary("Indica el tipo de cotización a obtener")] string cotizacion = null)
         {

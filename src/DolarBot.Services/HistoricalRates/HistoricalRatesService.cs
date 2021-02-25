@@ -61,6 +61,7 @@ namespace DolarBot.Services.HistoricalRates
             Emoji downEmoji = new Emoji(emojis["arrowDownGreen"]);
             Emoji neutralEmoji = new Emoji(emojis["neutral"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
             string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
@@ -110,7 +111,7 @@ namespace DolarBot.Services.HistoricalRates
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(embedDescription.AppendLineBreak())
                                                    .WithThumbnailUrl(chartImageUrl)
-                                                   .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
+                                                   .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddField(fieldTitle, sbField.AppendLineBreak().ToString());
             return embed;
         }
@@ -125,9 +126,12 @@ namespace DolarBot.Services.HistoricalRates
             return historicalRatesParam switch
             {
                 HistoricalRatesParams.Dolar => $"Evolución mensual del dólar oficial",
+                HistoricalRatesParams.DolarAhorro => $"Evolución mensual del dólar ahorro",
                 HistoricalRatesParams.DolarBlue => $"Evolución mensual del dólar blue",
                 HistoricalRatesParams.Euro => $"Evolución mensual del Euro",
+                HistoricalRatesParams.EuroAhorro => $"Evolución mensual del Euro ahorro",
                 HistoricalRatesParams.Real => $"Evolución mensual del Real",
+                HistoricalRatesParams.RealAhorro => $"Evolución mensual del Real ahorro",
                 _ => throw new NotImplementedException()
             };
         }
@@ -142,9 +146,12 @@ namespace DolarBot.Services.HistoricalRates
             return historicalRatesParam switch
             {
                 HistoricalRatesParams.Dolar => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar oficial")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParams.DolarAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar oficial")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
                 HistoricalRatesParams.DolarBlue => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar blue")}, expresadas en {Format.Bold("pesos argentinos")}.",
                 HistoricalRatesParams.Euro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Euro")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParams.EuroAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Euro")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
                 HistoricalRatesParams.Real => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Real")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParams.RealAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Real")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
                 _ => throw new NotImplementedException()
             };
         }
@@ -159,9 +166,12 @@ namespace DolarBot.Services.HistoricalRates
             return historicalRatesParam switch
             {
                 HistoricalRatesParams.Dolar => GlobalConfiguration.Colors.Main,
+                HistoricalRatesParams.DolarAhorro => GlobalConfiguration.Colors.Main,
                 HistoricalRatesParams.DolarBlue => GlobalConfiguration.Colors.Main,
                 HistoricalRatesParams.Euro => GlobalConfiguration.Colors.Euro,
+                HistoricalRatesParams.EuroAhorro => GlobalConfiguration.Colors.Euro,
                 HistoricalRatesParams.Real => GlobalConfiguration.Colors.Real,
+                HistoricalRatesParams.RealAhorro => GlobalConfiguration.Colors.Real,
                 _ => throw new NotImplementedException()
             };
         } 

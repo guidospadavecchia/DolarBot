@@ -129,9 +129,12 @@ namespace DolarBot.API
 
             //Historical Rates
             private const string EVOLUCION_DOLAR_OFICIAL_ENDPOINT = "/api/evolucion/dolar/oficial";
+            private const string EVOLUCION_DOLAR_AHORRO_ENDPOINT = "/api/evolucion/dolar/ahorro";
             private const string EVOLUCION_DOLAR_BLUE_ENDPOINT = "/api/evolucion/dolar/blue";
             private const string EVOLUCION_EURO_OFICIAL_ENDPOINT = "/api/evolucion/euro/oficial";
+            private const string EVOLUCION_EURO_AHORRO_ENDPOINT = "/api/evolucion/euro/ahorro";
             private const string EVOLUCION_REAL_OFICIAL_ENDPOINT = "/api/evolucion/real/oficial";
+            private const string EVOLUCION_REAL_AHORRO_ENDPOINT = "/api/evolucion/real/ahorro";
             #endregion
 
             #region Vars
@@ -297,10 +300,16 @@ namespace DolarBot.API
                 Dolar,
                 [Description(EVOLUCION_DOLAR_BLUE_ENDPOINT)]
                 DolarBlue,
+                [Description(EVOLUCION_DOLAR_AHORRO_ENDPOINT)]
+                DolarAhorro,
                 [Description(EVOLUCION_EURO_OFICIAL_ENDPOINT)]
                 Euro,
+                [Description(EVOLUCION_EURO_AHORRO_ENDPOINT)]
+                EuroAhorro,
                 [Description(EVOLUCION_REAL_OFICIAL_ENDPOINT)]
-                Real
+                Real,
+                [Description(EVOLUCION_REAL_AHORRO_ENDPOINT)]
+                RealAhorro
             }
 
             /// <summary>

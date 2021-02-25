@@ -9,6 +9,7 @@ namespace DolarBot.API.Models
     {
         public DateTime Fecha { get; set; }
         public string ARS { get; set; }
+        public string ARSTaxed { get; set; }
         public string USD { get; set; }
 
         [JsonIgnore]

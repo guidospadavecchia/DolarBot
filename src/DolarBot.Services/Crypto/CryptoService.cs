@@ -111,6 +111,7 @@ namespace DolarBot.Services.Crypto
             Emoji argentinaEmoji = new Emoji(":flag_ar:");
             Emoji usaEmoji = new Emoji(":flag_us:");
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string thumbnailUrl = Configuration.GetSection("images").GetSection("crypto")[cryptoResponse.Currency.ToString().ToLower()];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string lastUpdated = cryptoResponse.Fecha.ToString(cryptoResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
@@ -121,7 +122,7 @@ namespace DolarBot.Services.Crypto
                                                    .WithTitle($"{cryptoResponse.Currency.ToString().Capitalize()} ({cryptoResponse.CurrencyCode})")
                                                    .WithDescription($"Cotización de {Format.Bold(cryptoResponse.Currency.ToString().Capitalize())} ({Format.Bold(cryptoResponse.CurrencyCode)}) expresada en {Format.Bold("pesos argentinos")} y {Format.Bold("dólares estadounidenses")}.".AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($"Ultima actualización: {lastUpdated} ({localTimeZone.StandardName})", footerImageUrl)
+                                                   .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddInlineField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.CurrencyCode}")} = {Format.Bold($"US$ {usdPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
                                                    .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.CurrencyCode}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}".AppendLineBreak());
             return embed;

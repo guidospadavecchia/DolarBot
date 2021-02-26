@@ -225,18 +225,24 @@ namespace DolarBot.Services.Dolar
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateDollarEmbed(DollarResponse dollarResponse, string description, string title = null, string thumbnailUrl = null)
         {
+            var emojis = Configuration.GetSection("customEmojis");
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
+            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+
             string dollarImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("dollar")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(dollarResponse.Type);
-            string lastUpdated = dollarResponse.Fecha.ToString(dollarResponse.Fecha.Date == DateTime.UtcNow.Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
+            string lastUpdated = dollarResponse.Fecha.ToString(dollarResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string buyPrice = decimal.TryParse(dollarResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string sellPrice = decimal.TryParse(dollarResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             string buyInlineField = Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}");
-            string sellInlineField = Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}") + (dollarResponse.VentaAhorro != null ? string.Empty.AppendLineBreak() : string.Empty);
+            string sellInlineField = Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}");
+            string shareText = $"*{(dollarResponse.VentaAhorro != null ? $"Dólar - {embedTitle}" : embedTitle)}*{Environment.NewLine}{Environment.NewLine}Compra: \t\t$ *{buyPrice}*{Environment.NewLine}Venta: \t\t$ *{sellPrice}*";
+
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
@@ -249,7 +255,11 @@ namespace DolarBot.Services.Dolar
                 string sellPriceWithTaxes = decimal.TryParse(dollarResponse?.VentaAhorro, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellWithTaxesInlineField = Format.Bold($"{dollarEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPriceWithTaxes}").AppendLineBreak();
                 embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
+                shareText += $"{Environment.NewLine}Venta c/imp: \t$ *{sellPriceWithTaxes}*";
             }
+
+            shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
+            embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
 
             return embed;
         }

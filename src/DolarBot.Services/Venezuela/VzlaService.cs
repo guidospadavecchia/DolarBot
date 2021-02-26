@@ -62,16 +62,22 @@ namespace DolarBot.Services.Venezuela
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateVzlaEmbed(VzlaResponse vzlaResponse)
         {
+            var emojis = Configuration.GetSection("customEmojis");
             Emoji currencyEmoji = GetEmoji(vzlaResponse.Type);
             Emoji bankEmoji = new Emoji(":bank:");
             Emoji moneyBagEmoji = new Emoji(":moneybag:");
-            Emoji colombiaEmoji = new Emoji(":flag_co:");
+            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+
+            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+
             string thumbnailUrl = Configuration.GetSection("images").GetSection("venezuela")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
-            string bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorBancos) ? Format.Bold($"B$ {valorBancos.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
-            string paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorParalelo) ? Format.Bold($"B$ {valorParalelo.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
-            string cucutaValue = decimal.TryParse(vzlaResponse?.Cucuta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorCucuta) ? Format.Bold($"B$ {valorCucuta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
+            decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
+            decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
+            string bancosValueText = bancosValue > 0 ? Format.Bold($"B$ {valorBancos.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
+            string paraleloValueText = paraleloValue > 0 ? Format.Bold($"B$ {valorParalelo.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
             
             string title = $"{GetName(vzlaResponse.Type).Capitalize()} Venezuela";
             string description = new StringBuilder()
@@ -79,8 +85,9 @@ namespace DolarBot.Services.Venezuela
                                  .AppendLineBreak()
                                  .AppendLine($"{bankEmoji} {Format.Bold("Bancos")}: {Format.Italics("Promedio de las cotizaciones bancarias")}.")
                                  .AppendLine($"{moneyBagEmoji} {Format.Bold("Paralelo")}: {Format.Italics($"Cotización del {GetName(vzlaResponse.Type).ToLower()} paralelo")}.")
-                                 .Append($"{colombiaEmoji} {Format.Bold("Cúcuta")}: {Format.Italics($"Cotización del {GetName(vzlaResponse.Type).ToLower()} en la ciudad de Cúcuta, Colombia")}.")
                                  .ToString();
+            string lastUpdated = vzlaResponse.Fecha.ToString(vzlaResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
+            string shareText = $"*{title}*{Environment.NewLine}{Environment.NewLine}Bancos: \t\tB$ *{bancosValue.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}*{Environment.NewLine}Paralelo: \t\tB$ *{paraleloValue.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Venezuela)
                                                    .WithTitle(title)
@@ -88,12 +95,12 @@ namespace DolarBot.Services.Venezuela
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {vzlaResponse.Fecha:dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"{bankEmoji} Bancos", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {bancosValue} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{moneyBagEmoji} Paralelo", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {paraleloValue} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{colombiaEmoji} Cúcuta", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {cucutaValue} {GlobalConfiguration.Constants.BLANK_SPACE}".AppendLineBreak());
+                                                   .AddInlineField($"{bankEmoji} Bancos", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {bancosValueText} {GlobalConfiguration.Constants.BLANK_SPACE}")
+                                                   .AddInlineField($"{moneyBagEmoji} Paralelo", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {paraleloValueText} {GlobalConfiguration.Constants.BLANK_SPACE}")
+                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed;
         }
 

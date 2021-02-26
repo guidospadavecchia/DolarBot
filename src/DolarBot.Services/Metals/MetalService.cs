@@ -70,12 +70,21 @@ namespace DolarBot.Services.Metals
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateMetalEmbed(MetalResponse metalResponse)
         {
+            var emojis = Configuration.GetSection("customEmojis");
             Emoji metalEmoji = GetEmoji(metalResponse.Type);
+            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+
+            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+            int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+
             string thumbnailUrl = GetThumbnailUrl(metalResponse.Type);
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? Format.Bold($"US$ {valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
+            decimal value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? valor : 0;
+            string valueText = value > 0 ? Format.Bold($"US$ {valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
             string title = $"Cotización {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {GetName(metalResponse.Type).Capitalize()}";
             string description = $"Valor internacional {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {Format.Bold(GetName(metalResponse.Type).ToLower())} expresado en {Format.Bold("dólares")} por {Format.Bold(metalResponse.Unidad.ToLower())}.";
+            string lastUpdated = metalResponse.Fecha.ToString(metalResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
+            string shareText = $"*{title}*{Environment.NewLine}{Environment.NewLine}US$ *{value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}*{Environment.NewLine}Hora: {lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GetColor(metalResponse.Type))
                                                    .WithTitle(title)
@@ -83,10 +92,11 @@ namespace DolarBot.Services.Metals
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
-                                                       Text = $"Ultima actualización: {metalResponse.Fecha:dd/MM/yyyy - HH:mm}",
+                                                       Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}".AppendLineBreak());
+                                                   .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}")
+                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed;
         }
 

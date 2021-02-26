@@ -3,6 +3,8 @@ using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Web;
 
 namespace DolarBot.Util.Extensions
 {
@@ -93,6 +95,18 @@ namespace DolarBot.Util.Extensions
         public static EmbedBuilder AddEmptyLine(this EmbedBuilder embedBuilder)
         {
             return embedBuilder.AddField(GlobalConfiguration.Constants.BLANK_SPACE, GlobalConfiguration.Constants.BLANK_SPACE);
+        }
+
+        /// <summary>
+        /// Adds a new field with a link to share the specified <paramref name="shareText"/> on WhatsApp.
+        /// </summary>
+        /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object with an added share field.</returns>
+        public static EmbedBuilder AddFieldWhatsAppShare(this EmbedBuilder embedBuilder, Emoji shareEmoji, string shareText)
+        {            
+            string encodedText = HttpUtility.UrlEncode($"{shareText}{Environment.NewLine}{Environment.NewLine}{"_Powered by DolarBot_"}");
+            string url = $"https://api.whatsapp.com/send?text={encodedText}";
+            return embedBuilder.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{shareEmoji} {Format.Url("Compartir", url)}".AppendLineBreak());
         }
     }
 }

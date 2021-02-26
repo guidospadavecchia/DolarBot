@@ -47,14 +47,10 @@ A continuación se listan los comandos disponibles:
 ### Cotizaciones del Euro
 - \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro oficial para los bancos disponibles.  
 - \[`$euro` | `$e`] `<banco>`: Muestra la cotización del Euro oficial para un banco puntual (Ver `$bancos euro`).  
-- \[`$euroahorro` | `$ea`]: Muestra todas las cotizaciones del Euro ahorro para los bancos disponibles (Euro oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$euroahorro` | `$ea`] `<banco>`: Muestra la cotización del Euro ahorro para un banco puntual (Ver `$bancos euro`).  
 
 ### Cotizaciones del Real
 - \[`$real` | `$r`]: Muestra todas las cotizaciones del Real oficial para los bancos disponibles.  
 - \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco puntual (Ver `$bancos real`).  
-- \[`$realahorro` | `$ra`]: Muestra todas las cotizaciones del Real ahorro para los bancos disponibles (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$realahorro` | `$ra`] `<banco>`: Muestra la cotización del Real ahorro para un banco puntual (Ver `$bancos real`).  
 
 ### Metales
 - \[`$oro`]: Muestra la cotización internacional del Oro.  
@@ -80,7 +76,7 @@ A continuación se listan los comandos disponibles:
 - \[`$bolivareuro` | `$be`]: Muestra las distintas cotizaciones del Euro en Venezuela, expresadas en bolívares.  
 
 ### Evolución
-- \[`$evolucion` | `$ev`] `<cotizacion>`: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.  
+- \[`$evolucion` | `$ev`] `<cotizacion>`: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles. Para ver todos los parámetros disponibles para este comando, ejecutar `$evolucion`.
 
 ### Información
 - \[`$hora` | `$date`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  

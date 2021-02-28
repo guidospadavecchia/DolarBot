@@ -11,10 +11,9 @@ namespace DolarBot.API.Models
         public string ARS { get; set; }
         public string ARSTaxed { get; set; }
         public string USD { get; set; }
+        public string Code { get; set; }
 
         [JsonIgnore]
         public CryptoCurrencies Currency;
-        [JsonIgnore]
-        public string CurrencyCode;
     }
 }

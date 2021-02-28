@@ -1,5 +1,4 @@
-﻿using DolarBot.API.Attributes;
-using DolarBot.API.Cache;
+﻿using DolarBot.API.Cache;
 using DolarBot.API.Models;
 using DolarBot.Util.Extensions;
 using log4net;
@@ -269,25 +268,18 @@ namespace DolarBot.API
             public enum CryptoCurrencies
             {
                 [Description(BITCOIN_ENDPOINT)]
-                [CryptoCurrencyCode("BTC")]
                 Bitcoin,
                 [Description(BITCOINCASH_ENDPOINT)]
-                [CryptoCurrencyCode("BCH")]
                 BitcoinCash,
                 [Description(ETHEREUM_ENDPOINT)]
-                [CryptoCurrencyCode("ETH")]
                 Ethereum,
                 [Description(MONERO_ENDPOINT)]
-                [CryptoCurrencyCode("XMR")]
                 Monero,
                 [Description(LITECOIN_ENDPOINT)]
-                [CryptoCurrencyCode("LTC")]
                 Litecoin,
                 [Description(RIPPLE_ENDPOINT)]
-                [CryptoCurrencyCode("XRP")]
                 Ripple,
                 [Description(DASH_ENDPOINT)]
-                [CryptoCurrencyCode("DASH")]
                 Dash
             }
 
@@ -571,7 +563,6 @@ namespace DolarBot.API
                     {
                         CryptoResponse cryptoResponse = response.Data;
                         cryptoResponse.Currency = cryptoCurrency;
-                        cryptoResponse.CurrencyCode = cryptoCurrency.GetAttribute<CryptoCurrencyCodeAttribute>()?.Code;
                         Cache.SaveObject(cryptoCurrency, cryptoResponse);
 
                         return cryptoResponse;

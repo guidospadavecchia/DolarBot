@@ -50,7 +50,7 @@ namespace DolarBot.Modules.Commands
         [Alias("bd")]
         [Summary("Muestra las distintas cotizaciones del dólar para Venezuela.")]
         [HelpUsageExample(false, "$bolivardolar", "$bd")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetDollarRatesAsync()
         {
             try
@@ -80,7 +80,7 @@ namespace DolarBot.Modules.Commands
         [Alias("be")]
         [Summary("Muestra las distintas cotizaciones del Euro para Venezuela.")]
         [HelpUsageExample(false, "$bolivareuro", "$be")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetEuroRatesAsync()
         {
             try

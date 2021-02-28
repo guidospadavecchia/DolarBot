@@ -54,7 +54,7 @@ namespace DolarBot.Modules.Commands
         [Command("monedas")]
         [Alias("m")]
         [Summary("Muestra la lista de monedas soportadas.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetCurrencies()
         {
             try
@@ -73,7 +73,7 @@ namespace DolarBot.Modules.Commands
         [Command("bancos")]
         [Alias("b")]
         [Summary("Muestra la lista de bancos disponibles para cada moneda.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetBanks(
             [Summary("Opcional. Indica la moneda para listar sus bancos disponibles. Los valores posibles son aquellos devueltos por el comando `$monedas`.")]
             string moneda = null)

@@ -61,7 +61,7 @@ namespace DolarBot.Modules.Commands
         [Command(HELP_COMMAND, RunMode = RunMode.Async)]
         [Alias(HELP_ALIAS)]
         [Summary(HELP_SUMMARY)]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task SendHelp(string command = null)
         {
             try
@@ -86,7 +86,7 @@ namespace DolarBot.Modules.Commands
         [Command(HELP_COMMAND_DM, RunMode = RunMode.Async)]
         [Alias(HELP_ALIAS_DM)]
         [Summary(HELP_SUMMARY_DM)]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task SendHelpDM(string command = null)
         {
             try

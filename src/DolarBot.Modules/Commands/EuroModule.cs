@@ -54,7 +54,7 @@ namespace DolarBot.Modules.Commands
         [Alias("e")]
         [Summary("Muestra todas las cotizaciones del Euro oficial disponibles.")]
         [HelpUsageExample(false, "$euro", "$e", "$euro Nacion", "$e BBVA")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetEuroPriceAsync(
             [Summary("Opcional. Indica el banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos euro`. Si no se especifica, mostrará todas las cotizaciones.")]
             string banco = null)

@@ -51,7 +51,7 @@ namespace DolarBot.Modules.Commands
         [Command("hora", RunMode = RunMode.Async)]
         [Alias("date")]
         [Summary("Muestra la fecha y hora del bot y del servidor donde se aloja.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetDateAsync()
         {
             try
@@ -81,7 +81,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("sid", RunMode = RunMode.Async)]
         [Summary("Muestra el ID del servidor de Discord actual.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetServerId()
         {
             try
@@ -105,7 +105,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("ping", RunMode = RunMode.Async)]
         [Summary("Muestra la latencia del bot de Discord.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task Ping()
         {
             try
@@ -148,7 +148,7 @@ namespace DolarBot.Modules.Commands
         [Command("invitar", RunMode = RunMode.Async)]
         [Alias("invite")]
         [Summary("Devuelve el link de invitación del bot en Discord.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetInviteLink()
         {
             try
@@ -179,7 +179,7 @@ namespace DolarBot.Modules.Commands
         [Command("votar", RunMode = RunMode.Async)]
         [Alias("vote")]
         [Summary("Muestra el link para votar por DolarBot")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetVoteLink()
         {
             string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
@@ -196,7 +196,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("bot", RunMode = RunMode.Async)]
         [Summary("Muestra información acerca del bot.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetAbout()
         {
             try
@@ -242,7 +242,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("status", RunMode = RunMode.Async)]
         [Summary("Obtiene el estado actual del bot.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetApiStatus()
         {
             string statusText = await InfoService.GetApiStatus();

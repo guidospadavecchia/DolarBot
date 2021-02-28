@@ -54,7 +54,7 @@ namespace DolarBot.Modules.Commands
         [Alias("r")]
         [Summary("Muestra todas las cotizaciones del Real oficial disponibles.")]
         [HelpUsageExample(false, "$real", "$r", "$real Nacion", "$r BBVA")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetRealPriceAsync(
             [Summary("Opcional. Indica el banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos real`. Si no se especifica, mostrará todas las cotizaciones.")]
             string banco = null)

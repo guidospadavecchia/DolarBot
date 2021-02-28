@@ -50,7 +50,7 @@ namespace DolarBot.Modules.Commands
         [Alias("btc")]
         [Summary("Muestra la cotización del Bitcoin (BTC) en pesos y dólares.")]
         [HelpUsageExample(false, "$bitcoin", "$btc")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetBitcoinRatesAsync()
         {
             try
@@ -80,7 +80,7 @@ namespace DolarBot.Modules.Commands
         [Alias("bch")]
         [Summary("Muestra la cotización del Bitcoin Cash (BCH) en pesos y dólares.")]
         [HelpUsageExample(false, "$bitcoincash", "$bch")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetBitcoinCashRatesAsync()
         {
             try
@@ -110,7 +110,7 @@ namespace DolarBot.Modules.Commands
         [Alias("eth")]
         [Summary("Muestra la cotización del Ethereum (ETH) en pesos y dólares.")]
         [HelpUsageExample(false, "$ethereum", "$eth")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetEthereumRatesAsync()
         {
             try
@@ -139,7 +139,7 @@ namespace DolarBot.Modules.Commands
         [Command("dash", RunMode = RunMode.Async)]
         [Summary("Muestra la cotización del Dash (DASH) en pesos y dólares.")]
         [HelpUsageExample(false, "$dash")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetDashRatesAsync()
         {
             try
@@ -169,7 +169,7 @@ namespace DolarBot.Modules.Commands
         [Alias("ltc")]
         [Summary("Muestra la cotización del Litecoin (LTC) en pesos y dólares.")]
         [HelpUsageExample(false, "$litecoin", "$ltc")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetLitecoinRatesAsync()
         {
             try
@@ -199,7 +199,7 @@ namespace DolarBot.Modules.Commands
         [Alias("xmr")]
         [Summary("Muestra la cotización del Monero (XMR) en pesos y dólares.")]
         [HelpUsageExample(false, "$monero", "$xmr")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetMoneroRatesAsync()
         {
             try
@@ -229,7 +229,7 @@ namespace DolarBot.Modules.Commands
         [Alias("xrp")]
         [Summary("Muestra la cotización del Ripple (XRP) en pesos y dólares.")]
         [HelpUsageExample(false, "$ripple", "$xrp")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetRippleRatesAsync()
         {
             try

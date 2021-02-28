@@ -54,7 +54,7 @@ namespace DolarBot.Modules.Commands
         [Alias("d")]
         [Summary("Muestra todas las cotizaciones del dólar disponibles o por banco.")]
         [HelpUsageExample(false, "$dolar", "$d", "$dolar bancos", "$dolar santander", "$d galicia")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetDolarPriceAsync(
             [Summary("Opcional. Indica el banco a mostrar. Los valores posibles son aquellos devueltos por el comando `$bancos dolar`. Si no se especifica, mostrará todas las cotizaciones no bancarias.")]
             string banco = null)
@@ -139,7 +139,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolaroficial", RunMode = RunMode.Async)]
         [Alias("do")]
         [Summary("Muestra la cotización del dólar oficial.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetDolarOficialPriceAsync()
         {
             try
@@ -168,7 +168,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarahorro", RunMode = RunMode.Async)]
         [Alias("da")]
         [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y ganancias.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         [HelpUsageExample(false, "$dolarahorro", "$da")]
         public async Task GetDolarAhorroPriceAsync()
         {
@@ -198,7 +198,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarblue", RunMode = RunMode.Async)]
         [Alias("db")]
         [Summary("Muestra la cotización del dólar blue.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         [HelpUsageExample(false, "$dolarblue", "$db")]
         public async Task GetDolarBluePriceAsync()
         {
@@ -228,7 +228,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarpromedio", RunMode = RunMode.Async)]
         [Alias("dp")]
         [Summary("Muestra el promedio de las cotizaciones bancarias del dólar oficial.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         [HelpUsageExample(false, "$dolarpromedio", "$dp")]
         public async Task GetDolarPromedioPriceAsync()
         {
@@ -258,7 +258,7 @@ namespace DolarBot.Modules.Commands
         [Command("dolarbolsa", RunMode = RunMode.Async)]
         [Alias("dbo")]
         [Summary("Muestra la cotización del dólar bolsa (MEP).")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         [HelpUsageExample(false, "$dolarbolsa", "$dbo")]
         public async Task GetDolarBolsaPriceAsync()
         {
@@ -288,7 +288,7 @@ namespace DolarBot.Modules.Commands
         [Command("contadoconliqui", RunMode = RunMode.Async)]
         [Alias("ccl")]
         [Summary("Muestra la cotización del dólar contado con liquidación.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         [HelpUsageExample(false, "$contadoconliqui", "$ccl")]
         public async Task GetDolarContadoConLiquiPriceAsync()
         {

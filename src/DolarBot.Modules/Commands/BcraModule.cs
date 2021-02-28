@@ -50,7 +50,7 @@ namespace DolarBot.Modules.Commands
         [Alias("rp")]
         [Summary("Muestra el valor del riesgo país.")]
         [HelpUsageExample(false, "$riesgopais", "$rp")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetRiesgoPaisValueAsync()
         {
             try
@@ -80,7 +80,7 @@ namespace DolarBot.Modules.Commands
         [Alias("rs")]
         [Summary("Muestra las reservas de dólares del Banco Central a la fecha.")]
         [HelpUsageExample(false, "$reservas", "$rs")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetReservasAsync()
         {
             try
@@ -110,7 +110,7 @@ namespace DolarBot.Modules.Commands
         [Alias("c")]
         [Summary("Muestra la cantidad total de pesos en circulación a la fecha.")]
         [HelpUsageExample(false, "$circulante", "$c")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetCirculanteAsync()
         {
             try

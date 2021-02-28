@@ -48,7 +48,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("oro", RunMode = RunMode.Async)]
         [Summary("Muestra la cotización internacional del oro.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetGoldPriceAsync()
         {
             try
@@ -76,7 +76,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("plata", RunMode = RunMode.Async)]
         [Summary("Muestra la cotización internacional de la plata.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetSilverPriceAsync()
         {
             try
@@ -104,7 +104,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("cobre", RunMode = RunMode.Async)]
         [Summary("Muestra la cotización internacional del cobre.")]
-        [RateLimit(1, 5, Measure.Seconds)]
+        [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetCopperPriceAsync()
         {
             try

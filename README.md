@@ -101,9 +101,6 @@ A continuación se listan los comandos disponibles:
 
 ## APIS
 - [DolarBot-Api](https://github.com/guidospadavecchia/DolarBot-Api)
-- [DolarSí](https://www.dolarsi.com/)
-- [DolarToday](https://dolartoday.com/api/)
-- [CoinGecko](https://www.coingecko.com/)
 
 ## Contribuciones
 Reportá problemas en la sección [issues](https://github.com/guidospadavecchia/DolarBot/issues), y utilizá la sección [discussions](https://github.com/guidospadavecchia/DolarBot/discussions) para preguntas y sugerencias.  

@@ -67,12 +67,14 @@ namespace DolarBot.Services.Venezuela
             Emoji bankEmoji = new Emoji(":bank:");
             Emoji moneyBagEmoji = new Emoji(":moneybag:");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             string thumbnailUrl = Configuration.GetSection("images").GetSection("venezuela")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
+            string playStoreUrl = Configuration["playStoreLink"];
 
             decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
             decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
@@ -84,14 +86,14 @@ namespace DolarBot.Services.Venezuela
                                  .AppendLine($"Cotizaciones disponibles del {Format.Bold(GetName(vzlaResponse.Type))} expresadas en {Format.Bold("bolívares venezolanos")}.")
                                  .AppendLineBreak()
                                  .AppendLine($"{bankEmoji} {Format.Bold("Bancos")}: {Format.Italics("Promedio de las cotizaciones bancarias")}.")
-                                 .AppendLine($"{moneyBagEmoji} {Format.Bold("Paralelo")}: {Format.Italics($"Cotización del {GetName(vzlaResponse.Type).ToLower()} paralelo")}.")
+                                 .Append($"{moneyBagEmoji} {Format.Bold("Paralelo")}: {Format.Italics($"Cotización del {GetName(vzlaResponse.Type).ToLower()} paralelo")}.")
                                  .ToString();
             string lastUpdated = vzlaResponse.Fecha.ToString(vzlaResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string shareText = $"*{title}*{Environment.NewLine}{Environment.NewLine}Bancos: \t\tB$ *{bancosValue.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}*{Environment.NewLine}Paralelo: \t\tB$ *{paraleloValue.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Venezuela)
                                                    .WithTitle(title)
-                                                   .WithDescription(description.AppendLineBreak())
+                                                   .WithDescription(description.ToString().AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {
@@ -101,6 +103,10 @@ namespace DolarBot.Services.Venezuela
                                                    .AddInlineField($"{bankEmoji} Bancos", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {bancosValueText} {GlobalConfiguration.Constants.BLANK_SPACE}")
                                                    .AddInlineField($"{moneyBagEmoji} Paralelo", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {paraleloValueText} {GlobalConfiguration.Constants.BLANK_SPACE}")
                                                    .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
             return embed;
         }
 

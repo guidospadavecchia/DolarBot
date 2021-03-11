@@ -73,8 +73,10 @@ namespace DolarBot.Services.Bcra
             var emojis = Configuration.GetSection("customEmojis");
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
             string riskImageUrl = Configuration.GetSection("images").GetSection("risk")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
+            string playStoreUrl = Configuration["playStoreLink"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -103,7 +105,10 @@ namespace DolarBot.Services.Bcra
                                                    })
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos")
                                                    .AddFieldWhatsAppShare(whatsappEmoji, shareText);
-
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
             return embed;
         }
 
@@ -117,8 +122,10 @@ namespace DolarBot.Services.Bcra
             var emojis = Configuration.GetSection("customEmojis");
             Emoji moneyBagEmoji = new Emoji(":moneybag:");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
             string reservesImageUrl = Configuration.GetSection("images").GetSection("reserves")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
+            string playStoreUrl = Configuration["playStoreLink"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -150,6 +157,10 @@ namespace DolarBot.Services.Bcra
                                                    })
                                                    .AddInlineField($"Valor", text)
                                                    .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
             return embed;
         }
 
@@ -163,8 +174,10 @@ namespace DolarBot.Services.Bcra
             var emojis = Configuration.GetSection("customEmojis");
             Emoji circulatingMoneyEmoji = new Emoji(":money_with_wings:");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
             string reservesImageUrl = Configuration.GetSection("images").GetSection("money")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
+            string playStoreUrl = Configuration["playStoreLink"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -196,6 +209,10 @@ namespace DolarBot.Services.Bcra
                                                    })
                                                    .AddInlineField($"Valor", text)
                                                    .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
             return embed;
         }
 

@@ -149,14 +149,17 @@ namespace DolarBot.Services.Euro
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateEuroEmbed(EuroResponse[] euroResponses, string description, string thumbnailUrl)
         {
+            var emojis = Configuration.GetSection("customEmojis");
             Emoji euroEmoji = new Emoji(":euro:");
             Emoji clockEmoji = new Emoji("\u23F0");
             Emoji buyEmoji = new Emoji(":regional_indicator_c:");
             Emoji sellEmoji = new Emoji(":regional_indicator_v:");
             Emoji sellWithTaxesEmoji = new Emoji(":regional_indicator_a:");
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+            string playStoreUrl = Configuration["playStoreLink"];
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Euro)
                                                    .WithTitle("Cotizaciones del Euro")
@@ -189,6 +192,11 @@ namespace DolarBot.Services.Euro
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
+
             return embed;
         }
 
@@ -205,9 +213,11 @@ namespace DolarBot.Services.Euro
             var emojis = Configuration.GetSection("customEmojis");
             Emoji euroEmoji = new Emoji(":euro:");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+            string playStoreUrl = Configuration["playStoreLink"];
 
             string euroImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("euro")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
@@ -237,6 +247,11 @@ namespace DolarBot.Services.Euro
 
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
             embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
+
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
 
             return embed;
         }

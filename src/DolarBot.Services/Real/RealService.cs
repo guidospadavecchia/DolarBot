@@ -119,9 +119,11 @@ namespace DolarBot.Services.Real
             Emoji buyEmoji = new Emoji(emojis["buyYellow"]);
             Emoji sellEmoji = new Emoji(emojis["sellYellow"]);
             Emoji sellWithTaxesEmoji = new Emoji(emojis["sellWithTaxesYellow"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+            string playStoreUrl = Configuration["playStoreLink"];
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle("Cotizaciones del Real")
@@ -154,6 +156,11 @@ namespace DolarBot.Services.Real
                 }
             }
 
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
+
             return embed;
         }
 
@@ -170,12 +177,14 @@ namespace DolarBot.Services.Real
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new Emoji(emojis["real"]);
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             string realImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("real")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
+            string playStoreUrl = Configuration["playStoreLink"];
             string embedTitle = title ?? GetTitle(realResponse);
             string lastUpdated = realResponse.Fecha.ToString(realResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
@@ -202,6 +211,11 @@ namespace DolarBot.Services.Real
 
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
             embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
+
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
+            }
 
             return embed;
         }

@@ -101,12 +101,28 @@ namespace DolarBot.Util.Extensions
         /// Adds a new field with a link to share the specified <paramref name="shareText"/> on WhatsApp.
         /// </summary>
         /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>
+        /// <param name="shareEmoji">The emoji to use.</param>
+        /// <param name="shareText">The text to share.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object with an added share field.</returns>
         public static EmbedBuilder AddFieldWhatsAppShare(this EmbedBuilder embedBuilder, Emoji shareEmoji, string shareText)
         {            
             string encodedText = HttpUtility.UrlEncode($"{shareText}{Environment.NewLine}{Environment.NewLine}{"_Powered by DolarBot_"}");
             string url = $"https://api.whatsapp.com/send?text={encodedText}";
             return embedBuilder.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{shareEmoji} {Format.Url("Compartir", url)}".AppendLineBreak());
+        }
+
+        /// <summary>
+        /// Adds a new field with a clickable link.
+        /// </summary>
+        /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>
+        /// <param name="emoji">The emoji to use.</param>
+        /// <param name="title">The title for the embed field.</param>
+        /// <param name="linkText">The text to show on the link.</param>
+        /// <param name="url">The URL for the link.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object with an added link field.</returns>
+        public static EmbedBuilder AddFieldLink(this EmbedBuilder embedBuilder, Emoji emoji, string title, string linkText, string url)
+        {
+            return embedBuilder.AddField(title, $"{emoji} {Format.Url(linkText, url)}".AppendLineBreak());
         }
     }
 }

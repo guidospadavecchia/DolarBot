@@ -208,7 +208,7 @@ namespace DolarBot.Services.Euro
         /// <param name="title">Optional. The embed's title.</param>
         /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateEuroEmbed(EuroResponse euroResponse, string description, string title = null, string thumbnailUrl = null)
+        public async Task<EmbedBuilder> CreateEuroEmbedAsync(EuroResponse euroResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji euroEmoji = new Emoji(":euro:");
@@ -246,7 +246,7 @@ namespace DolarBot.Services.Euro
             }
 
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
-            embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
 
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {

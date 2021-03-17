@@ -58,7 +58,7 @@ namespace DolarBot.Modules.Commands
                     MetalResponse result = await MetalService.GetGoldPrice().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = MetalService.CreateMetalEmbed(result);
+                        EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -86,7 +86,7 @@ namespace DolarBot.Modules.Commands
                     MetalResponse result = await MetalService.GetSilverPrice().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = MetalService.CreateMetalEmbed(result);
+                        EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -114,7 +114,7 @@ namespace DolarBot.Modules.Commands
                     MetalResponse result = await MetalService.GetCopperPrice().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = MetalService.CreateMetalEmbed(result);
+                        EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

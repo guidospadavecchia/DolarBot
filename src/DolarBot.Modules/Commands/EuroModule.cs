@@ -75,7 +75,7 @@ namespace DolarBot.Modules.Commands
                                 EuroResponse result = await EuroService.GetEuroByBank(bank).ConfigureAwait(false);
                                 if (result != null)
                                 {
-                                    EmbedBuilder embed = EuroService.CreateEuroEmbed(result, $"Cotización del {Format.Bold("Euro oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
+                                    EmbedBuilder embed = await EuroService.CreateEuroEmbedAsync(result, $"Cotización del {Format.Bold("Euro oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
                                     await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                                 }
                                 else

@@ -60,7 +60,7 @@ namespace DolarBot.Modules.Commands
                     VzlaResponse result = await VzlaService.GetDollarRates().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = VzlaService.CreateVzlaEmbed(result);
+                        EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -90,7 +90,7 @@ namespace DolarBot.Modules.Commands
                     VzlaResponse result = await VzlaService.GetEuroRates().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = VzlaService.CreateVzlaEmbed(result);
+                        EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

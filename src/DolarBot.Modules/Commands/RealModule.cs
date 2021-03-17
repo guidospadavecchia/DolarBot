@@ -75,7 +75,7 @@ namespace DolarBot.Modules.Commands
                                 RealResponse result = await RealService.GetRealByBank(bank).ConfigureAwait(false);
                                 if (result != null)
                                 {
-                                    EmbedBuilder embed = RealService.CreateRealEmbed(result, $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
+                                    EmbedBuilder embed = await RealService.CreateRealEmbedAsync(result, $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
                                     await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                                 }
                                 else

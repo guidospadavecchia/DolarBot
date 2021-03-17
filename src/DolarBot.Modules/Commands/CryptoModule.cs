@@ -60,7 +60,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetBitcoinRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -90,7 +90,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetBitcoinCashRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -120,7 +120,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetEthereumRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -149,7 +149,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetDashRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -179,7 +179,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetLitecoinRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -209,7 +209,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetMoneroRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -239,7 +239,7 @@ namespace DolarBot.Modules.Commands
                     CryptoResponse result = await CryptoService.GetRippleRate().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = CryptoService.CreateCryptoEmbed(result);
+                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

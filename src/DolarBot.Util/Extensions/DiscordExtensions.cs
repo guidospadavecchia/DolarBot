@@ -3,7 +3,7 @@ using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace DolarBot.Util.Extensions
@@ -104,10 +104,16 @@ namespace DolarBot.Util.Extensions
         /// <param name="shareEmoji">The emoji to use.</param>
         /// <param name="shareText">The text to share.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object with an added share field.</returns>
-        public static EmbedBuilder AddFieldWhatsAppShare(this EmbedBuilder embedBuilder, Emoji shareEmoji, string shareText)
-        {            
+        public static async Task<EmbedBuilder> AddFieldWhatsAppShare(this EmbedBuilder embedBuilder, Emoji shareEmoji, string shareText, Func<string, Task<string>> shortenUrlFunction = null)
+        {
             string encodedText = HttpUtility.UrlEncode($"{shareText}{Environment.NewLine}{Environment.NewLine}{"_Powered by DolarBot_"}");
             string url = $"https://api.whatsapp.com/send?text={encodedText}";
+
+            if (shortenUrlFunction != null)
+            {
+                url = await shortenUrlFunction(url);
+            }
+
             return embedBuilder.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{shareEmoji} {Format.Url("Compartir", url)}".AppendLineBreak());
         }
 

@@ -104,7 +104,7 @@ namespace DolarBot.Services.Crypto
         /// </summary>
         /// <param name="cryptoResponse">The crypto response object.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateCryptoEmbed(CryptoResponse cryptoResponse)
+        public async Task<EmbedBuilder> CreateCryptoEmbedAsync(CryptoResponse cryptoResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji cryptoEmoji = new Emoji(emojis["cryptoCoin"]);
@@ -130,8 +130,9 @@ namespace DolarBot.Services.Crypto
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"US$ {usdPrice}")}".AppendLineBreak())
                                                    .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
+
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
                 embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);

@@ -1,5 +1,6 @@
 ﻿using DolarBot.API.Cache;
 using DolarBot.API.Models;
+using DolarBot.API.Models.Cuttly;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace DolarBot.API
 
         #region Apis        
         public DolarBotApi DolarBot { get; private set; }
+        public CuttlyApi Cuttly { get; private set; }
         #endregion
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace DolarBot.API
             this.logger = logger;
             cache = new ResponseCache(configuration);
             DolarBot = new DolarBotApi(configuration, cache, LogError);
+            Cuttly = new CuttlyApi(configuration);
         }
 
         /// <summary>
@@ -331,7 +334,7 @@ namespace DolarBot.API
                 Client = new RestClient(Configuration["apiUrl"]);
                 Client.UseNewtonsoftJson();
                 Client.AddDefaultHeader(API_KEY_NAME, !string.IsNullOrEmpty(Configuration["apiKey"]) ? Configuration["apiKey"] : Environment.GetEnvironmentVariable(API_KEY_NAME));
-                
+
                 if (int.TryParse(Configuration["apiRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
                 {
                     Client.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
@@ -634,6 +637,80 @@ namespace DolarBot.API
                         return null;
                     }
                 }
+            }
+        }
+
+        [Description("https://cutt.ly/cuttly-api")]
+        public class CuttlyApi
+        {
+            #region Constants
+            private const string ENV_API_KEY_NAME = "CUTTLY_API_KEY";
+            private const int CUTTLY_STATUS_OK = 7;
+            #endregion
+
+            #region Vars
+            /// <summary>
+            /// An object to execute REST calls to the API.
+            /// </summary>
+            private readonly RestClient Client;
+            /// <summary>
+            /// Allows access to application settings.
+            /// </summary>
+            private readonly IConfiguration Configuration;
+            /// <summary>
+            /// Allows access to application settings.
+            /// </summary>
+            private readonly string ApiKey;
+            #endregion
+
+            /// <summary>
+            /// Creats a <see cref="CuttlyApi"/> object using the provided configuration.
+            /// </summary>
+            /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
+            internal CuttlyApi(IConfiguration configuration)
+            {
+                Configuration = configuration;
+                ApiKey = Configuration["cuttlyApiKey"];
+
+                Client = new RestClient(Configuration["cuttlyBaseUrl"]);
+                Client.UseNewtonsoftJson();   
+                if (int.TryParse(Configuration["cuttlyRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
+                {
+                    Client.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
+                }
+            }
+
+            /// <summary>
+            /// Shortens a link using the cutt.ly API.
+            /// </summary>
+            /// <param name="url">The URL to shorten.</param>
+            /// <returns>A shortened URL if successful, otherwise returns <paramref name="url"/>.</returns>
+            public async Task<string> ShortenUrl(string url)
+            {
+                string apiKey = !string.IsNullOrWhiteSpace(ApiKey) ? ApiKey : Environment.GetEnvironmentVariable(ENV_API_KEY_NAME);
+
+                if (!string.IsNullOrWhiteSpace(apiKey))
+                {
+                    RestRequest request = new RestRequest
+                    {
+                        RequestFormat = DataFormat.Json,
+                        OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; }
+                    };
+                    request.AddQueryParameter("key", apiKey).AddQueryParameter("short", url);
+                    IRestResponse<CuttlyResponse> response = await Client.ExecuteGetAsync<CuttlyResponse>(request).ConfigureAwait(false);
+
+                    if (response.IsSuccessful)
+                    {
+                        CuttlyResponse cuttlyResponse = response.Data;
+                        return cuttlyResponse.Url.Status == CUTTLY_STATUS_OK ? cuttlyResponse.Url.ShortLink : url;
+                    }
+                    else
+                    {
+                        return url;
+                    }
+                }
+
+                return url;
             }
         }
     }

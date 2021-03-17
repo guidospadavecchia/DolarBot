@@ -172,7 +172,7 @@ namespace DolarBot.Services.Real
         /// <param name="title">Optional. The embed's title.</param>
         /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRealEmbed(RealResponse realResponse, string description, string title = null, string thumbnailUrl = null)
+        public async Task<EmbedBuilder> CreateRealEmbedAsync(RealResponse realResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new Emoji(emojis["real"]);
@@ -210,7 +210,7 @@ namespace DolarBot.Services.Real
             }
 
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
-            embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
 
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {

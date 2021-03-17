@@ -68,7 +68,7 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         /// <param name="riesgoPaisResponse">The Riesgo Pais response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateCountryRiskEmbed(CountryRiskResponse riesgoPaisResponse)
+        public async Task<EmbedBuilder> CreateCountryRiskEmbedAsync(CountryRiskResponse riesgoPaisResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
@@ -103,8 +103,8 @@ namespace DolarBot.Services.Bcra
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos")
-                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+                                                   .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos");
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
                 embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
@@ -117,7 +117,7 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         /// <param name="bcraResponse">The BCRA response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateReservesEmbed(BcraResponse bcraResponse)
+        public async Task<EmbedBuilder> CreateReservesEmbedAsync(BcraResponse bcraResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji moneyBagEmoji = new Emoji(":moneybag:");
@@ -155,8 +155,8 @@ namespace DolarBot.Services.Bcra
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"Valor", text)
-                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+                                                   .AddInlineField($"Valor", text);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
                 embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
@@ -169,7 +169,7 @@ namespace DolarBot.Services.Bcra
         /// </summary>
         /// <param name="bcraResponse">The BCRA response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateCirculatingMoneyEmbed(BcraResponse bcraResponse)
+        public async Task<EmbedBuilder> CreateCirculatingMoneyEmbedAsync(BcraResponse bcraResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji circulatingMoneyEmoji = new Emoji(":money_with_wings:");
@@ -207,8 +207,8 @@ namespace DolarBot.Services.Bcra
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"Valor", text)
-                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+                                                   .AddInlineField($"Valor", text);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
                 embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);

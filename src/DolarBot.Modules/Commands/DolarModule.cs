@@ -93,7 +93,7 @@ namespace DolarBot.Modules.Commands
                                 DollarResponse result = await DolarService.GetByBank(bank).ConfigureAwait(false);
                                 if (result != null)
                                 {
-                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
+                                    EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
                                     await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                                 }
                                 else
@@ -149,7 +149,7 @@ namespace DolarBot.Modules.Commands
                     DollarResponse result = await DolarService.GetDollarOficial().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -179,7 +179,7 @@ namespace DolarBot.Modules.Commands
                     DollarResponse result = await DolarService.GetDollarAhorro().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -209,7 +209,7 @@ namespace DolarBot.Modules.Commands
                     DollarResponse result = await DolarService.GetDollarBlue().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -239,7 +239,7 @@ namespace DolarBot.Modules.Commands
                     DollarResponse result = await DolarService.GetDollarPromedio().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -269,7 +269,7 @@ namespace DolarBot.Modules.Commands
                     DollarResponse result = await DolarService.GetDollarBolsa().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -299,7 +299,7 @@ namespace DolarBot.Modules.Commands
                     DollarResponse result = await DolarService.GetDollarContadoConLiqui().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = DolarService.CreateDollarEmbed(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
+                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

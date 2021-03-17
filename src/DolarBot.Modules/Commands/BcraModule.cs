@@ -60,7 +60,7 @@ namespace DolarBot.Modules.Commands
                     CountryRiskResponse result = await BcraService.GetCountryRisk().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = BcraService.CreateCountryRiskEmbed(result);
+                        EmbedBuilder embed = await BcraService.CreateCountryRiskEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -90,7 +90,7 @@ namespace DolarBot.Modules.Commands
                     BcraResponse result = await BcraService.GetReserves().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = BcraService.CreateReservesEmbed(result);
+                        EmbedBuilder embed = await BcraService.CreateReservesEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else
@@ -120,7 +120,7 @@ namespace DolarBot.Modules.Commands
                     BcraResponse result = await BcraService.GetCirculatingMoney().ConfigureAwait(false);
                     if (result != null)
                     {
-                        EmbedBuilder embed = BcraService.CreateCirculatingMoneyEmbed(result);
+                        EmbedBuilder embed = await BcraService.CreateCirculatingMoneyEmbedAsync(result);
                         await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
                     else

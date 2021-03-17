@@ -68,7 +68,7 @@ namespace DolarBot.Services.Metals
         /// </summary>
         /// <param name="metalResponse">The metal response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateMetalEmbed(MetalResponse metalResponse)
+        public async Task<EmbedBuilder> CreateMetalEmbedAsync(MetalResponse metalResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji metalEmoji = GetEmoji(metalResponse.Type);
@@ -97,8 +97,9 @@ namespace DolarBot.Services.Metals
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}")
-                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+                                                   .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}");
+
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
                 embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);

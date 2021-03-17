@@ -60,7 +60,7 @@ namespace DolarBot.Services.Venezuela
         /// </summary>
         /// <param name="vzlaResponse">The Venezuela response.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateVzlaEmbed(VzlaResponse vzlaResponse)
+        public async Task<EmbedBuilder> CreateVzlaEmbedAsync(VzlaResponse vzlaResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji currencyEmoji = GetEmoji(vzlaResponse.Type);
@@ -101,8 +101,9 @@ namespace DolarBot.Services.Venezuela
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"{bankEmoji} Bancos", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {bancosValueText} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{moneyBagEmoji} Paralelo", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {paraleloValueText} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddFieldWhatsAppShare(whatsappEmoji, shareText);
+                                                   .AddInlineField($"{moneyBagEmoji} Paralelo", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {paraleloValueText} {GlobalConfiguration.Constants.BLANK_SPACE}");
+
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
                 embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);

@@ -115,7 +115,8 @@ Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).
 ## Licencia
 **DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE).  
 
-*Disclaimer: **DolarBot** recopila y muestra información de distintas fuentes, quienes son responsables de mantenerla actualizada. Por este motivo, no es posible garantizar la disponibilidad, relevancia y fidelidad de la información provista por terceros y ofrecida a través de **DolarBot**.*
+## Renuncia de responsabilidad
+**DolarBot** recopila y muestra información de distintas fuentes, quienes son responsables de mantenerla actualizada. Por este motivo, no es posible garantizar la disponibilidad, relevancia y fidelidad de la información provista por terceros y ofrecida a través de **DolarBot**.*
 
 ## 
 <p align="center">

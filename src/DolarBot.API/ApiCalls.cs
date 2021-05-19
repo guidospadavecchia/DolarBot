@@ -566,7 +566,7 @@ namespace DolarBot.API
                     {
                         CryptoResponse cryptoResponse = response.Data;
                         cryptoResponse.Currency = cryptoCurrency;
-                        Cache.SaveObject(cryptoCurrency, cryptoResponse);
+                        Cache.SaveObject(cryptoCurrency, cryptoResponse, Cache.GetCryptoExpiration());
 
                         return cryptoResponse;
                     }

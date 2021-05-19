@@ -52,8 +52,36 @@ namespace DolarBot.API.Cache
         /// <param name="data">Object to save.</param>
         public void SaveObject(object key, object data)
         {
-            int cacheExpiration = int.Parse(configuration["requestCacheExpirationMinutes"]);
-            cache.Set(key, data, TimeSpan.FromMinutes(cacheExpiration > 0 ? cacheExpiration : int.MaxValue));
+            cache.Set(key, data, TimeSpan.FromMinutes(GetDefaultExpiration()));
+        }
+
+        /// <summary>
+        /// Saves an object to cache.
+        /// </summary>
+        /// <param name="key">Object's key.</param>
+        /// <param name="data">Object to save.</param>
+        /// <param name="expirationSeconds">TTL in seconds.</param>
+        public void SaveObject(object key, object data, int expirationSeconds)
+        {
+            cache.Set(key, data, TimeSpan.FromMinutes(expirationSeconds > 0 ? expirationSeconds : int.MaxValue));
+        }
+
+        /// <summary>
+        /// Retrieves the default TTL (time-to-live), in seconds, before an item expires from cache.
+        /// </summary>
+        /// <returns>The expiration TTL in seconds.</returns>
+        public int GetDefaultExpiration()
+        {
+            return int.TryParse(configuration.GetSection("cacheExpirationSeconds")["default"], out int result) ? result : 0;
+        }
+
+        /// <summary>
+        /// Retrieves the TTL (time-to-live) for cryptocurrency requests, in seconds, before an item expires from cache.
+        /// </summary>
+        /// <returns>The expiration TTL in seconds.</returns>
+        public int GetCryptoExpiration()
+        {
+            return int.TryParse(configuration.GetSection("cacheExpirationSeconds")["crypto"], out int result) ? result : 0;
         }
         #endregion
     }

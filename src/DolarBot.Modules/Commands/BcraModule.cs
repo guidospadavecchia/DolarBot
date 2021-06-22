@@ -16,7 +16,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains the BCRA (Argentine Republic Central Bank) related commands.
     /// </summary>
-    [HelpOrder(6)]
+    [HelpOrder(8)]
     [HelpTitle("Indicadores BCRA")]
     public class BcraModule : BaseInteractiveModule
     {

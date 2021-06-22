@@ -58,13 +58,23 @@ A continuación se listan los comandos disponibles:
 - \[`$cobre`]: Muestra la cotización internacional del Cobre.  
 
 ### Criptomonedas
+- \[`$binance` | `$bnb`]: Muestra la cotización del **Binance Coin (BNB)** en pesos y dólares.  
 - \[`$bitcoin` | `$btc`]: Muestra la cotización del **Bitcoin (BTC)** en pesos y dólares.  
 - \[`$bitcoincash` | `$bch`]: Muestra la cotización del **Bitcoin Cash (BCH)** en pesos y dólares.  
+- \[`$cardano` | `$ada`]: Muestra la cotización del **Cardano (ADA)** en pesos y dólares.  
+- \[`$chainlink` | `$link`]: Muestra la cotización del **Chainlink (LINK)** en pesos y dólares.  
+- \[`$dai`]: Muestra la cotización del **DAI (DAI)** en pesos y dólares.  
+- \[`$dogecoin` | `$doge`]: Muestra la cotización del **Dogecoin (DOGE)** en pesos y dólares.  
 - \[`$ethereum` | `$eth`]: Muestra la cotización del **Ethereum (ETH)** en pesos y dólares.  
 - \[`$dash`]: Muestra la cotización del **Dash (DASH)** en pesos y dólares.  
 - \[`$litecoin` | `$ltc`]: Muestra la cotización del **Litecoin (LTC)** en pesos y dólares.  
 - \[`$monero` | `$xmr`]: Muestra la cotización del **Monero (XMR)** en pesos y dólares.  
+- \[`$polkadot` | `$dot`]: Muestra la cotización del **Polkadot (DOT)** en pesos y dólares.  
 - \[`$ripple` | `$xrp`]: Muestra la cotización del **Ripple (XRP)** en pesos y dólares.  
+- \[`$stellar` | `$xlm`]: Muestra la cotización del **Stellar (XLM)** en pesos y dólares.  
+- \[`$tether` | `$usdt`]: Muestra la cotización del **Tether (USDT)** en pesos y dólares.  
+- \[`$theta`]: Muestra la cotización del **Theta (THETA)** en pesos y dólares.  
+- \[`$uniswap` | `$uni`]: Muestra la cotización del **Uniswap (UNI)** en pesos y dólares.  
 
 ### Indicadores
 - \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  

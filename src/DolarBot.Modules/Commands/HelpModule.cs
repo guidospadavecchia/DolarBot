@@ -91,11 +91,12 @@ namespace DolarBot.Modules.Commands
         {
             try
             {
-                EmbedBuilder embed = CommandExists(command) ? GenerateEmbeddedHelpCommand(command) : GenerateEmbeddedHelp();
-
-                var reply = ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
-                var dm = Context.User.SendMessageAsync(embed: embed.Build());
-                await Task.WhenAll(reply, dm).ConfigureAwait(false);
+                List<EmbedBuilder> embeds = CommandExists(command) ? new List<EmbedBuilder>() { GenerateEmbeddedHelpCommand(command) } : GenerateEmbeddedHelp();
+                foreach (var embed in embeds)
+                {
+                    await Context.User.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                }
+                var reply = await ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.").ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -109,26 +110,22 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for help using reflection and attribute values.
         /// </summary>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        private EmbedBuilder GenerateEmbeddedHelp()
+        /// <returns>A collection of <see cref="EmbedBuilder"/> objects ready to be built.</returns>
+        private List<EmbedBuilder> GenerateEmbeddedHelp()
         {
+            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+
             Emoji moduleBullet = new Emoji("\uD83D\uDD37");
             Emoji commandBullet = new Emoji("\uD83D\uDD39");
-            string helpImageUrl = Configuration.GetSection("images").GetSection("help")["32"];
+            string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
             string commandPrefix = Configuration["commandPrefix"];
 
-            List<ModuleInfo> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
-                                                       .OrderBy(m => (m.GetAttribute<HelpOrderAttribute>()?.Order))
-                                                       .ToList();
-
-            EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
-                                                   .WithTitle(Format.Bold("Comandos Disponibles"))
-                                                   .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
-                                                   .WithThumbnailUrl(helpImageUrl)
-                                                   .WithCurrentTimestamp();
+            EmbedBuilder helpEmbed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
+                                                       .WithTitle(Format.Bold("Ayuda"))
+                                                       .WithThumbnailUrl(helpImageUrl)
+                                                       .WithCurrentTimestamp();
 
             string helpCommands = new StringBuilder()
-                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
                                   .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")}")
                                   .AppendLine(Format.Italics(HELP_SUMMARY))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
@@ -142,25 +139,38 @@ namespace DolarBot.Modules.Commands
                                   .AppendLine(Format.Italics(HELP_COMMAND_SUMMARY_DM))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
                                   .ToString();
-            embed.AddField(Format.Bold($"{moduleBullet} Ayuda"), helpCommands);
+            helpEmbed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, helpCommands);
+            embeds.Add(helpEmbed);
 
-            foreach (ModuleInfo module in modules)
+            Dictionary<string, List<ModuleInfo>> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
+                                                               .OrderBy(m => (m.GetAttribute<HelpOrderAttribute>()?.Order))
+                                                               .GroupBy(m => m.GetAttribute<HelpTitleAttribute>()?.Title)
+                                                               .Where(x => !string.IsNullOrWhiteSpace(x.Key))
+                                                               .ToDictionary(x => x.Key, x => x.ToList());
+            foreach (var module in modules)
             {
-                string moduleTitle = module.GetAttribute<HelpTitleAttribute>()?.Title;
-                if (!string.IsNullOrWhiteSpace(moduleTitle))
+                for (int i = 0; i < module.Value.Count; i++)
                 {
-                    StringBuilder commandsBuilder = new StringBuilder().AppendLine(GlobalConfiguration.Constants.BLANK_SPACE);
-                    foreach (CommandInfo commandInfo in module.Commands)
+                    EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
+                                        .WithTitle(module.Value.Count > 1 ? $"{Format.Bold(module.Key)} ({i + 1}/{module.Value.Count})" : Format.Bold(module.Key))
+                                        .WithThumbnailUrl(helpImageUrl)
+                                        .WithCurrentTimestamp();
+
+                    ModuleInfo m = module.Value.ElementAt(i);
+                    StringBuilder commandsBuilder = new StringBuilder();
+                    foreach (CommandInfo commandInfo in m.Commands)
                     {
                         string commandSummary = Format.Italics(commandInfo.Summary);
                         string aliases = string.Join(" | ", commandInfo.Aliases.Select(a => Format.Code($"{commandPrefix}{a}")));
                         commandsBuilder.AppendLine($"{commandBullet} {aliases}").AppendLine(commandSummary.AppendLineBreak());
                     }
-                    embed.AddField($"{moduleBullet} {Format.Bold(moduleTitle)}", commandsBuilder.ToString());
+
+                    embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, commandsBuilder.ToString());
+                    embeds.Add(embed);
                 }
             }
 
-            return embed;
+            return embeds;
         }
 
         /// <summary>
@@ -229,24 +239,29 @@ namespace DolarBot.Modules.Commands
         /// <returns>A completed task.</returns>
         private async Task SendPagedHelpReplyAsync()
         {
-            EmbedBuilder embed = GenerateEmbeddedHelp();
+            List<EmbedBuilder> embeds = GenerateEmbeddedHelp();
             List<PaginatedMessage.Page> pages = new List<PaginatedMessage.Page>();
             int pageCount = 0;
-            foreach (EmbedFieldBuilder embedField in embed.Fields)
+            int totalPages = embeds.Select(x => x.Fields.Count).Sum();
+
+            foreach (EmbedBuilder embed in embeds)
             {
-                pages.Add(new PaginatedMessage.Page
+                foreach (EmbedFieldBuilder embedField in embed.Fields)
                 {
-                    Description = embed.Description,
-                    Title = embed.Title,
-                    Fields = new List<EmbedFieldBuilder>() { embedField },
-                    ImageUrl = embed.ImageUrl,
-                    Color = embed.Color,
-                    FooterOverride = new EmbedFooterBuilder
+                    pages.Add(new PaginatedMessage.Page
                     {
-                        Text = $"Página {++pageCount} de {embed.Fields.Count}"
-                    },
-                    ThumbnailUrl = embed.ThumbnailUrl
-                });
+                        Description = embed.Description,
+                        Title = embed.Title,
+                        Fields = new List<EmbedFieldBuilder>() { embedField },
+                        ImageUrl = embed.ImageUrl,
+                        Color = embed.Color,
+                        FooterOverride = new EmbedFooterBuilder
+                        {
+                            Text = $"Página {++pageCount} de {totalPages}"
+                        },
+                        ThumbnailUrl = embed.ThumbnailUrl
+                    });
+                }
             }
 
             PaginatedMessage pager = new PaginatedMessage

@@ -16,9 +16,9 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains cryptocurrency related commands.
     /// </summary>
-    [HelpOrder(5)]
+    [HelpOrder(6)]
     [HelpTitle("Crypto")]
-    public class CryptoModule : BaseCryptoModule
+    public class CryptoModule2 : BaseCryptoModule
     {
         #region Constructor
         /// <summary>
@@ -27,21 +27,20 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public CryptoModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
+        public CryptoModule2(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
         #endregion
 
-        [Command("binance", RunMode = RunMode.Async)]
-        [Alias("bnb")]
-        [Summary("Muestra la cotización del Binance Coin (BNB) en pesos y dólares.")]
-        [HelpUsageExample(false, "$binance", "$bnb")]
+        [Command("dash", RunMode = RunMode.Async)]
+        [Summary("Muestra la cotización del Dash (DASH) en pesos y dólares.")]
+        [HelpUsageExample(false, "$dash")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetBinanceCoinRatesAsync()
+        public async Task GetDashRatesAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetBinanceCoinRate().ConfigureAwait(false);
+                    CryptoResponse result = await CryptoService.GetDashRate().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
@@ -60,18 +59,18 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("bitcoin", RunMode = RunMode.Async)]
-        [Alias("btc")]
-        [Summary("Muestra la cotización del Bitcoin (BTC) en pesos y dólares.")]
-        [HelpUsageExample(false, "$bitcoin", "$btc")]
+        [Command("dogecoin", RunMode = RunMode.Async)]
+        [Alias("doge")]
+        [Summary("Muestra la cotización del Dogecoin (DOGE) en pesos y dólares.")]
+        [HelpUsageExample(false, "$dogecoin", "$doge")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetBitcoinRatesAsync()
+        public async Task GetDogecoinRatesAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetBitcoinRate().ConfigureAwait(false);
+                    CryptoResponse result = await CryptoService.GetDogecoinRate().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
@@ -90,18 +89,18 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("bitcoincash", RunMode = RunMode.Async)]
-        [Alias("bch")]
-        [Summary("Muestra la cotización del Bitcoin Cash (BCH) en pesos y dólares.")]
-        [HelpUsageExample(false, "$bitcoincash", "$bch")]
+        [Command("ethereum", RunMode = RunMode.Async)]
+        [Alias("eth")]
+        [Summary("Muestra la cotización del Ethereum (ETH) en pesos y dólares.")]
+        [HelpUsageExample(false, "$ethereum", "$eth")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetBitcoinCashRatesAsync()
+        public async Task GetEthereumRatesAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetBitcoinCashRate().ConfigureAwait(false);
+                    CryptoResponse result = await CryptoService.GetEthereumRate().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
@@ -120,18 +119,18 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("cardano", RunMode = RunMode.Async)]
-        [Alias("ada")]
-        [Summary("Muestra la cotización del Cardano (ADA) en pesos y dólares.")]
-        [HelpUsageExample(false, "$cardano", "$ada")]
+        [Command("litecoin", RunMode = RunMode.Async)]
+        [Alias("ltc")]
+        [Summary("Muestra la cotización del Litecoin (LTC) en pesos y dólares.")]
+        [HelpUsageExample(false, "$litecoin", "$ltc")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetCardanoRatesAsync()
+        public async Task GetLitecoinRatesAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetCardanoRate().ConfigureAwait(false);
+                    CryptoResponse result = await CryptoService.GetLitecoinRate().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
@@ -150,18 +149,18 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("chainlink", RunMode = RunMode.Async)]
-        [Alias("link")]
-        [Summary("Muestra la cotización del Chainlink (LINK) en pesos y dólares.")]
-        [HelpUsageExample(false, "$chainlink", "$link")]
+        [Command("monero", RunMode = RunMode.Async)]
+        [Alias("xmr")]
+        [Summary("Muestra la cotización del Monero (XMR) en pesos y dólares.")]
+        [HelpUsageExample(false, "$monero", "$xmr")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetChainlinkRatesAsync()
+        public async Task GetMoneroRatesAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetChainlinkRate().ConfigureAwait(false);
+                    CryptoResponse result = await CryptoService.GetMoneroRate().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
@@ -180,17 +179,18 @@ namespace DolarBot.Modules.Commands
             }
         }
 
-        [Command("dai", RunMode = RunMode.Async)]
-        [Summary("Muestra la cotización del DAI (DAI) en pesos y dólares.")]
-        [HelpUsageExample(false, "$dai")]
+        [Command("polkadot", RunMode = RunMode.Async)]
+        [Alias("dot")]
+        [Summary("Muestra la cotización del Polkadot (DOT) en pesos y dólares.")]
+        [HelpUsageExample(false, "$polkadot", "$dot")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetDaiRatesAsync()
+        public async Task GetPolkadotRatesAsync()
         {
             try
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetDaiRate().ConfigureAwait(false);
+                    CryptoResponse result = await CryptoService.GetPolkadotRate().ConfigureAwait(false);
                     if (result != null)
                     {
                         EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);

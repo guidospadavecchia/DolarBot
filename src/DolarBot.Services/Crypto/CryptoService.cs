@@ -33,6 +33,15 @@ namespace DolarBot.Services.Crypto
         #region API Calls
 
         /// <summary>
+        /// Fetches the price for Binance Coin (BNB).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetBinanceCoinRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.BinanceCoin).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Fetches the price for Bitcoin (BTC).
         /// </summary>
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
@@ -48,6 +57,51 @@ namespace DolarBot.Services.Crypto
         public async Task<CryptoResponse> GetBitcoinCashRate()
         {
             return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.BitcoinCash).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Cardano (ADA).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetCardanoRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Cardano).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Chainlink (LINK).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetChainlinkRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Chainlink).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for DAI (DAI).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetDaiRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.DAI).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Dash (DASH).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetDashRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Dash).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Dogecoin (DOGE).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetDogecoinRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.DogeCoin).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -78,6 +132,15 @@ namespace DolarBot.Services.Crypto
         }
 
         /// <summary>
+        /// Fetches the price for Polkadot (DOT).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetPolkadotRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Polkadot).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Fetches the price for Ripple (XRP).
         /// </summary>
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
@@ -87,12 +150,39 @@ namespace DolarBot.Services.Crypto
         }
 
         /// <summary>
-        /// Fetches the price for Dash (DASH).
+        /// Fetches the price for Stellar (XLM).
         /// </summary>
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
-        public async Task<CryptoResponse> GetDashRate()
+        public async Task<CryptoResponse> GetStellarRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Dash).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Stellar).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Tether (USDT).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetTetherRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Tether).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Theta (THETA).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetThetaRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Theta).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Uniswap (UNI).
+        /// </summary>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetUniswapRate()
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Uniswap).ConfigureAwait(false);
         }
 
         #endregion
@@ -149,13 +239,23 @@ namespace DolarBot.Services.Crypto
         {
             return cryptoCurrency switch
             {
+                CryptoCurrencies.BinanceCoin => GlobalConfiguration.Colors.BinanceCoin,
                 CryptoCurrencies.Bitcoin => GlobalConfiguration.Colors.Bitcoin,
                 CryptoCurrencies.BitcoinCash => GlobalConfiguration.Colors.BitcoinCash,
+                CryptoCurrencies.Cardano => GlobalConfiguration.Colors.Cardano,
+                CryptoCurrencies.Chainlink => GlobalConfiguration.Colors.Chainlink,
+                CryptoCurrencies.DAI => GlobalConfiguration.Colors.DAI,
                 CryptoCurrencies.Dash => GlobalConfiguration.Colors.Dash,
+                CryptoCurrencies.DogeCoin => GlobalConfiguration.Colors.Dogecoin,
                 CryptoCurrencies.Ethereum => GlobalConfiguration.Colors.Ethereum,
                 CryptoCurrencies.Litecoin => GlobalConfiguration.Colors.Litecoin,
                 CryptoCurrencies.Monero => GlobalConfiguration.Colors.Monero,
+                CryptoCurrencies.Polkadot => GlobalConfiguration.Colors.Polkadot,
                 CryptoCurrencies.Ripple => GlobalConfiguration.Colors.Ripple,
+                CryptoCurrencies.Stellar => GlobalConfiguration.Colors.Stellar,
+                CryptoCurrencies.Tether => GlobalConfiguration.Colors.Tether,
+                CryptoCurrencies.Theta => GlobalConfiguration.Colors.Theta,
+                CryptoCurrencies.Uniswap => GlobalConfiguration.Colors.Uniswap,
                 _ => throw new NotImplementedException()
             };
         }

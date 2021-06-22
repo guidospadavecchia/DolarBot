@@ -117,13 +117,23 @@ namespace DolarBot.API
             private const string COBRE_ENDPOINT = "/api/metales/cobre";
 
             //Crypto
+            private const string BINANCECOIN_ENDPOINT = "/api/crypto/binancecoin";
             private const string BITCOIN_ENDPOINT = "/api/crypto/bitcoin";
             private const string BITCOINCASH_ENDPOINT = "/api/crypto/bitcoincash";
+            private const string CARDANO_ENDPOINT = "/api/crypto/cardano";
+            private const string CHAINLINK_ENDPOINT = "/api/crypto/chainlink";
+            private const string DAI_ENDPOINT = "/api/crypto/dai";
+            private const string DASH_ENDPOINT = "/api/crypto/dash";
+            private const string DOGECOIN_ENDPOINT = "/api/crypto/dogecoin";
             private const string ETHEREUM_ENDPOINT = "/api/crypto/ethereum";
             private const string MONERO_ENDPOINT = "/api/crypto/monero";
             private const string LITECOIN_ENDPOINT = "/api/crypto/litecoin";
+            private const string POLKADOT_ENDPOINT = "/api/crypto/polkadot";
             private const string RIPPLE_ENDPOINT = "/api/crypto/ripple";
-            private const string DASH_ENDPOINT = "/api/crypto/dash";
+            private const string STELLAR_ENDPOINT = "/api/crypto/stellar";
+            private const string TETHER_ENDPOINT = "/api/crypto/tether";
+            private const string THETA_ENDPOINT = "/api/crypto/theta-token";
+            private const string UNISWAP_ENDPOINT = "/api/crypto/uniswap";
 
             //Venezuela
             private const string VZLA_DOLAR_ENDOPOINT = "/api/vzla/dolar";
@@ -270,20 +280,40 @@ namespace DolarBot.API
             /// </summary>
             public enum CryptoCurrencies
             {
+                [Description(BINANCECOIN_ENDPOINT)]
+                BinanceCoin,
                 [Description(BITCOIN_ENDPOINT)]
                 Bitcoin,
                 [Description(BITCOINCASH_ENDPOINT)]
                 BitcoinCash,
+                [Description(CARDANO_ENDPOINT)]
+                Cardano,
+                [Description(CHAINLINK_ENDPOINT)]
+                Chainlink,
+                [Description(DAI_ENDPOINT)]
+                DAI, 
+                [Description(DASH_ENDPOINT)]
+                Dash,
+                [Description(DOGECOIN_ENDPOINT)]
+                DogeCoin, 
                 [Description(ETHEREUM_ENDPOINT)]
                 Ethereum,
                 [Description(MONERO_ENDPOINT)]
                 Monero,
                 [Description(LITECOIN_ENDPOINT)]
                 Litecoin,
+                [Description(POLKADOT_ENDPOINT)]
+                Polkadot,
                 [Description(RIPPLE_ENDPOINT)]
                 Ripple,
-                [Description(DASH_ENDPOINT)]
-                Dash
+                [Description(STELLAR_ENDPOINT)]
+                Stellar,
+                [Description(TETHER_ENDPOINT)]
+                Tether,
+                [Description(THETA_ENDPOINT)]
+                Theta,
+                [Description(UNISWAP_ENDPOINT)]
+                Uniswap
             }
 
             /// <summary>

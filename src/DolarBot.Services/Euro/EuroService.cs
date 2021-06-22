@@ -7,6 +7,7 @@ using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -43,7 +44,42 @@ namespace DolarBot.Services.Euro
                 Banks.BBVA,
                 Banks.Hipotecario,
                 Banks.Chaco,
-                Banks.Pampa
+                Banks.Pampa,
+                Banks.Piano,
+                Banks.Santander,
+                Banks.Ciudad,
+                Banks.Supervielle,
+                Banks.Patagonia,
+                Banks.Comafi,
+                Banks.Reba,
+                Banks.Roela
+            };
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Banks"/> object to its <see cref="EuroTypes"/> equivalent.
+        /// </summary>
+        /// <param name="bank">The value to convert.</param>
+        /// <returns>The converted value as <see cref="EuroTypes"/>.</returns>
+        private EuroTypes ConvertToEuroType(Banks bank)
+        {
+            return bank switch
+            {
+                Banks.Nacion => EuroTypes.Nacion,
+                Banks.Galicia => EuroTypes.Galicia,
+                Banks.BBVA => EuroTypes.BBVA,
+                Banks.Hipotecario => EuroTypes.Hipotecario,
+                Banks.Chaco => EuroTypes.Chaco,
+                Banks.Pampa => EuroTypes.Pampa,
+                Banks.Piano => EuroTypes.Piano,
+                Banks.Santander => EuroTypes.Santander,
+                Banks.Ciudad => EuroTypes.Ciudad,
+                Banks.Supervielle => EuroTypes.Supervielle,
+                Banks.Patagonia => EuroTypes.Patagonia,
+                Banks.Comafi => EuroTypes.Comafi,
+                Banks.Reba => EuroTypes.Reba,
+                Banks.Roela => EuroTypes.Roela,
+                _ => throw new ArgumentException("Unsupported Euro type")
             };
         }
 
@@ -56,16 +92,8 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroByBank(Banks bank)
         {
-            return bank switch
-            {
-                Banks.Nacion => await GetEuroNacion().ConfigureAwait(false),
-                Banks.Galicia => await GetEuroGalicia().ConfigureAwait(false),
-                Banks.BBVA => await GetEuroBBVA().ConfigureAwait(false),
-                Banks.Hipotecario => await GetEuroHipotecario().ConfigureAwait(false),
-                Banks.Chaco => await GetEuroChaco().ConfigureAwait(false),
-                Banks.Pampa => await GetEuroPampa().ConfigureAwait(false),
-                _ => throw new ArgumentException("Invalid bank for currency.")
-            };
+            EuroTypes euroType = ConvertToEuroType(bank);
+            return await Api.DolarBot.GetEuroRate(euroType).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -74,71 +102,35 @@ namespace DolarBot.Services.Euro
         /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
         public async Task<EuroResponse[]> GetAllEuroRates()
         {
-            return await Task.WhenAll(GetEuroNacion(),
-                                      GetEuroGalicia(),
-                                      GetEuroBBVA(),
-                                      GetEuroHipotecario(),
-                                      GetEuroChaco(),
-                                      GetEuroPampa()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the price for euro from bank Nacion.
-        /// </summary>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroNacion()
-        {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Nacion).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the price for euro from bank Galicia.
-        /// </summary>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroGalicia()
-        {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Galicia).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the price for euro from bank BBVA.
-        /// </summary>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroBBVA()
-        {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.BBVA).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the price for euro from bank Hipotecario.
-        /// </summary>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroHipotecario()
-        {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Hipotecario).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the price for euro from bank Nuevo Banco del Chaco.
-        /// </summary>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroChaco()
-        {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Chaco).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the price for euro from bank Banco de La Pampa.
-        /// </summary>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroPampa()
-        {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Pampa).ConfigureAwait(false);
+            List<Task<EuroResponse>> tasks = new List<Task<EuroResponse>>();
+            foreach (EuroTypes euroType in Enum.GetValues(typeof(EuroTypes)).Cast<EuroTypes>())
+            {
+                tasks.Add(Api.DolarBot.GetEuroRate(euroType));
+            }
+            return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         #endregion
 
         #region Embed
+
+        /// <summary>
+        /// Returns the title depending on the response type.
+        /// </summary>
+        /// <param name="euroResponse">The euro response.</param>
+        /// <returns>The corresponding title.</returns>
+        private string GetTitle(EuroResponse euroResponse)
+        {
+            string euroType = euroResponse.Type.ToString();
+            if (Enum.TryParse(euroType, out Banks bankType))
+            {
+                return bankType.GetDescription();
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported Bank");
+            }
+        }
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses specifying a custom description and thumbnail URL.
@@ -244,25 +236,6 @@ namespace DolarBot.Services.Euro
             embed = AddPlayStoreLink(embed);
 
             return embed;
-        }
-
-        /// <summary>
-        /// Returns the title depending on the response type.
-        /// </summary>
-        /// <param name="euroResponse">The euro response.</param>
-        /// <returns>The corresponding title.</returns>
-        private string GetTitle(EuroResponse euroResponse)
-        {
-            return euroResponse.Type switch
-            {
-                EuroTypes.Nacion => Banks.Nacion.GetDescription(),
-                EuroTypes.Galicia => Banks.Galicia.GetDescription(),
-                EuroTypes.BBVA => Banks.BBVA.GetDescription(),
-                EuroTypes.Hipotecario => Banks.Hipotecario.GetDescription(),
-                EuroTypes.Chaco => Banks.Chaco.GetDescription(),
-                EuroTypes.Pampa => Banks.Pampa.GetDescription(),
-                _ => throw new ArgumentException($"Unable to get title from '{euroResponse.Type}'.")
-            };
         }
 
         #endregion

@@ -29,13 +29,19 @@ namespace DolarBot.Services.Banking
         Patagonia,
         [Description("Banco Comafi")]
         Comafi,
-        [Description("Banco Industrial")]
-        BIND,
         [Description("Banco de Córdoba")]
         Bancor,
         [Description("NBC (Chaco)")]
         Chaco,
         [Description("Banco de La Pampa")]
-        Pampa
+        Pampa,
+        [Description("Banco ICBC")]
+        ICBC,
+        [Description("Banco Provincia")]
+        Provincia,
+        [Description("Rebanking")]
+        Reba,
+        [Description("Banco Roela")]
+        Roela
     }
 }

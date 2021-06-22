@@ -67,22 +67,26 @@ namespace DolarBot.Services.Base
         /// <returns>The banks thumbnail URL.</returns>
         public string GetBankThumbnailUrl(Banks bank)
         {
+            var banksSection = Configuration.GetSection("images").GetSection("banks");
             return bank switch
             {
-                Banks.Nacion => Configuration.GetSection("images").GetSection("banks")["nacion"],
-                Banks.BBVA => Configuration.GetSection("images").GetSection("banks")["bbva"],
-                Banks.Piano => Configuration.GetSection("images").GetSection("banks")["piano"],
-                Banks.Hipotecario => Configuration.GetSection("images").GetSection("banks")["hipotecario"],
-                Banks.Galicia => Configuration.GetSection("images").GetSection("banks")["galicia"],
-                Banks.Santander => Configuration.GetSection("images").GetSection("banks")["santander"],
-                Banks.Ciudad => Configuration.GetSection("images").GetSection("banks")["ciudad"],
-                Banks.Supervielle => Configuration.GetSection("images").GetSection("banks")["supervielle"],
-                Banks.Patagonia => Configuration.GetSection("images").GetSection("banks")["patagonia"],
-                Banks.Comafi => Configuration.GetSection("images").GetSection("banks")["comafi"],
-                Banks.BIND => Configuration.GetSection("images").GetSection("banks")["bind"],
-                Banks.Bancor => Configuration.GetSection("images").GetSection("banks")["bancor"],
-                Banks.Chaco => Configuration.GetSection("images").GetSection("banks")["chaco"],
-                Banks.Pampa => Configuration.GetSection("images").GetSection("banks")["pampa"],
+                Banks.Nacion => banksSection["nacion"],
+                Banks.BBVA => banksSection["bbva"],
+                Banks.Piano => banksSection["piano"],
+                Banks.Hipotecario => banksSection["hipotecario"],
+                Banks.Galicia => banksSection["galicia"],
+                Banks.Santander => banksSection["santander"],
+                Banks.Ciudad => banksSection["ciudad"],
+                Banks.Supervielle => banksSection["supervielle"],
+                Banks.Patagonia => banksSection["patagonia"],
+                Banks.Comafi => banksSection["comafi"],
+                Banks.Bancor => banksSection["bancor"],
+                Banks.Chaco => banksSection["chaco"],
+                Banks.Pampa => banksSection["pampa"],
+                Banks.ICBC => banksSection["icbc"],
+                Banks.Provincia => banksSection["provincia"],
+                Banks.Reba => banksSection["reba"],
+                Banks.Roela => banksSection["roela"],
                 _ => string.Empty,
             };
         }

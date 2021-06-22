@@ -87,10 +87,13 @@ namespace DolarBot.API
             private const string DOLAR_SUPERVIELLE_ENDPOINT = "/api/dolar/bancos/supervielle";
             private const string DOLAR_PATAGONIA_ENDPOINT = "/api/dolar/bancos/patagonia";
             private const string DOLAR_COMAFI_ENDPOINT = "/api/dolar/bancos/comafi";
-            private const string DOLAR_BIND_ENDPOINT = "/api/dolar/bancos/bind";
             private const string DOLAR_BANCOR_ENDPOINT = "/api/dolar/bancos/bancor";
             private const string DOLAR_CHACO_ENDPOINT = "/api/dolar/bancos/chaco";
             private const string DOLAR_PAMPA_ENDPOINT = "/api/dolar/bancos/pampa";
+            private const string DOLAR_PROVINCIA_ENDPOINT = "/api/dolar/bancos/provincia";
+            private const string DOLAR_ICBC_ENDPOINT = "/api/dolar/bancos/icbc";
+            private const string DOLAR_REBANKING_ENDPOINT = "/api/dolar/bancos/reba";
+            private const string DOLAR_ROELA_ENDPOINT = "/api/dolar/bancos/roela";
 
             //Euro
             private const string EURO_NACION_ENDPOINT = "/api/euro/bancos/nacion";
@@ -99,11 +102,22 @@ namespace DolarBot.API
             private const string EURO_HIPOTECARIO_ENDPOINT = "/api/euro/bancos/hipotecario";
             private const string EURO_CHACO_ENDPOINT = "/api/euro/bancos/chaco";
             private const string EURO_PAMPA_ENDPOINT = "/api/euro/bancos/pampa";
+            private const string EURO_PIANO_ENDPOINT = "/api/euro/bancos/piano";
+            private const string EURO_SANTANDER_ENDPOINT = "/api/euro/bancos/santander";
+            private const string EURO_CIUDAD_ENDPOINT = "/api/euro/bancos/ciudad";
+            private const string EURO_SUPERVIELLE_ENDPOINT = "/api/euro/bancos/supervielle";
+            private const string EURO_PATAGONIA_ENDPOINT = "/api/euro/bancos/patagonia";
+            private const string EURO_COMAFI_ENDPOINT = "/api/euro/bancos/comafi";
+            private const string EURO_REBANKING_ENDPOINT = "/api/euro/bancos/reba";
+            private const string EURO_ROELA_ENDPOINT = "/api/euro/bancos/roela";
 
             //Real
             private const string REAL_NACION_ENDPOINT = "/api/real/bancos/nacion";
             private const string REAL_BBVA_ENDPOINT = "/api/real/bancos/bbva";
             private const string REAL_CHACO_ENDPOINT = "/api/real/bancos/chaco";
+            private const string REAL_PIANO_ENDPOINT = "/api/real/bancos/piano";
+            private const string REAL_CIUDAD_ENDPOINT = "/api/real/bancos/ciudad";
+            private const string REAL_SUPERVIELLE_ENDPOINT = "/api/real/bancos/supervielle";
 
             //BCRA
             private const string RESERVAS_ENDPOINT = "/api/bcra/reservas";
@@ -209,14 +223,20 @@ namespace DolarBot.API
                 Patagonia,
                 [Description(DOLAR_COMAFI_ENDPOINT)]
                 Comafi,
-                [Description(DOLAR_BIND_ENDPOINT)]
-                BIND,
                 [Description(DOLAR_BANCOR_ENDPOINT)]
                 Bancor,
                 [Description(DOLAR_CHACO_ENDPOINT)]
                 Chaco,
                 [Description(DOLAR_PAMPA_ENDPOINT)]
                 Pampa,
+                [Description(DOLAR_PROVINCIA_ENDPOINT)]
+                Provincia,
+                [Description(DOLAR_ICBC_ENDPOINT)]
+                ICBC,
+                [Description(DOLAR_REBANKING_ENDPOINT)]
+                Reba,
+                [Description(DOLAR_ROELA_ENDPOINT)]
+                Roela,
             }
 
             /// <summary>
@@ -235,7 +255,23 @@ namespace DolarBot.API
                 [Description(EURO_PAMPA_ENDPOINT)]
                 Pampa,
                 [Description(EURO_CHACO_ENDPOINT)]
-                Chaco
+                Chaco,
+                [Description(EURO_PIANO_ENDPOINT)]
+                Piano,
+                [Description(EURO_SANTANDER_ENDPOINT)]
+                Santander,
+                [Description(EURO_CIUDAD_ENDPOINT)]
+                Ciudad,
+                [Description(EURO_SUPERVIELLE_ENDPOINT)]
+                Supervielle,
+                [Description(EURO_PATAGONIA_ENDPOINT)]
+                Patagonia,
+                [Description(EURO_COMAFI_ENDPOINT)]
+                Comafi,
+                [Description(EURO_REBANKING_ENDPOINT)]
+                Reba,
+                [Description(EURO_ROELA_ENDPOINT)]
+                Roela
             }
 
             /// <summary>
@@ -248,7 +284,13 @@ namespace DolarBot.API
                 [Description(REAL_BBVA_ENDPOINT)]
                 BBVA,
                 [Description(REAL_CHACO_ENDPOINT)]
-                Chaco
+                Chaco,
+                [Description(REAL_PIANO_ENDPOINT)]
+                Piano,
+                [Description(REAL_CIUDAD_ENDPOINT)]
+                Ciudad,
+                [Description(REAL_SUPERVIELLE_ENDPOINT)]
+                Supervielle
             }
 
             /// <summary>

@@ -7,6 +7,7 @@ using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,28 @@ namespace DolarBot.Services.Real
                 Banks.Nacion,
                 Banks.BBVA,
                 Banks.Chaco,
+                Banks.Piano,
+                Banks.Ciudad,
+                Banks.Supervielle
+            };
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Banks"/> object to its <see cref="RealTypes"/> equivalent.
+        /// </summary>
+        /// <param name="bank">The value to convert.</param>
+        /// <returns>The converted value as <see cref="RealTypes"/>.</returns>
+        private RealTypes ConvertToRealType(Banks bank)
+        {
+            return bank switch
+            {
+                Banks.Nacion => RealTypes.Nacion,
+                Banks.BBVA => RealTypes.BBVA,
+                Banks.Chaco => RealTypes.Chaco,
+                Banks.Piano => RealTypes.Piano,
+                Banks.Ciudad => RealTypes.Ciudad,
+                Banks.Supervielle => RealTypes.Supervielle,
+                _ => throw new ArgumentException("Unsupported Real type")
             };
         }
 
@@ -53,13 +76,8 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealByBank(Banks bank)
         {
-            return bank switch
-            {
-                Banks.Nacion => await GetRealNacion().ConfigureAwait(false),
-                Banks.BBVA => await GetRealBBVA().ConfigureAwait(false),
-                Banks.Chaco => await GetRealChaco().ConfigureAwait(false),
-                _ => throw new ArgumentException("Invalid bank for currency.")
-            };
+            RealTypes realType = ConvertToRealType(bank);
+            return await Api.DolarBot.GetRealRate(realType).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -68,9 +86,12 @@ namespace DolarBot.Services.Real
         /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
         public async Task<RealResponse[]> GetAllRealRates()
         {
-            return await Task.WhenAll(GetRealNacion(),
-                                      GetRealBBVA(),
-                                      GetRealChaco()).ConfigureAwait(false);
+            List<Task<RealResponse>> tasks = new List<Task<RealResponse>>();
+            foreach (RealTypes realType in Enum.GetValues(typeof(RealTypes)).Cast<RealTypes>())
+            {
+                tasks.Add(Api.DolarBot.GetRealRate(realType));
+            }
+            return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -103,6 +124,24 @@ namespace DolarBot.Services.Real
         #endregion
 
         #region Embed
+
+        /// <summary>
+        /// Returns the title depending on the response type.
+        /// </summary>
+        /// <param name="realResponse">The real response.</param>
+        /// <returns>The corresponding title.</returns>
+        private string GetTitle(RealResponse realResponse)
+        {
+            string realType = realResponse.Type.ToString();
+            if (Enum.TryParse(realType, out Banks bankType))
+            {
+                return bankType.GetDescription();
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported Bank");
+            }
+        }
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses specifying a custom description and thumbnail URL.
@@ -207,22 +246,6 @@ namespace DolarBot.Services.Real
             embed = AddPlayStoreLink(embed);
 
             return embed;
-        }
-
-        /// <summary>
-        /// Returns the title depending on the response type.
-        /// </summary>
-        /// <param name="realResponse">The Real response.</param>
-        /// <returns>The corresponding title.</returns>
-        private string GetTitle(RealResponse realResponse)
-        {
-            return realResponse.Type switch
-            {
-                RealTypes.Nacion => Banks.Nacion.GetDescription(),
-                RealTypes.BBVA => Banks.BBVA.GetDescription(),
-                RealTypes.Chaco => Banks.Chaco.GetDescription(),
-                _ => throw new ArgumentException($"Unable to get title from '{realResponse.Type}'.")
-            };
         }
 
         #endregion

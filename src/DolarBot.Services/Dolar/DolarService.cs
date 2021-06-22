@@ -49,6 +49,36 @@ namespace DolarBot.Services.Dolar
             return Enum.GetValues(typeof(Banks)).Cast<Banks>().ToArray();
         }
 
+        /// <summary>
+        /// Converts a <see cref="Banks"/> object to its <see cref="DollarTypes"/> equivalent.
+        /// </summary>
+        /// <param name="bank">The value to convert.</param>
+        /// <returns>The converted value as <see cref="DollarTypes"/>.</returns>
+        private DollarTypes ConvertToDollarType(Banks bank)
+        {
+            return bank switch
+            {
+                Banks.Nacion => DollarTypes.Nacion,
+                Banks.BBVA => DollarTypes.BBVA,
+                Banks.Piano => DollarTypes.Piano,
+                Banks.Hipotecario => DollarTypes.Hipotecario,
+                Banks.Galicia => DollarTypes.Galicia,
+                Banks.Santander => DollarTypes.Santander,
+                Banks.Ciudad => DollarTypes.Ciudad,
+                Banks.Supervielle => DollarTypes.Supervielle,
+                Banks.Patagonia => DollarTypes.Patagonia,
+                Banks.Comafi => DollarTypes.Comafi,
+                Banks.Bancor => DollarTypes.Bancor,
+                Banks.Chaco => DollarTypes.Chaco,
+                Banks.Pampa => DollarTypes.Pampa,
+                Banks.Provincia => DollarTypes.Provincia,
+                Banks.ICBC => DollarTypes.ICBC,
+                Banks.Reba => DollarTypes.Reba,
+                Banks.Roela => DollarTypes.Roela,
+                _ => throw new ArgumentException("Unsupported Dollar type")
+            };
+        }
+
         #region API Calls
 
         /// <summary>
@@ -293,42 +323,18 @@ namespace DolarBot.Services.Dolar
                 DollarTypes.Supervielle => Banks.Supervielle.GetDescription(),
                 DollarTypes.Patagonia => Banks.Patagonia.GetDescription(),
                 DollarTypes.Comafi => Banks.Comafi.GetDescription(),
-                DollarTypes.BIND => Banks.BIND.GetDescription(),
                 DollarTypes.Bancor => Banks.Bancor.GetDescription(),
                 DollarTypes.Chaco => Banks.Chaco.GetDescription(),
                 DollarTypes.Pampa => Banks.Pampa.GetDescription(),
+                DollarTypes.ICBC => Banks.ICBC.GetDescription(),
+                DollarTypes.Provincia => Banks.Provincia.GetDescription(),
+                DollarTypes.Reba => Banks.Reba.GetDescription(),
+                DollarTypes.Roela => Banks.Roela.GetDescription(),
                 _ => throw new ArgumentException($"Unable to get title from '{dollarType}'.")
             };
         }
 
         #endregion
-
-        /// <summary>
-        /// Converts a <see cref="Banks"/> object to its <see cref="DollarTypes"/> equivalent.
-        /// </summary>
-        /// <param name="bank">The value to convert.</param>
-        /// <returns>The converted value as <see cref="DollarTypes"/>.</returns>
-        public DollarTypes ConvertToDollarType(Banks bank)
-        {
-            return bank switch
-            {
-                Banks.Nacion => DollarTypes.Nacion,
-                Banks.BBVA => DollarTypes.BBVA,
-                Banks.Piano => DollarTypes.Piano,
-                Banks.Hipotecario => DollarTypes.Hipotecario,
-                Banks.Galicia => DollarTypes.Galicia,
-                Banks.Santander => DollarTypes.Santander,
-                Banks.Ciudad => DollarTypes.Ciudad,
-                Banks.Supervielle => DollarTypes.Supervielle,
-                Banks.Patagonia => DollarTypes.Patagonia,
-                Banks.Comafi => DollarTypes.Comafi,
-                Banks.BIND => DollarTypes.BIND,
-                Banks.Bancor => DollarTypes.Bancor,
-                Banks.Chaco => DollarTypes.Chaco,
-                Banks.Pampa => DollarTypes.Pampa,
-                _ => DollarTypes.Oficial,
-            };
-        }
 
         #endregion
     }

@@ -73,14 +73,12 @@ namespace DolarBot.Services.Metals
             var emojis = Configuration.GetSection("customEmojis");
             Emoji metalEmoji = GetEmoji(metalResponse.Type);
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             string thumbnailUrl = GetThumbnailUrl(metalResponse.Type);
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string playStoreUrl = Configuration["playStoreLink"];
             decimal value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? valor : 0;
             string valueText = value > 0 ? Format.Bold($"US$ {valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
             string title = $"Cotización {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {GetName(metalResponse.Type).Capitalize()}";
@@ -100,10 +98,8 @@ namespace DolarBot.Services.Metals
                                                    .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}");
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
-            }
+            embed = AddPlayStoreLink(embed);
+
             return embed;
         }
 

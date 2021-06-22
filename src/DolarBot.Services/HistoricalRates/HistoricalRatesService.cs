@@ -60,13 +60,11 @@ namespace DolarBot.Services.HistoricalRates
             Emoji upEmoji = new Emoji(emojis["arrowUpRed"]);
             Emoji downEmoji = new Emoji(emojis["arrowDownGreen"]);
             Emoji neutralEmoji = new Emoji(emojis["neutral"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
             string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string playStoreUrl = Configuration["playStoreLink"];
             string embedTitle = GetTitle(historicalRatesParam);
             string embedDescription = GetDescription(historicalRatesParam);
             Color embedColor = GetColor(historicalRatesParam);
@@ -115,10 +113,8 @@ namespace DolarBot.Services.HistoricalRates
                                                    .WithThumbnailUrl(chartImageUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddField(fieldTitle, sbField.AppendLineBreak().ToString());
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
-            }
+            embed = AddPlayStoreLink(embed);
+
             return embed;
         }
 

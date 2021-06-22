@@ -177,11 +177,9 @@ namespace DolarBot.Services.Dolar
             Emoji buyEmoji = new Emoji(emojis["buyGreen"]);
             Emoji sellEmoji = new Emoji(emojis["sellGreen"]);
             Emoji sellWithTaxesEmoji = new Emoji(emojis["sellWithTaxesGreen"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
-            string playStoreUrl = Configuration["playStoreLink"];
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Cotizaciones del Dólar")
@@ -214,10 +212,7 @@ namespace DolarBot.Services.Dolar
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
-            }
+            embed = AddPlayStoreLink(embed);
 
             return embed;
         }
@@ -235,11 +230,9 @@ namespace DolarBot.Services.Dolar
             var emojis = Configuration.GetSection("customEmojis");
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
-            string playStoreUrl = Configuration["playStoreLink"];
 
             string dollarImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("dollar")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
@@ -270,10 +263,7 @@ namespace DolarBot.Services.Dolar
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
 
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
-            }
+            embed = AddPlayStoreLink(embed);
 
             return embed;
         }

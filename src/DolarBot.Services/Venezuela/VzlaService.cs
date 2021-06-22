@@ -67,14 +67,12 @@ namespace DolarBot.Services.Venezuela
             Emoji bankEmoji = new Emoji(":bank:");
             Emoji moneyBagEmoji = new Emoji(":moneybag:");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             string thumbnailUrl = Configuration.GetSection("images").GetSection("venezuela")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string playStoreUrl = Configuration["playStoreLink"];
 
             decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
             decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
@@ -104,10 +102,8 @@ namespace DolarBot.Services.Venezuela
                                                    .AddInlineField($"{moneyBagEmoji} Paralelo", $"{currencyEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {paraleloValueText} {GlobalConfiguration.Constants.BLANK_SPACE}");
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
-            }
+            embed = AddPlayStoreLink(embed);
+
             return embed;
         }
 

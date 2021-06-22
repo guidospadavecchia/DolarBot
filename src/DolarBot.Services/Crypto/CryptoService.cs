@@ -201,12 +201,10 @@ namespace DolarBot.Services.Crypto
             Emoji argentinaEmoji = new Emoji(":flag_ar:");
             Emoji usaEmoji = new Emoji(":flag_us:");
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string thumbnailUrl = Configuration.GetSection("images").GetSection("crypto")[cryptoResponse.Currency.ToString().ToLower()];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string playStoreUrl = Configuration["playStoreLink"];
             string lastUpdated = cryptoResponse.Fecha.ToString(cryptoResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ars) ? ars.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
@@ -223,10 +221,8 @@ namespace DolarBot.Services.Crypto
                                                    .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                embed.AddFieldLink(playStoreEmoji, "Descargá la app!", "Play Store", playStoreUrl);
-            }
+            embed = AddPlayStoreLink(embed);
+
             return embed;
         }
 

@@ -1,5 +1,7 @@
-﻿using DolarBot.API;
+﻿using Discord;
+using DolarBot.API;
 using DolarBot.Services.Banking;
+using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 
 namespace DolarBot.Services.Base
@@ -36,6 +38,27 @@ namespace DolarBot.Services.Base
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Appends the play store link as a field into <paramref name="embed"/>.
+        /// </summary>
+        /// <param name="embed">The embed to be modified.</param>
+        /// <returns>The modified <see cref="EmbedBuilder"/>.</returns>
+        public EmbedBuilder AddPlayStoreLink(EmbedBuilder embed)
+        {
+            var emojis = Configuration.GetSection("customEmojis");
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
+            string playStoreUrl = Configuration["playStoreLink"];
+
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                return embed.AddFieldLink(playStoreEmoji, "¡Descargá la app para Android!", "Google Play Store", playStoreUrl);
+            }
+            else
+            {
+                return embed;
+            }
+        }
 
         /// <summary>
         /// Retrieves the thumbnail URL for a particular <see cref="Banks"/> object.

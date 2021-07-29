@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
+using System.Linq;
 
 namespace DolarBot.Util
 {
@@ -50,7 +51,13 @@ namespace DolarBot.Util
         /// Gets the bot's timezone.
         /// </summary>
         /// <returns></returns>
-        public static TimeZoneInfo GetLocalTimeZoneInfo() => TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
+        public static TimeZoneInfo GetLocalTimeZoneInfo()
+        {
+            const string WINDOWS_TIMEZONE = "Argentina Standard Time";
+            const string IANA_TIMEZONE = "America/Argentina/Buenos_Aires";
+            string timeZoneId = TimeZoneInfo.GetSystemTimeZones().Any(x => x.Id.Equals(WINDOWS_TIMEZONE, StringComparison.OrdinalIgnoreCase)) ? WINDOWS_TIMEZONE : IANA_TIMEZONE;
+            return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+        }
         /// <summary>
         /// Gets the localized culture format.
         /// </summary>

@@ -93,13 +93,13 @@ namespace DolarBot.Services.Euro
         public override async Task<EuroResponse> GetByBank(Banks bank)
         {
             EuroTypes euroType = ConvertToEuroType(bank);
-            return await Api.DolarBot.GetEuroRate(euroType).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(euroType);
         }
 
         /// <inheritdoc />
         public override async Task<EuroResponse[]> GetAllStandardRates()
         {
-            return await Task.WhenAll(GetEuroOficial(), GetEuroAhorro(), GetEuroBlue()).ConfigureAwait(false);
+            return await Task.WhenAll(GetEuroOficial(), GetEuroAhorro(), GetEuroBlue());
         }
 
         /// <inheritdoc />
@@ -113,7 +113,7 @@ namespace DolarBot.Services.Euro
                 tasks[i] = Api.DolarBot.GetEuroRate(euroType);
             }
 
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
+            return await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroOficial()
         {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Oficial).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Oficial);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroAhorro()
         {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Ahorro).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Ahorro);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroBlue()
         {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Blue).ConfigureAwait(false);
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Blue);
         }
 
         #endregion

@@ -38,7 +38,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetBinanceCoinRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.BinanceCoin).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.BinanceCoin);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetBitcoinRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Bitcoin).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Bitcoin);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetBitcoinCashRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.BitcoinCash).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.BitcoinCash);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetCardanoRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Cardano).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Cardano);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetChainlinkRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Chainlink).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Chainlink);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetDaiRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.DAI).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.DAI);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetDashRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Dash).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Dash);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetDogecoinRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.DogeCoin).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.DogeCoin);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetEthereumRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Ethereum).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Ethereum);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetMoneroRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Monero).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Monero);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetLitecoinRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Litecoin).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Litecoin);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetPolkadotRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Polkadot).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Polkadot);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetRippleRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Ripple).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Ripple);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetStellarRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Stellar).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Stellar);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetTetherRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Tether).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Tether);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetThetaRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Theta).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Theta);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace DolarBot.Services.Crypto
         /// <returns>A single <see cref="CryptoResponse"/>.</returns>
         public async Task<CryptoResponse> GetUniswapRate()
         {
-            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Uniswap).ConfigureAwait(false);
+            return await Api.DolarBot.GetCryptoCurrencyRate(CryptoCurrencies.Uniswap);
         }
 
         #endregion

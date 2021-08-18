@@ -107,7 +107,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await Service.GetDollarOficial().ConfigureAwait(false);
+                    DollarResponse result = await Service.GetDollarOficial();
                     string description = $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -129,7 +129,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await Service.GetDollarAhorro().ConfigureAwait(false);
+                    DollarResponse result = await Service.GetDollarAhorro();
                     string description = $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -151,7 +151,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await Service.GetDollarBlue().ConfigureAwait(false);
+                    DollarResponse result = await Service.GetDollarBlue();
                     string description = $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -173,7 +173,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await Service.GetDollarPromedio().ConfigureAwait(false);
+                    DollarResponse result = await Service.GetDollarPromedio();
                     string description = $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -195,7 +195,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await Service.GetDollarBolsa().ConfigureAwait(false);
+                    DollarResponse result = await Service.GetDollarBolsa();
                     string description = $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -217,7 +217,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await Service.GetDollarContadoConLiqui().ConfigureAwait(false);
+                    DollarResponse result = await Service.GetDollarContadoConLiqui();
                     string description = $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }

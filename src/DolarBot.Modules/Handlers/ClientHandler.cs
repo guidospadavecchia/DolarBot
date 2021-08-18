@@ -58,7 +58,7 @@ namespace DolarBot.Modules.Handlers
         {
             try
             {
-                await UpdateServerLogAsync(false).ConfigureAwait(false);
+                await UpdateServerLogAsync(false);
 
                 bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl;
                 if (shouldUpdateDbl)

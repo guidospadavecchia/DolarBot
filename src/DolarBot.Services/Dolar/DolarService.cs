@@ -87,7 +87,7 @@ namespace DolarBot.Services.Dolar
                                       GetDollarBlue(),
                                       GetDollarBolsa(),
                                       GetDollarPromedio(),
-                                      GetDollarContadoConLiqui()).ConfigureAwait(false);
+                                      GetDollarContadoConLiqui());
         }
 
         /// <inheritdoc />
@@ -101,14 +101,14 @@ namespace DolarBot.Services.Dolar
                 tasks[i] = Api.DolarBot.GetDollarRate(dollarType);
             }
 
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
+            return await Task.WhenAll(tasks);
         }
 
         /// <inheritdoc />
         public override async Task<DollarResponse> GetByBank(Banks bank)
         {
             DollarTypes dollarType = ConvertToDollarType(bank);
-            return await Api.DolarBot.GetDollarRate(dollarType).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(dollarType);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DollarResponse"/>.</returns>
         public async Task<DollarResponse> GetDollarOficial()
         {
-            return await Api.DolarBot.GetDollarRate(DollarTypes.Oficial).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(DollarTypes.Oficial);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DollarResponse"/>.</returns>
         public async Task<DollarResponse> GetDollarAhorro()
         {
-            return await Api.DolarBot.GetDollarRate(DollarTypes.Ahorro).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(DollarTypes.Ahorro);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DollarResponse"/>.</returns>
         public async Task<DollarResponse> GetDollarBlue()
         {
-            return await Api.DolarBot.GetDollarRate(DollarTypes.Blue).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(DollarTypes.Blue);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DollarResponse"/>.</returns>
         public async Task<DollarResponse> GetDollarPromedio()
         {
-            return await Api.DolarBot.GetDollarRate(DollarTypes.Promedio).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(DollarTypes.Promedio);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DollarResponse"/>.</returns>
         public async Task<DollarResponse> GetDollarBolsa()
         {
-            return await Api.DolarBot.GetDollarRate(DollarTypes.Bolsa).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(DollarTypes.Bolsa);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>A single <see cref="DollarResponse"/>.</returns>
         public async Task<DollarResponse> GetDollarContadoConLiqui()
         {
-            return await Api.DolarBot.GetDollarRate(DollarTypes.ContadoConLiqui).ConfigureAwait(false);
+            return await Api.DolarBot.GetDollarRate(DollarTypes.ContadoConLiqui);
         }
 
         #endregion

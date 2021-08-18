@@ -62,12 +62,12 @@ namespace DolarBot
             string token = GlobalConfiguration.GetToken(Configuration);
 
             PrintCurrentVersion();
-            await RegisterEventsAsync(client, commands, services).ConfigureAwait(false);
-            await client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
-            await client.StartAsync().ConfigureAwait(false);
-            await client.SetGameAsync(GlobalConfiguration.GetStatusText(commandPrefix), type: ActivityType.Listening).ConfigureAwait(false);
+            await RegisterEventsAsync(client, commands, services);
+            await client.LoginAsync(TokenType.Bot, token);
+            await client.StartAsync();
+            await client.SetGameAsync(GlobalConfiguration.GetStatusText(commandPrefix), type: ActivityType.Listening);
 
-            await Task.Delay(-1).ConfigureAwait(false);
+            await Task.Delay(-1);
         }
 
         #endregion

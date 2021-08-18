@@ -107,7 +107,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    EuroResponse result = await Service.GetEuroOficial().ConfigureAwait(false);
+                    EuroResponse result = await Service.GetEuroOficial();
                     string description = $"Cotización del {Format.Bold("Euro oficial")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -129,7 +129,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    EuroResponse result = await Service.GetEuroAhorro().ConfigureAwait(false);
+                    EuroResponse result = await Service.GetEuroAhorro();
                     string description = $"Cotización del {Format.Bold("Euro ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -151,7 +151,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    EuroResponse result = await Service.GetEuroBlue().ConfigureAwait(false);
+                    EuroResponse result = await Service.GetEuroBlue();
                     string description = $"Cotización del {Format.Bold("Euro blue")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }

@@ -69,7 +69,7 @@ namespace DolarBot.Modules.Commands.Base
         /// <param name="ex">The exception to log.</param>
         protected async Task SendErrorReply(Exception ex)
         {
-            await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+            await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
             Logger.Error("Error al ejecutar comando.", ex);
         }
 
@@ -78,20 +78,20 @@ namespace DolarBot.Modules.Commands.Base
         /// </summary>
         protected async Task SendAllStandardRates()
         {
-            TypeResponse[] responses = await Service.GetAllStandardRates().ConfigureAwait(false);
+            TypeResponse[] responses = await Service.GetAllStandardRates();
             if (responses.Any(r => r != null))
             {
                 TypeResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses);
                 if (responses.Length != successfulResponses.Length)
                 {
-                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
+                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
                 }
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             else
             {
-                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                await ReplyAsync(REQUEST_ERROR_MESSAGE);
             }
         }
 
@@ -101,7 +101,7 @@ namespace DolarBot.Modules.Commands.Base
         /// <param name="description">The message to show as a description.</param>
         protected async Task SendAllBankRates(string description)
         {
-            TypeResponse[] responses = await Service.GetAllBankRates().ConfigureAwait(false);
+            TypeResponse[] responses = await Service.GetAllBankRates();
             if (responses.Any(r => r != null))
             {
                 string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
@@ -109,13 +109,13 @@ namespace DolarBot.Modules.Commands.Base
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses, description, thumbnailUrl);
                 if (responses.Length != successfulResponses.Length)
                 {
-                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
+                    await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
                 }
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             else
             {
-                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                await ReplyAsync(REQUEST_ERROR_MESSAGE);
             }
         }
 
@@ -126,15 +126,15 @@ namespace DolarBot.Modules.Commands.Base
         protected async Task SendBankRate(Banks bank, string description)
         {
             string thumbnailUrl = Service.GetBankThumbnailUrl(bank);
-            TypeResponse result = await Service.GetByBank(bank).ConfigureAwait(false);
+            TypeResponse result = await Service.GetByBank(bank);
             if (result != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, null, thumbnailUrl);
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             else
             {
-                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                await ReplyAsync(REQUEST_ERROR_MESSAGE);
             }
         }
 
@@ -148,11 +148,11 @@ namespace DolarBot.Modules.Commands.Base
             if (response != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(response, description);
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             else
             {
-                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                await ReplyAsync(REQUEST_ERROR_MESSAGE);
             }
         }
 
@@ -165,7 +165,7 @@ namespace DolarBot.Modules.Commands.Base
             Currencies currency = GetCurrentCurrency();
             string commandPrefix = Configuration["commandPrefix"];
             string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-            await ReplyAsync($"La cotización del {Format.Bold(bank.GetDescription())} no está disponible para esta moneda. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {currency.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+            await ReplyAsync($"La cotización del {Format.Bold(bank.GetDescription())} no está disponible para esta moneda. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {currency.GetDescription().ToLower()}")}.");
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace DolarBot.Modules.Commands.Base
             Currencies currency = GetCurrentCurrency();
             string commandPrefix = Configuration["commandPrefix"];
             string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {currency.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {currency.GetDescription().ToLower()}")}.");
         }
 
         #endregion

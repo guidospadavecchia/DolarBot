@@ -55,21 +55,21 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    MetalResponse result = await MetalService.GetGoldPrice().ConfigureAwait(false);
+                    MetalResponse result = await MetalService.GetGoldPrice();
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        await ReplyAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -83,21 +83,21 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    MetalResponse result = await MetalService.GetSilverPrice().ConfigureAwait(false);
+                    MetalResponse result = await MetalService.GetSilverPrice();
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        await ReplyAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -111,21 +111,21 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    MetalResponse result = await MetalService.GetCopperPrice().ConfigureAwait(false);
+                    MetalResponse result = await MetalService.GetCopperPrice();
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        await ReplyAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }

@@ -69,16 +69,16 @@ namespace DolarBot.Modules.Commands
                 if (CommandExists(command))
                 {
                     EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
-                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    await ReplyAsync(embed: embed.Build());
                 }
                 else
                 {
-                    await SendPagedHelpReplyAsync().ConfigureAwait(false);
+                    await SendPagedHelpReplyAsync();
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -94,13 +94,13 @@ namespace DolarBot.Modules.Commands
                 List<EmbedBuilder> embeds = CommandExists(command) ? new List<EmbedBuilder>() { GenerateEmbeddedHelpCommand(command) } : GenerateEmbeddedHelp();
                 foreach (var embed in embeds)
                 {
-                    await Context.User.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
+                    await Context.User.SendMessageAsync(embed: embed.Build());
                 }
-                var reply = await ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.").ConfigureAwait(false);
+                var reply = await ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -279,7 +279,7 @@ namespace DolarBot.Modules.Commands
                 Jump = false,
                 Trash = false
             };
-            await PagedReplyAsync(pager, reactions).ConfigureAwait(false);
+            await PagedReplyAsync(pager, reactions);
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ namespace DolarBot.Services.HistoricalRates
         /// <returns>A single <see cref="HistoricalRatesResponse"/> object.</returns>
         public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParams historicalRateParam)
         {
-            return await Api.DolarBot.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
+            return await Api.DolarBot.GetHistoricalRates(historicalRateParam);
         }
 
         #endregion

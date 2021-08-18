@@ -57,21 +57,21 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    VzlaResponse result = await VzlaService.GetDollarRates().ConfigureAwait(false);
+                    VzlaResponse result = await VzlaService.GetDollarRates();
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        await ReplyAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -87,21 +87,21 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    VzlaResponse result = await VzlaService.GetEuroRates().ConfigureAwait(false);
+                    VzlaResponse result = await VzlaService.GetEuroRates();
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                        await ReplyAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }

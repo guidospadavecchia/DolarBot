@@ -38,7 +38,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="CountryRiskResponse"/> object.</returns>
         public async Task<CountryRiskResponse> GetCountryRisk()
         {
-            return await Api.DolarBot.GetCountryRiskValue().ConfigureAwait(false);
+            return await Api.DolarBot.GetCountryRiskValue();
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="BcraResponse"/> object.</returns>
         public async Task<BcraResponse> GetReserves()
         {
-            return await Api.DolarBot.GetBcraValue(BcraValues.Reservas).ConfigureAwait(false);
+            return await Api.DolarBot.GetBcraValue(BcraValues.Reservas);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="BcraResponse"/> object.</returns>
         public async Task<BcraResponse> GetCirculatingMoney()
         {
-            return await Api.DolarBot.GetBcraValue(BcraValues.Circulante).ConfigureAwait(false);
+            return await Api.DolarBot.GetBcraValue(BcraValues.Circulante);
         }
 
         #endregion

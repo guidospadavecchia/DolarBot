@@ -464,7 +464,7 @@ namespace DolarBot.API
                 {
                     string endpoint = type.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<DollarResponse> response = await Client.ExecuteGetAsync<DollarResponse>(request).ConfigureAwait(false);
+                    IRestResponse<DollarResponse> response = await Client.ExecuteGetAsync<DollarResponse>(request);
                     if (response.IsSuccessful)
                     {
                         DollarResponse dolarResponse = response.Data;
@@ -497,7 +497,7 @@ namespace DolarBot.API
                 {
                     string endpoint = type.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<EuroResponse> response = await Client.ExecuteGetAsync<EuroResponse>(request).ConfigureAwait(false);
+                    IRestResponse<EuroResponse> response = await Client.ExecuteGetAsync<EuroResponse>(request);
                     if (response.IsSuccessful)
                     {
                         EuroResponse euroResponse = response.Data;
@@ -530,7 +530,7 @@ namespace DolarBot.API
                 {
                     string endpoint = type.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<RealResponse> response = await Client.ExecuteGetAsync<RealResponse>(request).ConfigureAwait(false);
+                    IRestResponse<RealResponse> response = await Client.ExecuteGetAsync<RealResponse>(request);
                     if (response.IsSuccessful)
                     {
                         RealResponse realResponse = response.Data;
@@ -561,7 +561,7 @@ namespace DolarBot.API
                 else
                 {
                     RestRequest request = new RestRequest(RIESGO_PAIS_ENDPOINT, DataFormat.Json);
-                    IRestResponse<CountryRiskResponse> response = await Client.ExecuteGetAsync<CountryRiskResponse>(request).ConfigureAwait(false);
+                    IRestResponse<CountryRiskResponse> response = await Client.ExecuteGetAsync<CountryRiskResponse>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);
@@ -590,7 +590,7 @@ namespace DolarBot.API
                 {
                     string endpoint = bcraValue.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<BcraResponse> response = await Client.ExecuteGetAsync<BcraResponse>(request).ConfigureAwait(false);
+                    IRestResponse<BcraResponse> response = await Client.ExecuteGetAsync<BcraResponse>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(bcraValue, response.Data);
@@ -619,7 +619,7 @@ namespace DolarBot.API
                 {
                     string endpoint = metal.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<MetalResponse> response = await Client.ExecuteGetAsync<MetalResponse>(request).ConfigureAwait(false);
+                    IRestResponse<MetalResponse> response = await Client.ExecuteGetAsync<MetalResponse>(request);
                     if (response.IsSuccessful)
                     {
                         MetalResponse metalResponse = response.Data;
@@ -651,7 +651,7 @@ namespace DolarBot.API
                 {
                     string endpoint = cryptoCurrency.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request).ConfigureAwait(false);
+                    IRestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
                     if (response.IsSuccessful)
                     {
                         CryptoResponse cryptoResponse = response.Data;
@@ -683,7 +683,7 @@ namespace DolarBot.API
                 {
                     string endpoint = type.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<VzlaResponse> response = await Client.ExecuteGetAsync<VzlaResponse>(request).ConfigureAwait(false);
+                    IRestResponse<VzlaResponse> response = await Client.ExecuteGetAsync<VzlaResponse>(request);
                     if (response.IsSuccessful)
                     {
                         VzlaResponse vzlaResponse = response.Data;
@@ -715,7 +715,7 @@ namespace DolarBot.API
                 {
                     string endpoint = historicalRatesParam.GetDescription();
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<HistoricalRatesResponse> response = await Client.ExecuteGetAsync<HistoricalRatesResponse>(request).ConfigureAwait(false);
+                    IRestResponse<HistoricalRatesResponse> response = await Client.ExecuteGetAsync<HistoricalRatesResponse>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(historicalRatesParam, response.Data);
@@ -787,7 +787,7 @@ namespace DolarBot.API
                         OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; }
                     };
                     request.AddQueryParameter("key", apiKey).AddQueryParameter("short", url);
-                    IRestResponse<CuttlyResponse> response = await Client.ExecuteGetAsync<CuttlyResponse>(request).ConfigureAwait(false);
+                    IRestResponse<CuttlyResponse> response = await Client.ExecuteGetAsync<CuttlyResponse>(request);
 
                     if (response.IsSuccessful)
                     {

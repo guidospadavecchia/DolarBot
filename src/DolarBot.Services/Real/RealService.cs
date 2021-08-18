@@ -79,7 +79,7 @@ namespace DolarBot.Services.Real
         public override async Task<RealResponse> GetByBank(Banks bank)
         {
             RealTypes realType = ConvertToRealType(bank);
-            return await Api.DolarBot.GetRealRate(realType).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(realType);
         }
 
         /// <inheritdoc />
@@ -93,13 +93,13 @@ namespace DolarBot.Services.Real
                 tasks[i] = Api.DolarBot.GetRealRate(realType);
             }
 
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
+            return await Task.WhenAll(tasks);
         }
 
         /// <inheritdoc />
         public override async Task<RealResponse[]> GetAllStandardRates()
         {
-            return await Task.WhenAll(GetRealOficial(), GetRealAhorro(), GetRealBlue()).ConfigureAwait(false);
+            return await Task.WhenAll(GetRealOficial(), GetRealAhorro(), GetRealBlue());
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealOficial()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Oficial).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(RealTypes.Oficial);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealAhorro()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Ahorro).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(RealTypes.Ahorro);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealBlue()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Blue).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(RealTypes.Blue);
         }
 
         #endregion

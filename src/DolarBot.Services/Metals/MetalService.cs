@@ -38,7 +38,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetGoldPrice()
         {
-            return await Api.DolarBot.GetMetalRate(Metal.Gold).ConfigureAwait(false);
+            return await Api.DolarBot.GetMetalRate(Metal.Gold);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetSilverPrice()
         {
-            return await Api.DolarBot.GetMetalRate(Metal.Silver).ConfigureAwait(false);
+            return await Api.DolarBot.GetMetalRate(Metal.Silver);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetCopperPrice()
         {
-            return await Api.DolarBot.GetMetalRate(Metal.Copper).ConfigureAwait(false);
+            return await Api.DolarBot.GetMetalRate(Metal.Copper);
         }
 
         #endregion

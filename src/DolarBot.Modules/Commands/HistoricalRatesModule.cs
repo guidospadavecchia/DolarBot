@@ -62,34 +62,34 @@ namespace DolarBot.Modules.Commands
                 {
                     if(cotizacion == null)
                     {
-                        await ReplyAsync(GetEvolucionInvalidParamsMessage()).ConfigureAwait(false);
+                        await ReplyAsync(GetEvolucionInvalidParamsMessage());
                     }
                     else
                     {
                         string userInput = Format.Sanitize(cotizacion).RemoveFormat(true);
                         if (Enum.TryParse(userInput, true, out HistoricalRatesParams historicalRateParam))
                         {
-                            HistoricalRatesResponse result = await HistoricalRatesService.GetHistoricalRates(historicalRateParam).ConfigureAwait(false);
+                            HistoricalRatesResponse result = await HistoricalRatesService.GetHistoricalRates(historicalRateParam);
                             if (result != null && result.Meses != null && result.Meses.Count > 0)
                             {
                                 EmbedBuilder embed = HistoricalRatesService.CreateHistoricalRatesEmbed(result, historicalRateParam);
-                                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                                await ReplyAsync(embed: embed.Build());
                             }
                             else
                             {
-                                await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                                await ReplyAsync(REQUEST_ERROR_MESSAGE);
                             }
                         }
                         else
                         {
-                            await ReplyAsync(GetEvolucionInvalidParamsMessage()).ConfigureAwait(false);
+                            await ReplyAsync(GetEvolucionInvalidParamsMessage());
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }

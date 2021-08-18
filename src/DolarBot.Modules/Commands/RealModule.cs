@@ -107,7 +107,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealResponse result = await Service.GetRealOficial().ConfigureAwait(false);
+                    RealResponse result = await Service.GetRealOficial();
                     string description = $"Cotización del {Format.Bold("Real oficial")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -129,7 +129,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealResponse result = await Service.GetRealAhorro().ConfigureAwait(false);
+                    RealResponse result = await Service.GetRealAhorro();
                     string description = $"Cotización del {Format.Bold("Real ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }
@@ -151,7 +151,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealResponse result = await Service.GetRealBlue().ConfigureAwait(false);
+                    RealResponse result = await Service.GetRealBlue();
                     string description = $"Cotización del {Format.Bold("Real blue")} expresada en {Format.Bold("pesos argentinos")}.";
                     await SendStandardRate(result, description);
                 }

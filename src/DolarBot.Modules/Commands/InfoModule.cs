@@ -70,11 +70,11 @@ namespace DolarBot.Modules.Commands
                                      .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
                                      .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
 
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -94,11 +94,11 @@ namespace DolarBot.Modules.Commands
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"El ID del servidor es {sid}");
 
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -119,7 +119,7 @@ namespace DolarBot.Modules.Commands
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                var message = await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                var message = await ReplyAsync(embed: embed.Build());
                 sw.Stop();
 
                 string responseTime = $"{Context.Client.Latency} ms";
@@ -136,11 +136,11 @@ namespace DolarBot.Modules.Commands
                          .AddInlineField("Latencia del gateway", $"{gatewayEmoji} {latency}");
 
                     x.Embed = embed.Build();
-                }).ConfigureAwait(false);
+                });
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -167,11 +167,11 @@ namespace DolarBot.Modules.Commands
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"Invita al bot haciendo {Format.Url("click acá", inviteLink)}");
 
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -191,7 +191,7 @@ namespace DolarBot.Modules.Commands
                                  .WithThumbnailUrl(infoImageUrl)
                                  .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");
 
-            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+            await ReplyAsync(embed: embed.Build());
         }
 
         [Command("bot", RunMode = RunMode.Async)]
@@ -231,11 +231,11 @@ namespace DolarBot.Modules.Commands
                                      .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLine($"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}").AppendLineBreak())
                                      .WithFooter($"Hecho con {blueHeartEmoji} en .NET 5");
 
-                await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -247,7 +247,7 @@ namespace DolarBot.Modules.Commands
         {
             string statusText = await InfoService.GetApiStatus();
             EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, Context.Client.Latency);
-            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+            await ReplyAsync(embed: embed.Build());
         }
     }
 }

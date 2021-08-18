@@ -61,11 +61,11 @@ namespace DolarBot.Modules.Commands
             {
                 string commandPrefix = Configuration["commandPrefix"];
                 string currencies = string.Join(", ", Enum.GetValues(typeof(Currencies)).Cast<Currencies>().Select(x => Format.Bold(x.GetDescription())));
-                await ReplyAsync($"Monedas disponibles: {currencies}.").ConfigureAwait(false);
+                await ReplyAsync($"Monedas disponibles: {currencies}.");
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -91,12 +91,12 @@ namespace DolarBot.Modules.Commands
                         IBankCurrencyService currencyService = GetCurrencyService(currency);
                         Banks[] banks = currencyService.GetValidBanks();
                         string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
-                        await ReplyAsync($"Parametros disponibles para utilizar en comandos de {Format.Bold(currency.GetDescription())}:".AppendLineBreak().AppendLineBreak() + $"{bankList}.").ConfigureAwait(false);
+                        await ReplyAsync($"Parametros disponibles para utilizar en comandos de {Format.Bold(currency.GetDescription())}:".AppendLineBreak().AppendLineBreak() + $"{bankList}.");
                     }
                     else
                     {
                         //Unknown parameter
-                        await ReplyAsync($"Moneda '{Format.Bold(userInput)}' inexistente. Verifique las monedas disponibles con {Format.Code($"{commandPrefix}{currencyCommand}")}.").ConfigureAwait(false);
+                        await ReplyAsync($"Moneda '{Format.Bold(userInput)}' inexistente. Verifique las monedas disponibles con {Format.Code($"{commandPrefix}{currencyCommand}")}.");
                     }
                 }
                 else
@@ -118,7 +118,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }
@@ -134,16 +134,16 @@ namespace DolarBot.Modules.Commands
                 Quote quote = QuoteService.GetRandomQuote();
                 if (quote != null && !string.IsNullOrWhiteSpace(quote.Text))
                 {
-                    await ReplyAsync($"{Format.Italics($"\"{quote.Text}\"")} -{Format.Bold(quote.Author)}.").ConfigureAwait(false);
+                    await ReplyAsync($"{Format.Italics($"\"{quote.Text}\"")} -{Format.Bold(quote.Author)}.");
                 }
                 else
                 {
-                    await ReplyAsync($"{Format.Bold("Error")}. No se puede acceder a las frases célebres en este momento. Intentá nuevamente más tarde.").ConfigureAwait(false);
+                    await ReplyAsync($"{Format.Bold("Error")}. No se puede acceder a las frases célebres en este momento. Intentá nuevamente más tarde.");
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
                 Logger.Error("Error al ejecutar comando.", ex);
             }
         }

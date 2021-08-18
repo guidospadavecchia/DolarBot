@@ -39,7 +39,7 @@ namespace DolarBot.Services.Venezuela
         /// <returns>A <see cref="VzlaResponse"/> object.</returns>
         public async Task<VzlaResponse> GetDollarRates()
         {
-            return await Api.DolarBot.GetVzlaRates(VenezuelaTypes.Dollar).ConfigureAwait(false);
+            return await Api.DolarBot.GetVzlaRates(VenezuelaTypes.Dollar);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace DolarBot.Services.Venezuela
         /// <returns>A <see cref="VzlaResponse"/> object.</returns>
         public async Task<VzlaResponse> GetEuroRates()
         {
-            return await Api.DolarBot.GetVzlaRates(VenezuelaTypes.Euro).ConfigureAwait(false);
+            return await Api.DolarBot.GetVzlaRates(VenezuelaTypes.Euro);
         }
 
         #endregion

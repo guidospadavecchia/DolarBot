@@ -75,13 +75,13 @@ namespace DolarBot.Modules.Handlers
             int argPos = default;
             if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
             {
-                IResult result = await Commands.ExecuteAsync(context, argPos, Services).ConfigureAwait(false);
+                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
                 if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
                     switch (result.Error)
                     {
                         case CommandError.BadArgCount:
-                            await ProcessBadArgCount(context, argPos).ConfigureAwait(false);
+                            await ProcessBadArgCount(context, argPos);
                             break;
                         case CommandError.Exception:
                         case CommandError.Unsuccessful:
@@ -122,11 +122,11 @@ namespace DolarBot.Modules.Handlers
             string commandSummary = GetCommandSummary(commandName);
             if (!string.IsNullOrWhiteSpace(commandSummary))
             {
-                await context.Channel.SendMessageAsync(Format.Italics(commandSummary)).ConfigureAwait(false);
+                await context.Channel.SendMessageAsync(Format.Italics(commandSummary));
             }
             else
             {
-                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {Format.Bold($"{commandPrefix}{commandName}")}. Verificá los parámetros con {Format.Bold($"{commandPrefix}ayuda")}.").ConfigureAwait(false);
+                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {Format.Bold($"{commandPrefix}{commandName}")}. Verificá los parámetros con {Format.Bold($"{commandPrefix}ayuda")}.");
             }
         }
 

@@ -7,7 +7,6 @@ using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Currencies;
 using DolarBot.Services.Real;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -22,20 +21,8 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(3)]
     [HelpTitle("Cotizaciones del Real")]
-    public class RealModule : BaseInteractiveModule
+    public class RealModule : BaseFiatCurrencyModule<RealService, RealResponse>
     {
-        #region Vars
-        /// <summary>
-        /// Provides methods to retrieve information about real rates.
-        /// </summary>
-        private readonly RealService RealService;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
-        #endregion
-
         #region Constructor
         /// <summary>
         /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
@@ -43,11 +30,17 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public RealModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
-        {
-            Logger = logger;
-            RealService = new RealService(configuration, api);
-        }
+        public RealModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
+        #endregion
+
+        #region Methods
+
+        /// <inheritdoc />
+        protected override RealService CreateService(IConfiguration configuration, ApiCalls api) => new RealService(configuration, api);
+
+        /// <inheritdoc />
+        protected override Currencies GetCurrentCurrency() => Currencies.Real;
+
         #endregion
 
         [Command("real", RunMode = RunMode.Async)]
@@ -70,84 +63,36 @@ namespace DolarBot.Modules.Commands
                         {
                             if (bank == Banks.Bancos)
                             {
-                                //Show all bank rates
-                                RealResponse[] responses = await RealService.GetAllBankRates().ConfigureAwait(false);
-                                if (responses.Any(r => r != null))
-                                {
-                                    RealResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-
-                                    string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
-                                    EmbedBuilder embed = RealService.CreateRealEmbed(successfulResponses, $"Cotizaciones disponibles del {Format.Bold("Real oficial")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
-                                    if (responses.Length != successfulResponses.Length)
-                                    {
-                                        await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
-                                    }
-                                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                                }
-                                else
-                                {
-                                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                                }
+                                string description = $"Cotizaciones disponibles del {Format.Bold("Real oficial")} expresadas en {Format.Bold("pesos argentinos")}.";
+                                await SendAllBankRates(description);
                             }
                             else
                             {
-                                if (RealService.GetValidBanks().Contains(bank))
+                                if (Service.GetValidBanks().Contains(bank))
                                 {
-                                    //Show individual bank rate
-                                    string thumbnailUrl = RealService.GetBankThumbnailUrl(bank);
-                                    RealResponse result = await RealService.GetByBank(bank).ConfigureAwait(false);
-                                    if (result != null)
-                                    {
-                                        EmbedBuilder embed = await RealService.CreateRealEmbedAsync(result, $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
-                                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                                    }
-                                    else
-                                    {
-                                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                                    }
+                                    string description = $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
+                                    await SendBankRate(bank, description);
                                 }
                                 else
                                 {
-                                    //Invalid bank for currency
-                                    string commandPrefix = Configuration["commandPrefix"];
-                                    string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                                    await ReplyAsync($"La cotización del {Format.Bold(bank.GetDescription())} no está disponible para esta moneda. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Real.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+                                    await SendInvalidBankForCurrency(bank);
                                 }
                             }
                         }
                         else
                         {
-                            //Unknown parameter
-                            string commandPrefix = Configuration["commandPrefix"];
-                            string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Real.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+                            await SendUnknownBankParameter(userInput);
                         }
                     }
                     else
                     {
-                        //Show all Real types (not banks)
-                        RealResponse[] responses = await RealService.GetAllRealRates().ConfigureAwait(false);
-                        if (responses.Any(r => r != null))
-                        {
-                            RealResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                            EmbedBuilder embed = RealService.CreateRealEmbed(successfulResponses);
-                            if (responses.Length != successfulResponses.Length)
-                            {
-                                await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
-                            }
-                            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                        }
+                        await SendAllStandardRates();
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -162,22 +107,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealResponse result = await RealService.GetRealOficial().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await RealService.CreateRealEmbedAsync(result, $"Cotización del {Format.Bold("Real oficial")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    RealResponse result = await Service.GetRealOficial().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("Real oficial")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -192,22 +129,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealResponse result = await RealService.GetRealAhorro().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await RealService.CreateRealEmbedAsync(result, $"Cotización del {Format.Bold("Real ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    RealResponse result = await Service.GetRealAhorro().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("Real ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -222,22 +151,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    RealResponse result = await RealService.GetRealBlue().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await RealService.CreateRealEmbedAsync(result, $"Cotización del {Format.Bold("Real blue")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    RealResponse result = await Service.GetRealBlue().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("Real blue")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
     }

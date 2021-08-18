@@ -19,7 +19,7 @@ namespace DolarBot.Services.Euro
     /// <summary>
     /// Contains several methods to process Euro commands.
     /// </summary>
-    public class EuroService : BaseCurrencyService
+    public class EuroService : BaseCurrencyService<EuroResponse>
     {
         #region Constants
         private const string EURO_OFICIAL_TITLE = "Euro Oficial";
@@ -89,22 +89,21 @@ namespace DolarBot.Services.Euro
 
         #region API Calls
 
-        /// <summary>
-        /// Fetches a single rate by bank. Only accepts banks returned by <see cref="GetValidBanks"/>.
-        /// </summary>
-        /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetByBank(Banks bank)
+        /// <inheritdoc />
+        public override async Task<EuroResponse> GetByBank(Banks bank)
         {
             EuroTypes euroType = ConvertToEuroType(bank);
             return await Api.DolarBot.GetEuroRate(euroType).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Fetches all oficial euro rates from <see cref="Banks"/>.
-        /// </summary>
-        /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
-        public async Task<EuroResponse[]> GetAllBankRates()
+        /// <inheritdoc />
+        public override async Task<EuroResponse[]> GetAllStandardRates()
+        {
+            return await Task.WhenAll(GetEuroOficial(), GetEuroAhorro(), GetEuroBlue()).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public override async Task<EuroResponse[]> GetAllBankRates()
         {
             List<Banks> banks = GetValidBanks().ToList();
             Task<EuroResponse>[] tasks = new Task<EuroResponse>[banks.Count];
@@ -115,15 +114,6 @@ namespace DolarBot.Services.Euro
             }
 
             return await Task.WhenAll(tasks).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches all available euro prices.
-        /// </summary>
-        /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
-        public async Task<EuroResponse[]> GetAllEuroRates()
-        {
-            return await Task.WhenAll(GetEuroOficial(), GetEuroAhorro(), GetEuroBlue()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -157,25 +147,15 @@ namespace DolarBot.Services.Euro
 
         #region Embed       
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple Euro responses.
-        /// </summary>
-        /// <param name="euroResponses">The Euro responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateEuroEmbed(EuroResponse[] euroResponses)
+        /// <inheritdoc />
+        public override EmbedBuilder CreateEmbed(EuroResponse[] euroResponses)
         {
             string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
-            return CreateEuroEmbed(euroResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
+            return CreateEmbed(euroResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
         }
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple euro responses specifying a custom description and thumbnail URL.
-        /// </summary>
-        /// <param name="euroResponses">The euro responses to show.</param>
-        /// <param name="description">The embed's description.</param>
-        /// <param name="thumbnailUrl">The URL of the embed's thumbnail image.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateEuroEmbed(EuroResponse[] euroResponses, string description, string thumbnailUrl)
+        /// <inheritdoc />
+        public override EmbedBuilder CreateEmbed(EuroResponse[] euroResponses, string description, string thumbnailUrl)
         {
             Emoji euroEmoji = new Emoji(":euro:");
             Emoji clockEmoji = new Emoji("\u23F0");
@@ -222,15 +202,8 @@ namespace DolarBot.Services.Euro
             return embed;
         }
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for a single euro response specifying a custom description, title and thumbnail URL.
-        /// </summary>
-        /// <param name="euroResponse">>The euro response to show.</param>
-        /// <param name="description">The embed's description.</param>
-        /// <param name="title">Optional. The embed's title.</param>
-        /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateEuroEmbedAsync(EuroResponse euroResponse, string description, string title = null, string thumbnailUrl = null)
+        /// <inheritdoc />
+        public override async Task<EmbedBuilder> CreateEmbedAsync(EuroResponse euroResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji euroEmoji = new Emoji(":euro:");

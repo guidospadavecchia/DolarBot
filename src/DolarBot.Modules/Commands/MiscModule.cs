@@ -4,7 +4,7 @@ using DolarBot.API;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Banking;
-using DolarBot.Services.Base;
+using DolarBot.Services.Banking.Interfaces;
 using DolarBot.Services.Currencies;
 using DolarBot.Services.Dolar;
 using DolarBot.Services.Euro;
@@ -88,7 +88,7 @@ namespace DolarBot.Modules.Commands
                     string userInput = Format.Sanitize(moneda).RemoveFormat(true);
                     if (Enum.TryParse(userInput, true, out Currencies currency))
                     {
-                        BaseCurrencyService currencyService = GetCurrencyService(currency);
+                        IBankCurrencyService currencyService = GetCurrencyService(currency);
                         Banks[] banks = currencyService.GetValidBanks();
                         string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
                         await ReplyAsync($"Parametros disponibles para utilizar en comandos de {Format.Bold(currency.GetDescription())}:".AppendLineBreak().AppendLineBreak() + $"{bankList}.").ConfigureAwait(false);
@@ -107,7 +107,7 @@ namespace DolarBot.Modules.Commands
                     Currencies[] currencies = Enum.GetValues(typeof(Currencies)).Cast<Currencies>().ToArray();
                     foreach (Currencies currency in currencies)
                     {
-                        BaseCurrencyService currencyService = GetCurrencyService(currency);
+                        IBankCurrencyService currencyService = GetCurrencyService(currency);
                         Banks[] banks = currencyService.GetValidBanks();
                         string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
                         message += $"{bankEmoji} {Format.Bold(currency.GetDescription())}: {bankList}.".AppendLineBreak();
@@ -153,7 +153,7 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="currency">The currency type.</param>
         /// <returns>An instantiated service.</returns>
-        private BaseCurrencyService GetCurrencyService(Currencies currency)
+        private IBankCurrencyService GetCurrencyService(Currencies currency)
         {
             return currency switch
             {

@@ -19,7 +19,7 @@ namespace DolarBot.Services.Real
     /// <summary>
     /// Contains several methods to process Real (Brazil) commands.
     /// </summary>
-    public class RealService : BaseCurrencyService
+    public class RealService : BaseCurrencyService<RealResponse>
     {
         #region Constants
         private const string REAL_OFICIAL_TITLE = "Real Oficial";
@@ -75,22 +75,15 @@ namespace DolarBot.Services.Real
 
         #region API Calls
 
-        /// <summary>
-        /// Fetches a single rate by bank. Only accepts banks returned by <see cref="GetValidBanks"/>.
-        /// </summary>
-        /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="RealResponse"/>.</returns>
-        public async Task<RealResponse> GetByBank(Banks bank)
+        /// <inheritdoc />
+        public override async Task<RealResponse> GetByBank(Banks bank)
         {
             RealTypes realType = ConvertToRealType(bank);
             return await Api.DolarBot.GetRealRate(realType).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Fetches all oficial Real rates from <see cref="Banks"/>.
-        /// </summary>
-        /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
-        public async Task<RealResponse[]> GetAllBankRates()
+        /// <inheritdoc />
+        public override async Task<RealResponse[]> GetAllBankRates()
         {
             List<Banks> banks = GetValidBanks().ToList();
             Task<RealResponse>[] tasks = new Task<RealResponse>[banks.Count];
@@ -103,11 +96,8 @@ namespace DolarBot.Services.Real
             return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Fetches all available Real prices.
-        /// </summary>
-        /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
-        public async Task<RealResponse[]> GetAllRealRates()
+        /// <inheritdoc />
+        public override async Task<RealResponse[]> GetAllStandardRates()
         {
             return await Task.WhenAll(GetRealOficial(), GetRealAhorro(), GetRealBlue()).ConfigureAwait(false);
         }
@@ -143,25 +133,15 @@ namespace DolarBot.Services.Real
 
         #region Embed
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses.
-        /// </summary>
-        /// <param name="realResponses">The Real responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRealEmbed(RealResponse[] realResponses)
+        /// <inheritdoc />
+        public override EmbedBuilder CreateEmbed(RealResponse[] realResponses)
         {
             string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
-            return CreateRealEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
+            return CreateEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
         }
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses specifying a custom description and thumbnail URL.
-        /// </summary>
-        /// <param name="realResponses">The Real responses to show.</param>
-        /// <param name="description">The embed's description.</param>
-        /// <param name="thumbnailUrl">The URL of the embed's thumbnail image.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateRealEmbed(RealResponse[] realResponses, string description, string thumbnailUrl)
+        /// <inheritdoc />
+        public override EmbedBuilder CreateEmbed(RealResponse[] realResponses, string description, string thumbnailUrl)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new Emoji(emojis["real"]);
@@ -209,15 +189,8 @@ namespace DolarBot.Services.Real
             return embed;
         }
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for a single Real response specifying a custom description, title and thumbnail URL.
-        /// </summary>
-        /// <param name="realResponse">>The Real response to show.</param>
-        /// <param name="description">The embed's description.</param>
-        /// <param name="title">Optional. The embed's title.</param>
-        /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateRealEmbedAsync(RealResponse realResponse, string description, string title = null, string thumbnailUrl = null)
+        /// <inheritdoc />
+        public override async Task<EmbedBuilder> CreateEmbedAsync(RealResponse realResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new Emoji(emojis["real"]);

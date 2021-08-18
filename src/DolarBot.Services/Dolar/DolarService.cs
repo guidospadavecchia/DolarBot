@@ -19,7 +19,7 @@ namespace DolarBot.Services.Dolar
     /// <summary>
     /// Contains several methods to process dollar commands.
     /// </summary>
-    public class DolarService : BaseCurrencyService
+    public class DolarService : BaseCurrencyService<DollarResponse>
     {
         #region Constants
         private const string DOLAR_OFICIAL_TITLE = "Dólar Oficial";
@@ -41,7 +41,7 @@ namespace DolarBot.Services.Dolar
 
         #region Methods
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public override Banks[] GetValidBanks()
         {
             return Enum.GetValues(typeof(Banks)).Cast<Banks>().ToArray();
@@ -79,11 +79,19 @@ namespace DolarBot.Services.Dolar
 
         #region API Calls
 
-        /// <summary>
-        /// Fetches all oficial dollar rates from <see cref="Banks"/>.
-        /// </summary>
-        /// <returns>An array of <see cref="DollarResponse"/> objects.</returns>
-        public async Task<DollarResponse[]> GetAllBankRates()
+        /// <inheritdoc />
+        public override async Task<DollarResponse[]> GetAllStandardRates()
+        {
+            return await Task.WhenAll(GetDollarOficial(),
+                                      GetDollarAhorro(),
+                                      GetDollarBlue(),
+                                      GetDollarBolsa(),
+                                      GetDollarPromedio(),
+                                      GetDollarContadoConLiqui()).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public override async Task<DollarResponse[]> GetAllBankRates()
         {
             List<Banks> banks = GetValidBanks().Where(b => b != Banks.Bancos).ToList();
             Task<DollarResponse>[] tasks = new Task<DollarResponse>[banks.Count];
@@ -96,26 +104,8 @@ namespace DolarBot.Services.Dolar
             return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Fetches all available dollar prices.
-        /// </summary>
-        /// <returns>An array of <see cref="DollarResponse"/> objects.</returns>
-        public async Task<DollarResponse[]> GetAllDollarRates()
-        {
-            return await Task.WhenAll(GetDollarOficial(),
-                                      GetDollarAhorro(),
-                                      GetDollarBlue(),
-                                      GetDollarBolsa(),
-                                      GetDollarPromedio(),
-                                      GetDollarContadoConLiqui()).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Fetches the official dollar rate for the specified bank.
-        /// </summary>
-        /// <param name="bank">The bank who's rate is to be retrieved.</param>
-        /// <returns>A single <see cref="DollarResponse"/>.</returns>
-        public async Task<DollarResponse> GetByBank(Banks bank)
+        /// <inheritdoc />
+        public override async Task<DollarResponse> GetByBank(Banks bank)
         {
             DollarTypes dollarType = ConvertToDollarType(bank);
             return await Api.DolarBot.GetDollarRate(dollarType).ConfigureAwait(false);
@@ -179,25 +169,15 @@ namespace DolarBot.Services.Dolar
 
         #region Embeds
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple dollar responses.
-        /// </summary>
-        /// <param name="dollarResponses">The dollar responses to show.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateDollarEmbed(DollarResponse[] dollarResponses)
+        /// <inheritdoc />
+        public override EmbedBuilder CreateEmbed(DollarResponse[] dollarResponses)
         {
             string dollarImageUrl = Configuration.GetSection("images").GetSection("dollar")["64"];
-            return CreateDollarEmbed(dollarResponses, $"Cotizaciones disponibles del {Format.Bold("dólar")} expresadas en {Format.Bold("pesos argentinos")}.", dollarImageUrl);
+            return CreateEmbed(dollarResponses, $"Cotizaciones disponibles del {Format.Bold("dólar")} expresadas en {Format.Bold("pesos argentinos")}.", dollarImageUrl);
         }
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for multiple dollar responses specifying a custom description and thumbnail URL.
-        /// </summary>
-        /// <param name="dollarResponses">The dollar responses to show.</param>
-        /// <param name="description">The embed's description.</param>
-        /// <param name="thumbnailUrl">The URL of the embed's thumbnail image.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateDollarEmbed(DollarResponse[] dollarResponses, string description, string thumbnailUrl)
+        /// <inheritdoc />
+        public override EmbedBuilder CreateEmbed(DollarResponse[] dollarResponses, string description, string thumbnailUrl)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");
@@ -245,15 +225,8 @@ namespace DolarBot.Services.Dolar
             return embed;
         }
 
-        /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for a single dollar response specifying a custom description, title and thumbnail URL.
-        /// </summary>
-        /// <param name="dollarResponse">The dollar response to show.</param>
-        /// <param name="description">The embed's description.</param>
-        /// <param name="title">Optional. The embed's title.</param>
-        /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateDollarEmbedAsync(DollarResponse dollarResponse, string description, string title = null, string thumbnailUrl = null)
+        /// <inheritdoc />
+        public override async Task<EmbedBuilder> CreateEmbedAsync(DollarResponse dollarResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji dollarEmoji = new Emoji("\uD83D\uDCB5");

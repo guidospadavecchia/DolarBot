@@ -7,7 +7,6 @@ using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Currencies;
 using DolarBot.Services.Dolar;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -22,20 +21,8 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(1)]
     [HelpTitle("Cotizaciones del Dólar")]
-    public class DolarModule : BaseInteractiveModule
+    public class DolarModule : BaseFiatCurrencyModule<DolarService, DollarResponse>
     {
-        #region Vars
-        /// <summary>
-        /// Provides methods to retrieve information about dollar rates.
-        /// </summary>
-        private readonly DolarService DolarService;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
-        #endregion
-
         #region Constructor
         /// <summary>
         /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
@@ -43,11 +30,17 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public DolarModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
-        {
-            Logger = logger;
-            DolarService = new DolarService(configuration, api);
-        }
+        public DolarModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
+        #endregion
+
+        #region Methods
+
+        /// <inheritdoc />
+        protected override DolarService CreateService(IConfiguration configuration, ApiCalls api) => new DolarService(configuration, api);
+
+        /// <inheritdoc />
+        protected override Currencies GetCurrentCurrency() => Currencies.Dolar;
+
         #endregion
 
         [Command("dolar", RunMode = RunMode.Async)]
@@ -70,81 +63,36 @@ namespace DolarBot.Modules.Commands
                         {
                             if (bank == Banks.Bancos)
                             {
-                                //Show all bank rates
-                                DollarResponse[] responses = await DolarService.GetAllBankRates().ConfigureAwait(false);
-                                if (responses.Any(r => r != null))
-                                {
-                                    string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
-                                    DollarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                                    EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("dólar oficial")} expresadas en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
-                                    if (responses.Length != successfulResponses.Length)
-                                    {
-                                        await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
-                                    }
-                                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                                }
-                                else
-                                {
-                                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                                }
+                                string description = $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("dólar oficial")} expresadas en {Format.Bold("pesos argentinos")}.";
+                                await SendAllBankRates(description);
                             }
                             else
                             {
-                                if (DolarService.GetValidBanks().Contains(bank))
+                                if (Service.GetValidBanks().Contains(bank))
                                 {
-                                    //Show individual bank rate
-                                    string thumbnailUrl = DolarService.GetBankThumbnailUrl(bank);
-                                    DollarResponse result = await DolarService.GetByBank(bank).ConfigureAwait(false);
-                                    if (result != null)
-                                    {
-                                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
-                                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                                    }
-                                    else
-                                    {
-                                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                                    }
+                                    string description = $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
+                                    await SendBankRate(bank, description);
                                 }
                                 else
                                 {
-                                    //Invalid bank for currency
-                                    string commandPrefix = Configuration["commandPrefix"];
-                                    string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                                    await ReplyAsync($"La cotización del {Format.Bold(bank.GetDescription())} no está disponible para esta moneda. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Dolar.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+                                    await SendInvalidBankForCurrency(bank);
                                 }
                             }
                         }
                         else
-                        {   //Unknown parameter
-                            string commandPrefix = Configuration["commandPrefix"];
-                            string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                            await ReplyAsync($"Banco '{Format.Bold(userInput)}' inexistente. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Dolar.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+                        {
+                            await SendUnknownBankParameter(userInput);
                         }
                     }
                     else
-                    {   //Show all dollar types (not banks)
-                        DollarResponse[] responses = await DolarService.GetAllDollarRates().ConfigureAwait(false);
-                        if (responses.Any(r => r != null))
-                        {
-                            DollarResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                            EmbedBuilder embed = DolarService.CreateDollarEmbed(successfulResponses);
-                            if (responses.Length != successfulResponses.Length)
-                            {
-                                await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
-                            }
-                            await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                        }
+                    {
+                        await SendAllStandardRates();
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -159,22 +107,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await DolarService.GetDollarOficial().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    DollarResponse result = await Service.GetDollarOficial().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("dólar oficial")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -189,22 +129,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await DolarService.GetDollarAhorro().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    DollarResponse result = await Service.GetDollarAhorro().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -219,22 +151,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await DolarService.GetDollarBlue().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    DollarResponse result = await Service.GetDollarBlue().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -249,22 +173,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await DolarService.GetDollarPromedio().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    DollarResponse result = await Service.GetDollarPromedio().ConfigureAwait(false);
+                    string description = $"Cotización {Format.Bold("promedio de los bancos del dólar oficial")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -279,22 +195,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await DolarService.GetDollarBolsa().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    DollarResponse result = await Service.GetDollarBolsa().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("dólar bolsa (MEP)")} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -309,22 +217,14 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    DollarResponse result = await DolarService.GetDollarContadoConLiqui().ConfigureAwait(false);
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.");
-                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
-                    }
+                    DollarResponse result = await Service.GetDollarContadoConLiqui().ConfigureAwait(false);
+                    string description = $"Cotización del {Format.Bold("dólar contado con liquidación")}{Environment.NewLine} expresada en {Format.Bold("pesos argentinos")}.";
+                    await SendStandardRate(result, description);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
     }

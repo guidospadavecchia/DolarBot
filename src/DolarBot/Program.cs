@@ -49,12 +49,12 @@ namespace DolarBot
             ConfigureLogger();
             QuoteService.TryLoadQuotes();
             
-            ApiCalls api = new ApiCalls(Configuration, logger);
-            DiscordSocketClient client = new DiscordSocketClient(new DiscordSocketConfig()
+            ApiCalls api = new(Configuration, logger);
+            DiscordSocketClient client = new(new DiscordSocketConfig()
             {
                 ExclusiveBulkDelete = true,
             });
-            CommandService commands = new CommandService();
+            CommandService commands = new();
 
             IServiceProvider services = ConfigureServices(client, commands, api);
             
@@ -146,12 +146,12 @@ namespace DolarBot
         {
             client.Log += LogClientEvent;
 
-            ClientHandler clientHandler = new ClientHandler(client, Configuration, logger);
+            ClientHandler clientHandler = new(client, Configuration, logger);
             client.Ready += clientHandler.OnReady;
             client.JoinedGuild += clientHandler.OnGuildCountChanged;
             client.LeftGuild += clientHandler.OnGuildCountChanged;
 
-            CommandHandler commandHandler = new CommandHandler(client, commands, services, Configuration, logger);
+            CommandHandler commandHandler = new(client, commands, services, Configuration, logger);
             client.MessageReceived += commandHandler.HandleCommandAsync;
             await commands.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
         }

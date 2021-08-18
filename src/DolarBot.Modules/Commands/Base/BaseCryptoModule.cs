@@ -1,7 +1,10 @@
-﻿using DolarBot.API;
+﻿using Discord;
+using DolarBot.API;
+using DolarBot.API.Models;
 using DolarBot.Services.Crypto;
 using log4net;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands.Base
 {
@@ -15,11 +18,6 @@ namespace DolarBot.Modules.Commands.Base
         /// Provides methods to retrieve information about cryptocurrencies rates and values.
         /// </summary>
         protected readonly CryptoService CryptoService;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        protected readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -27,11 +25,31 @@ namespace DolarBot.Modules.Commands.Base
         /// Initializes the object using the <see cref="IConfiguration"/> object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
-        public BaseCryptoModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
+        public BaseCryptoModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
-            Logger = logger;
             CryptoService = new CryptoService(configuration, api);
         }
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Replies with an embed message containing the rate for the current cryptocurrency.
+        /// </summary>
+        /// <param name="response">The crypto response with the data.</param>
+        protected async Task SendCryptoReply(CryptoResponse response)
+        {
+            if (response != null)
+            {
+                EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(response);
+                await ReplyAsync(embed: embed.Build());
+            }
+            else
+            {
+                await ReplyAsync(REQUEST_ERROR_MESSAGE);
+            }
+        }
+
         #endregion
     }
 }

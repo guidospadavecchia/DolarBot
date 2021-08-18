@@ -1,6 +1,10 @@
 ﻿using Discord.Addons.Interactive;
 using Discord.Commands;
+using DolarBot.Util;
+using log4net;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands.Base
 {
@@ -18,6 +22,10 @@ namespace DolarBot.Modules.Commands.Base
         /// Provides access to application settings.
         /// </summary>
         protected readonly IConfiguration Configuration;
+        /// <summary>
+        /// The log4net logger.
+        /// </summary>
+        protected readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -25,10 +33,25 @@ namespace DolarBot.Modules.Commands.Base
         /// Initializes the object using the <see cref="IConfiguration"/> object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
-        public BaseInteractiveModule(IConfiguration configuration)
+        public BaseInteractiveModule(IConfiguration configuration, ILog logger)
         {
             Configuration = configuration;
+            Logger = logger;
         }
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Sends a reply indicating an error has occurred.
+        /// </summary>
+        /// <param name="ex">The exception to log.</param>
+        protected async Task SendErrorReply(Exception ex)
+        {
+            await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
+            Logger.Error("Error al ejecutar comando.", ex);
+        }
+
         #endregion
     }
 }

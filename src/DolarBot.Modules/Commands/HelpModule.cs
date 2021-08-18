@@ -37,11 +37,6 @@ namespace DolarBot.Modules.Commands
         /// Service which provides access to the available commands.
         /// </summary>
         private readonly CommandService Commands;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -51,9 +46,8 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public HelpModule(IConfiguration configuration, ILog logger, CommandService commands) : base(configuration)
+        public HelpModule(IConfiguration configuration, ILog logger, CommandService commands) : base(configuration, logger)
         {
-            Logger = logger;
             Commands = commands;
         }
         #endregion
@@ -78,8 +72,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -92,16 +85,15 @@ namespace DolarBot.Modules.Commands
             try
             {
                 List<EmbedBuilder> embeds = CommandExists(command) ? new List<EmbedBuilder>() { GenerateEmbeddedHelpCommand(command) } : GenerateEmbeddedHelp();
+                await ReplyAsync($"{Context.User.Mention}, se envió la ayuda por mensaje privado.");
                 foreach (var embed in embeds)
                 {
                     await Context.User.SendMessageAsync(embed: embed.Build());
                 }
-                var reply = await ReplyAsync($"{Context.User.Mention}, se envió la Ayuda por mensaje privado.");
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 

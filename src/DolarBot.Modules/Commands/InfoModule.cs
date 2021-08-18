@@ -28,10 +28,6 @@ namespace DolarBot.Modules.Commands
         /// Provides methods to retrieve information about euro rates.
         /// </summary>
         private readonly InfoService InfoService;
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -41,9 +37,8 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public InfoModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration) 
+        public InfoModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
-            Logger = logger;
             InfoService = new InfoService(configuration, api);
         }
         #endregion
@@ -74,8 +69,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -98,8 +92,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -140,8 +133,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -171,8 +163,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -182,16 +173,23 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetVoteLink()
         {
-            string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
-            string voteLink = Configuration["voteUrl"];
+            try
+            {
+                string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
+                string voteLink = Configuration["voteUrl"];
 
-            EmbedBuilder embed = new EmbedBuilder()
-                                 .WithTitle("Votar")
-                                 .WithColor(GlobalConfiguration.Colors.Info)
-                                 .WithThumbnailUrl(infoImageUrl)
-                                 .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");
+                EmbedBuilder embed = new EmbedBuilder()
+                                     .WithTitle("Votar")
+                                     .WithColor(GlobalConfiguration.Colors.Info)
+                                     .WithThumbnailUrl(infoImageUrl)
+                                     .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");
 
-            await ReplyAsync(embed: embed.Build());
+                await ReplyAsync(embed: embed.Build());
+            }
+            catch (Exception ex)
+            {
+                await SendErrorReply(ex);
+            }
         }
 
         [Command("bot", RunMode = RunMode.Async)]
@@ -235,8 +233,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -245,9 +242,16 @@ namespace DolarBot.Modules.Commands
         [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetApiStatus()
         {
-            string statusText = await InfoService.GetApiStatus();
-            EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, Context.Client.Latency);
-            await ReplyAsync(embed: embed.Build());
+            try
+            {
+                string statusText = await InfoService.GetApiStatus();
+                EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, Context.Client.Latency);
+                await ReplyAsync(embed: embed.Build());
+            }
+            catch (Exception ex)
+            {
+                await SendErrorReply(ex);
+            }
         }
     }
 }

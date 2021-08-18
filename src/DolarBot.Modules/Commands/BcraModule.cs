@@ -5,7 +5,6 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Bcra;
-using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -25,11 +24,6 @@ namespace DolarBot.Modules.Commands
         /// Provides methods to retrieve information about BCRA rates and values.
         /// </summary>
         private readonly BcraService BcraService;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -39,9 +33,8 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public BcraModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
+        public BcraModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
-            Logger = logger;
             BcraService = new BcraService(configuration, api);
         }
         #endregion
@@ -71,8 +64,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -101,8 +93,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -131,8 +122,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
     }

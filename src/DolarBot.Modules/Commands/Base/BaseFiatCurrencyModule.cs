@@ -5,11 +5,9 @@ using DolarBot.API.Models.Base;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Base;
 using DolarBot.Services.Currencies;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,11 +24,6 @@ namespace DolarBot.Modules.Commands.Base
         /// Provides methods to retrieve information about currency rates and values.
         /// </summary>
         protected readonly TypeService Service;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        protected readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -40,9 +33,8 @@ namespace DolarBot.Modules.Commands.Base
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">The log4net logger.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public BaseFiatCurrencyModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
+        public BaseFiatCurrencyModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
-            Logger = logger;
             Service = CreateService(configuration, api);
         }
         #endregion
@@ -62,16 +54,6 @@ namespace DolarBot.Modules.Commands.Base
         /// </summary>
         /// <returns></returns>
         protected abstract Currencies GetCurrentCurrency();
-
-        /// <summary>
-        /// Sends a reply indicating an error has occurred.
-        /// </summary>
-        /// <param name="ex">The exception to log.</param>
-        protected async Task SendErrorReply(Exception ex)
-        {
-            await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-            Logger.Error("Error al ejecutar comando.", ex);
-        }
 
         /// <summary>
         /// Replies with an embed message containing all available standard rates for this currency.

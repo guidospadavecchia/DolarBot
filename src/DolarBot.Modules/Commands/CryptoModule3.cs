@@ -1,11 +1,9 @@
-﻿using Discord;
-using Discord.Commands;
+﻿using Discord.Commands;
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Crypto;
-using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -42,21 +40,12 @@ namespace DolarBot.Modules.Commands
                 using (Context.Channel.EnterTypingState())
                 {
                     CryptoResponse result = await CryptoService.GetRippleRate();
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
-                    }
+                    await SendCryptoReply(result);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -72,21 +61,12 @@ namespace DolarBot.Modules.Commands
                 using (Context.Channel.EnterTypingState())
                 {
                     CryptoResponse result = await CryptoService.GetStellarRate();
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
-                    }
+                    await SendCryptoReply(result);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -102,21 +82,12 @@ namespace DolarBot.Modules.Commands
                 using (Context.Channel.EnterTypingState())
                 {
                     CryptoResponse result = await CryptoService.GetTetherRate();
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
-                    }
+                    await SendCryptoReply(result);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -131,21 +102,12 @@ namespace DolarBot.Modules.Commands
                 using (Context.Channel.EnterTypingState())
                 {
                     CryptoResponse result = await CryptoService.GetThetaRate();
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
-                    }
+                    await SendCryptoReply(result);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -161,21 +123,12 @@ namespace DolarBot.Modules.Commands
                 using (Context.Channel.EnterTypingState())
                 {
                     CryptoResponse result = await CryptoService.GetUniswapRate();
-                    if (result != null)
-                    {
-                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
-                    }
-                    else
-                    {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
-                    }
+                    await SendCryptoReply(result);
                 }
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
     }

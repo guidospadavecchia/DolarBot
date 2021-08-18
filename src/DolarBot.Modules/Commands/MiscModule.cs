@@ -10,7 +10,6 @@ using DolarBot.Services.Dolar;
 using DolarBot.Services.Euro;
 using DolarBot.Services.Quotes;
 using DolarBot.Services.Real;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -29,10 +28,6 @@ namespace DolarBot.Modules.Commands
     {
         #region Vars
         /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
-        /// <summary>
         /// Provides several methods to interact with the different APIs.
         /// </summary>
         private readonly ApiCalls Api;
@@ -44,9 +39,8 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">Provides access to the different APIs.</param>
-        public MiscModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
+        public MiscModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
-            Logger = logger;
             Api = api;
         }
         #endregion
@@ -65,8 +59,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -118,8 +111,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -143,8 +135,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 

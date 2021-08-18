@@ -5,7 +5,6 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.HistoricalRates;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -28,11 +27,6 @@ namespace DolarBot.Modules.Commands
         /// Provides methods to retrieve information about historical rates.
         /// </summary>
         private readonly HistoricalRatesService HistoricalRatesService;
-
-        /// <summary>
-        /// The log4net logger.
-        /// </summary>
-        private readonly ILog Logger;
         #endregion
 
         #region Constructor
@@ -42,9 +36,8 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public HistoricalRatesModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration)
+        public HistoricalRatesModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
-            Logger = logger;
             HistoricalRatesService = new HistoricalRatesService(configuration, api);
         }
         #endregion
@@ -60,7 +53,7 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    if(cotizacion == null)
+                    if (cotizacion == null)
                     {
                         await ReplyAsync(GetEvolucionInvalidParamsMessage());
                     }
@@ -89,8 +82,7 @@ namespace DolarBot.Modules.Commands
             }
             catch (Exception ex)
             {
-                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-                Logger.Error("Error al ejecutar comando.", ex);
+                await SendErrorReply(ex);
             }
         }
 
@@ -102,7 +94,7 @@ namespace DolarBot.Modules.Commands
         {
             string commandPrefix = Configuration["commandPrefix"];
             string parameters = string.Join(", ", Enum.GetNames(typeof(HistoricalRatesParams)).Select(x => Format.Code(x.ToLower())));
-            
+
             return $"Debe especificar un parámetro válido para este comando. Las opciones disponibles son: {parameters}. Para más información, ejecute {Format.Code($"{commandPrefix}ayuda evolucion")}.";
         }
     }

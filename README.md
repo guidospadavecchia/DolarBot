@@ -35,10 +35,9 @@ A continuación se listan los comandos disponibles:
 ### Cotizaciones del dólar
 - \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
 - \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial para un banco puntual (Ver `$bancos dolar`).  
-- \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos`).  
+- \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos dolar`).
 - \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial.  
 - \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar ahorro (dólar oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$dolarahorro` | `$da`] `<banco>`: Muestra la cotización del dólar ahorro para un banco puntual (Ver `$bancos dolar`).  
 - \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
 - \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
 - \[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
@@ -47,10 +46,18 @@ A continuación se listan los comandos disponibles:
 ### Cotizaciones del Euro
 - \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro oficial para los bancos disponibles.  
 - \[`$euro` | `$e`] `<banco>`: Muestra la cotización del Euro oficial para un banco puntual (Ver `$bancos euro`).  
+- \[`$euro` | `$e`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos euro`).  
+- \[`$eurooficial` | `$eo`]: Muestra la cotización del Euro oficial.  
+- \[`$euroahorro` | `$ea`]: Muestra la cotización del Euro ahorro (Euro oficial más impuesto P.A.I.S. y retención de ganancias).  
+- \[`$euroblue` | `$eb`]: Muestra la cotización del Euro blue. 
 
 ### Cotizaciones del Real
 - \[`$real` | `$r`]: Muestra todas las cotizaciones del Real oficial para los bancos disponibles.  
 - \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco puntual (Ver `$bancos real`).  
+- \[`$real` | `$r`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos real`).  
+- \[`$realoficial` | `$ro`]: Muestra la cotización del Real oficial.  
+- \[`$realahorro` | `$ra`]: Muestra la cotización del Real ahorro (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
+- \[`$realblue` | `$rb`]: Muestra la cotización del Real blue. 
 
 ### Metales
 - \[`$oro`]: Muestra la cotización internacional del Oro.  

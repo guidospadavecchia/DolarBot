@@ -21,6 +21,12 @@ namespace DolarBot.Services.Real
     /// </summary>
     public class RealService : BaseCurrencyService
     {
+        #region Constants
+        private const string REAL_OFICIAL_TITLE = "Real Oficial";
+        private const string REAL_AHORRO_TITLE = "Real Ahorro";
+        private const string REAL_BLUE_TITLE = "Real Blue";
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -74,10 +80,27 @@ namespace DolarBot.Services.Real
         /// </summary>
         /// <param name="bank">The bank who's rate is to be retrieved.</param>
         /// <returns>A single <see cref="RealResponse"/>.</returns>
-        public async Task<RealResponse> GetRealByBank(Banks bank)
+        public async Task<RealResponse> GetByBank(Banks bank)
         {
             RealTypes realType = ConvertToRealType(bank);
             return await Api.DolarBot.GetRealRate(realType).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches all oficial Real rates from <see cref="Banks"/>.
+        /// </summary>
+        /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
+        public async Task<RealResponse[]> GetAllBankRates()
+        {
+            List<Banks> banks = GetValidBanks().ToList();
+            Task<RealResponse>[] tasks = new Task<RealResponse>[banks.Count];
+            for (int i = 0; i < banks.Count; i++)
+            {
+                RealTypes realType = ConvertToRealType(banks[i]);
+                tasks[i] = Api.DolarBot.GetRealRate(realType);
+            }
+
+            return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -86,39 +109,34 @@ namespace DolarBot.Services.Real
         /// <returns>An array of <see cref="RealResponse"/> objects.</returns>
         public async Task<RealResponse[]> GetAllRealRates()
         {
-            List<Task<RealResponse>> tasks = new List<Task<RealResponse>>();
-            foreach (RealTypes realType in Enum.GetValues(typeof(RealTypes)).Cast<RealTypes>())
-            {
-                tasks.Add(Api.DolarBot.GetRealRate(realType));
-            }
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
+            return await Task.WhenAll(GetRealOficial(), GetRealAhorro(), GetRealBlue()).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Fetches the price for Real from bank Nacion.
+        /// Fetches the price for official Real.
         /// </summary>
         /// <returns>A single <see cref="RealResponse"/>.</returns>
-        public async Task<RealResponse> GetRealNacion()
+        public async Task<RealResponse> GetRealOficial()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Nacion).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(RealTypes.Oficial).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Fetches the price for Real from bank BBVA.
+        /// Fetches the price for Real Ahorro.
         /// </summary>
         /// <returns>A single <see cref="RealResponse"/>.</returns>
-        public async Task<RealResponse> GetRealBBVA()
+        public async Task<RealResponse> GetRealAhorro()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.BBVA).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(RealTypes.Ahorro).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Fetches the price for Real from Nuevo Banco del Chaco.
+        /// Fetches the price for Real Blue.
         /// </summary>
         /// <returns>A single <see cref="RealResponse"/>.</returns>
-        public async Task<RealResponse> GetRealChaco()
+        public async Task<RealResponse> GetRealBlue()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Chaco).ConfigureAwait(false);
+            return await Api.DolarBot.GetRealRate(RealTypes.Blue).ConfigureAwait(false);
         }
 
         #endregion
@@ -126,21 +144,14 @@ namespace DolarBot.Services.Real
         #region Embed
 
         /// <summary>
-        /// Returns the title depending on the response type.
+        /// Creates an <see cref="EmbedBuilder"/> object for multiple Real responses.
         /// </summary>
-        /// <param name="realResponse">The real response.</param>
-        /// <returns>The corresponding title.</returns>
-        private string GetTitle(RealResponse realResponse)
+        /// <param name="realResponses">The Real responses to show.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
+        public EmbedBuilder CreateRealEmbed(RealResponse[] realResponses)
         {
-            string realType = realResponse.Type.ToString();
-            if (Enum.TryParse(realType, out Banks bankType))
-            {
-                return bankType.GetDescription();
-            }
-            else
-            {
-                throw new ArgumentException("Unsupported Bank");
-            }
+            string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
+            return CreateRealEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
         }
 
         /// <summary>
@@ -172,7 +183,7 @@ namespace DolarBot.Services.Real
             {
                 RealResponse response = realResponses[i];
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
-                string title = GetTitle(response);
+                string title = GetTitle(response.Type);
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
                 string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
@@ -217,7 +228,7 @@ namespace DolarBot.Services.Real
 
             string realImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("real")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string embedTitle = title ?? GetTitle(realResponse);
+            string embedTitle = title ?? GetTitle(realResponse.Type);
             string lastUpdated = realResponse.Fecha.ToString(realResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
@@ -246,6 +257,22 @@ namespace DolarBot.Services.Real
             embed = AddPlayStoreLink(embed);
 
             return embed;
+        }
+
+        /// <summary>
+        /// Returns the title depending on the response type.
+        /// </summary>
+        /// <param name="realType">The real type.</param>
+        /// <returns>The corresponding title.</returns>
+        private string GetTitle(RealTypes realType)
+        {
+            return realType switch
+            {
+                RealTypes.Oficial => REAL_OFICIAL_TITLE,
+                RealTypes.Ahorro => REAL_AHORRO_TITLE,
+                RealTypes.Blue => REAL_BLUE_TITLE,
+                _ => Enum.TryParse(realType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{realType}'."),
+            };
         }
 
         #endregion

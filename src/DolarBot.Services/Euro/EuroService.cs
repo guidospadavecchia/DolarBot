@@ -21,15 +21,19 @@ namespace DolarBot.Services.Euro
     /// </summary>
     public class EuroService : BaseCurrencyService
     {
-        #region Constructors
+        #region Constants
+        private const string EURO_OFICIAL_TITLE = "Euro Oficial";
+        private const string EURO_AHORRO_TITLE = "Euro Ahorro";
+        private const string EURO_BLUE_TITLE = "Euro Blue";
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Creates a new <see cref="EuroService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         public EuroService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
-
         #endregion
 
         #region Methods
@@ -90,10 +94,27 @@ namespace DolarBot.Services.Euro
         /// </summary>
         /// <param name="bank">The bank who's rate is to be retrieved.</param>
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
-        public async Task<EuroResponse> GetEuroByBank(Banks bank)
+        public async Task<EuroResponse> GetByBank(Banks bank)
         {
             EuroTypes euroType = ConvertToEuroType(bank);
             return await Api.DolarBot.GetEuroRate(euroType).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches all oficial euro rates from <see cref="Banks"/>.
+        /// </summary>
+        /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
+        public async Task<EuroResponse[]> GetAllBankRates()
+        {
+            List<Banks> banks = GetValidBanks().ToList();
+            Task<EuroResponse>[] tasks = new Task<EuroResponse>[banks.Count];
+            for (int i = 0; i < banks.Count; i++)
+            {
+                EuroTypes euroType = ConvertToEuroType(banks[i]);
+                tasks[i] = Api.DolarBot.GetEuroRate(euroType);
+            }
+
+            return await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -102,34 +123,49 @@ namespace DolarBot.Services.Euro
         /// <returns>An array of <see cref="EuroResponse"/> objects.</returns>
         public async Task<EuroResponse[]> GetAllEuroRates()
         {
-            List<Task<EuroResponse>> tasks = new List<Task<EuroResponse>>();
-            foreach (EuroTypes euroType in Enum.GetValues(typeof(EuroTypes)).Cast<EuroTypes>())
-            {
-                tasks.Add(Api.DolarBot.GetEuroRate(euroType));
-            }
-            return await Task.WhenAll(tasks).ConfigureAwait(false);
+            return await Task.WhenAll(GetEuroOficial(), GetEuroAhorro(), GetEuroBlue()).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for official Euro.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroOficial()
+        {
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Oficial).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Euro Ahorro.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroAhorro()
+        {
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Ahorro).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches the price for Euro Blue.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroBlue()
+        {
+            return await Api.DolarBot.GetEuroRate(EuroTypes.Blue).ConfigureAwait(false);
         }
 
         #endregion
 
-        #region Embed
+        #region Embed       
 
         /// <summary>
-        /// Returns the title depending on the response type.
+        /// Creates an <see cref="EmbedBuilder"/> object for multiple Euro responses.
         /// </summary>
-        /// <param name="euroResponse">The euro response.</param>
-        /// <returns>The corresponding title.</returns>
-        private string GetTitle(EuroResponse euroResponse)
+        /// <param name="euroResponses">The Euro responses to show.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
+        public EmbedBuilder CreateEuroEmbed(EuroResponse[] euroResponses)
         {
-            string euroType = euroResponse.Type.ToString();
-            if (Enum.TryParse(euroType, out Banks bankType))
-            {
-                return bankType.GetDescription();
-            }
-            else
-            {
-                throw new ArgumentException("Unsupported Bank");
-            }
+            string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
+            return CreateEuroEmbed(euroResponses, $"Cotizaciones disponibles del {Format.Bold("Euro")} expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
         }
 
         /// <summary>
@@ -141,7 +177,6 @@ namespace DolarBot.Services.Euro
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
         public EmbedBuilder CreateEuroEmbed(EuroResponse[] euroResponses, string description, string thumbnailUrl)
         {
-            var emojis = Configuration.GetSection("customEmojis");
             Emoji euroEmoji = new Emoji(":euro:");
             Emoji clockEmoji = new Emoji("\u23F0");
             Emoji buyEmoji = new Emoji(":regional_indicator_c:");
@@ -161,7 +196,7 @@ namespace DolarBot.Services.Euro
             {
                 EuroResponse response = euroResponses[i];
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
-                string title = GetTitle(response);
+                string title = GetTitle(response.Type);
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
                 string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
@@ -206,7 +241,7 @@ namespace DolarBot.Services.Euro
 
             string euroImageUrl = thumbnailUrl ?? Configuration.GetSection("images").GetSection("euro")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            string embedTitle = title ?? GetTitle(euroResponse);
+            string embedTitle = title ?? GetTitle(euroResponse.Type);
             string lastUpdated = euroResponse.Fecha.ToString(euroResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
@@ -236,6 +271,22 @@ namespace DolarBot.Services.Euro
             embed = AddPlayStoreLink(embed);
 
             return embed;
+        }
+
+        /// <summary>
+        /// Returns the title depending on the response type.
+        /// </summary>
+        /// <param name="euroType">The euro type.</param>
+        /// <returns>The corresponding title.</returns>
+        private string GetTitle(EuroTypes euroType)
+        {
+            return euroType switch
+            {
+                EuroTypes.Oficial => EURO_OFICIAL_TITLE,
+                EuroTypes.Ahorro => EURO_AHORRO_TITLE,
+                EuroTypes.Blue => EURO_BLUE_TITLE,                
+                _ => Enum.TryParse(euroType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{euroType}'."),
+            };
         }
 
         #endregion

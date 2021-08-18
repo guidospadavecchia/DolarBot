@@ -31,14 +31,12 @@ namespace DolarBot.Services.Dolar
         #endregion
 
         #region Constructors
-
         /// <summary>
         /// Creates a new <see cref="DolarService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         public DolarService(IConfiguration configuration, ApiCalls api) : base(configuration, api) { }
-
         #endregion
 
         #region Methods
@@ -87,7 +85,7 @@ namespace DolarBot.Services.Dolar
         /// <returns>An array of <see cref="DollarResponse"/> objects.</returns>
         public async Task<DollarResponse[]> GetAllBankRates()
         {
-            List<Banks> banks = Enum.GetValues(typeof(Banks)).Cast<Banks>().Where(b => b != Banks.Bancos).ToList();
+            List<Banks> banks = GetValidBanks().Where(b => b != Banks.Bancos).ToList();
             Task<DollarResponse>[] tasks = new Task<DollarResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {
@@ -313,24 +311,7 @@ namespace DolarBot.Services.Dolar
                 DollarTypes.Bolsa => DOLAR_BOLSA_TITLE,
                 DollarTypes.Promedio => DOLAR_PROMEDIO_TITLE,
                 DollarTypes.ContadoConLiqui => DOLAR_CCL_TITLE,
-                DollarTypes.Nacion => Banks.Nacion.GetDescription(),
-                DollarTypes.BBVA => Banks.BBVA.GetDescription(),
-                DollarTypes.Piano => Banks.Piano.GetDescription(),
-                DollarTypes.Hipotecario => Banks.Hipotecario.GetDescription(),
-                DollarTypes.Galicia => Banks.Galicia.GetDescription(),
-                DollarTypes.Santander => Banks.Santander.GetDescription(),
-                DollarTypes.Ciudad => Banks.Ciudad.GetDescription(),
-                DollarTypes.Supervielle => Banks.Supervielle.GetDescription(),
-                DollarTypes.Patagonia => Banks.Patagonia.GetDescription(),
-                DollarTypes.Comafi => Banks.Comafi.GetDescription(),
-                DollarTypes.Bancor => Banks.Bancor.GetDescription(),
-                DollarTypes.Chaco => Banks.Chaco.GetDescription(),
-                DollarTypes.Pampa => Banks.Pampa.GetDescription(),
-                DollarTypes.ICBC => Banks.ICBC.GetDescription(),
-                DollarTypes.Provincia => Banks.Provincia.GetDescription(),
-                DollarTypes.Reba => Banks.Reba.GetDescription(),
-                DollarTypes.Roela => Banks.Roela.GetDescription(),
-                _ => throw new ArgumentException($"Unable to get title from '{dollarType}'.")
+                _ => Enum.TryParse(dollarType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{dollarType}'."),
             };
         }
 

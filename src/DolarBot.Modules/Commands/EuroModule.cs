@@ -68,14 +68,20 @@ namespace DolarBot.Modules.Commands
                         string userInput = Format.Sanitize(banco).RemoveFormat(true);
                         if (Enum.TryParse(userInput, true, out Banks bank))
                         {
-                            if (EuroService.GetValidBanks().Contains(bank))
+                            if (bank == Banks.Bancos)
                             {
-                                //Show individual bank rate
-                                string thumbnailUrl = EuroService.GetBankThumbnailUrl(bank);
-                                EuroResponse result = await EuroService.GetEuroByBank(bank).ConfigureAwait(false);
-                                if (result != null)
+                                //Show all bank rates
+                                EuroResponse[] responses = await EuroService.GetAllBankRates().ConfigureAwait(false);
+                                if (responses.Any(r => r != null))
                                 {
-                                    EmbedBuilder embed = await EuroService.CreateEuroEmbedAsync(result, $"Cotización del {Format.Bold("Euro oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
+                                    EuroResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
+
+                                    string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
+                                    EmbedBuilder embed = EuroService.CreateEuroEmbed(successfulResponses, $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("Euro oficial")} expresadas en {Format.Bold("pesos argentinos")}.", thumbnailUrl);
+                                    if (responses.Length != successfulResponses.Length)
+                                    {
+                                        await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
+                                    }
                                     await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
                                 }
                                 else
@@ -85,14 +91,25 @@ namespace DolarBot.Modules.Commands
                             }
                             else
                             {
-                                //Invalid bank for currency
-                                string commandPrefix = Configuration["commandPrefix"];
-                                if (bank == Banks.Bancos)
+                                if (EuroService.GetValidBanks().Contains(bank))
                                 {
-                                    await ReplyAsync($"Esta opción no está disponible para esta moneda. Si desea ver todas las cotizaciones, ejecute {Format.Code($"{commandPrefix}{Currencies.Euro.GetDescription().ToLower()}")}.").ConfigureAwait(false);
+                                    //Show individual bank rate
+                                    string thumbnailUrl = EuroService.GetBankThumbnailUrl(bank);
+                                    EuroResponse result = await EuroService.GetByBank(bank).ConfigureAwait(false);
+                                    if (result != null)
+                                    {
+                                        EmbedBuilder embed = await EuroService.CreateEuroEmbedAsync(result, $"Cotización del {Format.Bold("Euro oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", bank.GetDescription(), thumbnailUrl);
+                                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                                    }
                                 }
                                 else
                                 {
+                                    //Invalid bank for currency
+                                    string commandPrefix = Configuration["commandPrefix"];
                                     string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
                                     await ReplyAsync($"La cotización del {Format.Bold(bank.GetDescription())} no está disponible para esta moneda. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Euro.GetDescription().ToLower()}")}.").ConfigureAwait(false);
                                 }
@@ -108,14 +125,12 @@ namespace DolarBot.Modules.Commands
                     }
                     else
                     {
-                        //Show all bank rates
+                        //Show all Euro types (not banks)
                         EuroResponse[] responses = await EuroService.GetAllEuroRates().ConfigureAwait(false);
                         if (responses.Any(r => r != null))
                         {
                             EuroResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-
-                            string euroImageUrl = Configuration.GetSection("images").GetSection("euro")["64"];
-                            EmbedBuilder embed = EuroService.CreateEuroEmbed(successfulResponses, $"Cotizaciones disponibles del {Format.Bold("Euro oficial")} expresadas en {Format.Bold("pesos argentinos")}.", euroImageUrl);
+                            EmbedBuilder embed = EuroService.CreateEuroEmbed(successfulResponses);
                             if (responses.Length != successfulResponses.Length)
                             {
                                 await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.").ConfigureAwait(false);
@@ -126,6 +141,96 @@ namespace DolarBot.Modules.Commands
                         {
                             await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                         }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("eurooficial", RunMode = RunMode.Async)]
+        [Alias("eo")]
+        [Summary("Muestra la cotización del Euro oficial.")]
+        [RateLimit(1, 3, Measure.Seconds)]
+        [HelpUsageExample(false, "$eurooficial", "$eo")]
+        public async Task GetEuroOficialPriceAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    EuroResponse result = await EuroService.GetEuroOficial().ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        EmbedBuilder embed = await EuroService.CreateEuroEmbedAsync(result, $"Cotización del {Format.Bold("Euro oficial")} expresada en {Format.Bold("pesos argentinos")}.");
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("euroahorro", RunMode = RunMode.Async)]
+        [Alias("ea")]
+        [Summary("Muestra la cotización del Euro oficial más impuesto P.A.I.S. y deducción de ganancias.")]
+        [RateLimit(1, 3, Measure.Seconds)]
+        [HelpUsageExample(false, "$euroahorro", "$ea")]
+        public async Task GetEuroAhorroPriceAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    EuroResponse result = await EuroService.GetEuroAhorro().ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        EmbedBuilder embed = await EuroService.CreateEuroEmbedAsync(result, $"Cotización del {Format.Bold("Euro ahorro")} expresada en {Format.Bold("pesos argentinos")}.");
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"])).ConfigureAwait(false);
+                Logger.Error("Error al ejecutar comando.", ex);
+            }
+        }
+
+        [Command("euroblue", RunMode = RunMode.Async)]
+        [Alias("eb")]
+        [Summary("Muestra la cotización del Euro blue.")]
+        [RateLimit(1, 3, Measure.Seconds)]
+        [HelpUsageExample(false, "$euroblue", "$eb")]
+        public async Task GetEuroBluePriceAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    EuroResponse result = await EuroService.GetEuroBlue().ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        EmbedBuilder embed = await EuroService.CreateEuroEmbedAsync(result, $"Cotización del {Format.Bold("Euro blue")} expresada en {Format.Bold("pesos argentinos")}.");
+                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
                     }
                 }
             }

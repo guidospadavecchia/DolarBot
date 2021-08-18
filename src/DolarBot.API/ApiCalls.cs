@@ -96,6 +96,9 @@ namespace DolarBot.API
             private const string DOLAR_ROELA_ENDPOINT = "/api/dolar/bancos/roela";
 
             //Euro
+            private const string EURO_OFICIAL_ENDPOINT = "/api/euro/oficial";
+            private const string EURO_AHORRO_ENDPOINT = "/api/euro/ahorro";
+            private const string EURO_BLUE_ENDPOINT = "/api/euro/blue";
             private const string EURO_NACION_ENDPOINT = "/api/euro/bancos/nacion";
             private const string EURO_GALICIA_ENDPOINT = "/api/euro/bancos/galicia";
             private const string EURO_BBVA_ENDPOINT = "/api/euro/bancos/bbva";
@@ -112,6 +115,9 @@ namespace DolarBot.API
             private const string EURO_ROELA_ENDPOINT = "/api/euro/bancos/roela";
 
             //Real
+            private const string REAL_OFICIAL_ENDPOINT = "/api/real/oficial";
+            private const string REAL_AHORRO_ENDPOINT = "/api/real/ahorro";
+            private const string REAL_BLUE_ENDPOINT = "/api/real/blue";
             private const string REAL_NACION_ENDPOINT = "/api/real/bancos/nacion";
             private const string REAL_BBVA_ENDPOINT = "/api/real/bancos/bbva";
             private const string REAL_CHACO_ENDPOINT = "/api/real/bancos/chaco";
@@ -244,6 +250,12 @@ namespace DolarBot.API
             /// </summary>
             public enum EuroTypes
             {
+                [Description(EURO_OFICIAL_ENDPOINT)]
+                Oficial,
+                [Description(EURO_AHORRO_ENDPOINT)]
+                Ahorro,
+                [Description(EURO_BLUE_ENDPOINT)]
+                Blue,
                 [Description(EURO_NACION_ENDPOINT)]
                 Nacion,
                 [Description(EURO_GALICIA_ENDPOINT)]
@@ -279,6 +291,12 @@ namespace DolarBot.API
             /// </summary>
             public enum RealTypes
             {
+                [Description(REAL_OFICIAL_ENDPOINT)]
+                Oficial,
+                [Description(REAL_AHORRO_ENDPOINT)]
+                Ahorro,
+                [Description(REAL_BLUE_ENDPOINT)]
+                Blue,
                 [Description(REAL_NACION_ENDPOINT)]
                 Nacion,
                 [Description(REAL_BBVA_ENDPOINT)]

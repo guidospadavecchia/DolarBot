@@ -70,6 +70,7 @@ namespace DolarBot.Modules.Commands
                         {
                             if (bank == Banks.Bancos)
                             {
+                                //Show all bank rates
                                 DollarResponse[] responses = await DolarService.GetAllBankRates().ConfigureAwait(false);
                                 if (responses.Any(r => r != null))
                                 {
@@ -88,17 +89,28 @@ namespace DolarBot.Modules.Commands
                                 }
                             }
                             else
-                            {   //Show individual bank rate
-                                string thumbnailUrl = DolarService.GetBankThumbnailUrl(bank);
-                                DollarResponse result = await DolarService.GetByBank(bank).ConfigureAwait(false);
-                                if (result != null)
+                            {
+                                if (DolarService.GetValidBanks().Contains(bank))
                                 {
-                                    EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
-                                    await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                                    //Show individual bank rate
+                                    string thumbnailUrl = DolarService.GetBankThumbnailUrl(bank);
+                                    DollarResponse result = await DolarService.GetByBank(bank).ConfigureAwait(false);
+                                    if (result != null)
+                                    {
+                                        EmbedBuilder embed = await DolarService.CreateDollarEmbedAsync(result, $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bank.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.", null, thumbnailUrl);
+                                        await ReplyAsync(embed: embed.Build()).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                                    }
                                 }
                                 else
                                 {
-                                    await ReplyAsync(REQUEST_ERROR_MESSAGE).ConfigureAwait(false);
+                                    //Invalid bank for currency
+                                    string commandPrefix = Configuration["commandPrefix"];
+                                    string bankCommand = typeof(MiscModule).GetMethod("GetBanks").GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+                                    await ReplyAsync($"La cotización del {Format.Bold(bank.GetDescription())} no está disponible para esta moneda. Verifique los bancos disponibles con {Format.Code($"{commandPrefix}{bankCommand} {Currencies.Dolar.GetDescription().ToLower()}")}.").ConfigureAwait(false);
                                 }
                             }
                         }
@@ -140,6 +152,7 @@ namespace DolarBot.Modules.Commands
         [Alias("do")]
         [Summary("Muestra la cotización del dólar oficial.")]
         [RateLimit(1, 3, Measure.Seconds)]
+        [HelpUsageExample(false, "$dolaroficial", "$do")]
         public async Task GetDolarOficialPriceAsync()
         {
             try
@@ -167,7 +180,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("dolarahorro", RunMode = RunMode.Async)]
         [Alias("da")]
-        [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y ganancias.")]
+        [Summary("Muestra la cotización del dólar oficial más impuesto P.A.I.S. y deducción de ganancias.")]
         [RateLimit(1, 3, Measure.Seconds)]
         [HelpUsageExample(false, "$dolarahorro", "$da")]
         public async Task GetDolarAhorroPriceAsync()

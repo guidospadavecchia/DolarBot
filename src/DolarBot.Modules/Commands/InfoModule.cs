@@ -199,34 +199,36 @@ namespace DolarBot.Modules.Commands
         {
             try
             {
+                var emojis = Configuration.GetSection("customEmojis");
                 Emoji blueHeartEmoji = new Emoji("\uD83D\uDC99");
-                Emoji versionEmoji = new Emoji("\uD83D\uDCCD");
+                Emoji versionEmoji = new Emoji(emojis["dolarbot"]);
                 Emoji supportServerEmoji = new Emoji("\uD83D\uDCAC");
-                Emoji githubEmoji = new Emoji("\uD83D\uDCBB");
-                Emoji coffeeEmoji = new Emoji("\u2615");
                 Emoji checkEmoji = new Emoji("\u2705");
-                Emoji voteEmoji = new Emoji("\uD83D\uDC8C");
+                Emoji voteEmoji = new Emoji(emojis["arrowUpRed"]);
                 Emoji hourglassEmoji = new Emoji("\u23F3");
 
+                Version version = Assembly.GetEntryAssembly().GetName().Version;
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
+                string dolarBotImageUrl = Configuration.GetSection("images")?.GetSection("dolarbot")?["32"];
+                string websiteUrl = Configuration["websiteUrl"];
                 string githubUrl = Configuration["githubUrl"];
-                string donationUrl = Configuration["donationUrl"];
+                string playStoreUrl = Configuration["playStoreLink"];
                 string supportServerUrl = Configuration["supportServerUrl"];
                 string voteUrl = Configuration["voteUrl"];
-                string version = Format.Bold(Assembly.GetEntryAssembly().GetName().Version.ToString());
+                string versionDescription = Format.Bold(version.ToString(3));
                 int serverCount = Context.Client.Guilds.Count;
                 TimeSpan uptime = GlobalConfiguration.GetUptime();
 
                 EmbedBuilder embed = new EmbedBuilder()
-                                     .WithTitle("DolarBot")
+                                     .WithTitle("DolarBot")                                     
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
-                                     .WithDescription($"{versionEmoji} Versión: {version}".AppendLineBreak())
+                                     .WithDescription($"{versionEmoji} Versión {versionDescription}".AppendLineBreak())
                                      .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}".AppendLineBreak())
                                      .AddField("Uptime", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
-                                     .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor de soporte", supportServerUrl)}".AppendLineBreak())
-                                     .AddField("GitHub", $"{githubEmoji} {Format.Url("DolarBot repo", githubUrl)}".AppendLineBreak())
-                                     .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLine($"{coffeeEmoji} Invitame un {Format.Url("café", donationUrl)}").AppendLineBreak())
+                                     .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor oficial de DolarBot", supportServerUrl)}".AppendLineBreak())
+                                     .AddField("Web", InfoService.GetWebsiteEmbedDescription().AppendLineBreak())
+                                     .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())
                                      .WithFooter($"Hecho con {blueHeartEmoji} en .NET 5");
 
                 await ReplyAsync(embed: embed.Build());

@@ -5,6 +5,7 @@ using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DolarBot.Services.Info
@@ -87,6 +88,36 @@ namespace DolarBot.Services.Info
                      .WithCurrentTimestamp();
 
             return embed;
+        }
+
+        /// <summary>
+        /// Builds the embed's description for 'bot' command.
+        /// </summary>
+        /// <returns>A formatted website description.</returns>
+        public StringBuilder GetWebsiteEmbedDescription()
+        {
+            var emojis = Configuration.GetSection("customEmojis");
+            Emoji websiteEmoji = new Emoji(emojis["web"]);
+            Emoji githubEmoji = new Emoji(emojis["github"]);
+            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
+
+            string websiteUrl = Configuration["websiteUrl"];
+            string githubUrl = Configuration["githubUrl"];
+            string playStoreUrl = Configuration["playStoreLink"];
+
+            StringBuilder websiteDescription = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(websiteUrl))
+            {
+                websiteDescription.AppendLine($"{websiteEmoji} {Format.Url("Sitio web", websiteUrl)}");
+            }
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                websiteDescription.AppendLine($"{playStoreEmoji} {Format.Url("Play Store", playStoreUrl)}");
+            }
+
+            websiteDescription.AppendLine($"{githubEmoji} {Format.Url("GitHub", githubUrl)}");
+
+            return websiteDescription;
         }
 
         #endregion

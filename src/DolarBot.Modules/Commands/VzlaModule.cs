@@ -15,7 +15,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains cryptocurrency related commands.
     /// </summary>
-    [HelpOrder(9)]
+    [HelpOrder(10)]
     [HelpTitle("Cotizaciones de Venezuela")]
     public class VzlaModule : BaseInteractiveModule
     {

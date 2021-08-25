@@ -14,7 +14,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains cryptocurrency related commands.
     /// </summary>
-    [HelpOrder(6)]
+    [HelpOrder(7)]
     [HelpTitle("Crypto")]
     public class CryptoModule2 : BaseCryptoModule
     {

@@ -45,6 +45,7 @@ namespace DolarBot.Services.Real
         {
             return new[]
             {
+                Banks.Bancos,
                 Banks.Nacion,
                 Banks.BBVA,
                 Banks.Chaco,
@@ -85,7 +86,7 @@ namespace DolarBot.Services.Real
         /// <inheritdoc />
         public override async Task<RealResponse[]> GetAllBankRates()
         {
-            List<Banks> banks = GetValidBanks().ToList();
+            List<Banks> banks = GetValidBanks().Where(b => b != Banks.Bancos).ToList();
             Task<RealResponse>[] tasks = new Task<RealResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {

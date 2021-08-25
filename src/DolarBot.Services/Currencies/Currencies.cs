@@ -7,7 +7,7 @@ namespace DolarBot.Services.Currencies
     /// </summary>
     public enum Currencies
     {
-        [Description("Dolar")]
+        [Description("Dólar")]
         Dolar,
         [Description("Euro")]
         Euro,

@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.API;
 using DolarBot.Modules.Attributes;
@@ -10,12 +11,15 @@ using DolarBot.Services.Dolar;
 using DolarBot.Services.Euro;
 using DolarBot.Services.Quotes;
 using DolarBot.Services.Real;
+using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
 
 namespace DolarBot.Modules.Commands
 {
@@ -45,69 +49,49 @@ namespace DolarBot.Modules.Commands
         }
         #endregion
 
-        [Command("monedas")]
-        [Alias("m")]
-        [Summary("Muestra la lista de monedas soportadas.")]
-        [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetCurrencies()
-        {
-            try
-            {
-                string commandPrefix = Configuration["commandPrefix"];
-                string currencies = string.Join(", ", Enum.GetValues(typeof(Currencies)).Cast<Currencies>().Select(x => Format.Bold(x.GetDescription())));
-                await ReplyAsync($"Monedas disponibles: {currencies}.");
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
-        }
-
-        [Command("bancos")]
+        [Command("bancos", RunMode = RunMode.Async)]
         [Alias("b")]
-        [Summary("Muestra la lista de bancos disponibles para cada moneda.")]
+        [Summary("Muestra la lista de bancos disponibles para cada una de las monedas principales.")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetBanks(
-            [Summary("Opcional. Indica la moneda para listar sus bancos disponibles. Los valores posibles son aquellos devueltos por el comando `$monedas`.")]
-            string moneda = null)
+        public async Task GetBanks()
         {
             try
             {
                 string commandPrefix = Configuration["commandPrefix"];
-                string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+                Emoji bankEmoji = new Emoji(":bank:");
+                string bankImageUrl = Configuration.GetSection("images").GetSection("bank")["64"];
 
-                if (moneda != null)
-                {
-                    string userInput = Format.Sanitize(moneda).RemoveFormat(true);
-                    if (Enum.TryParse(userInput, true, out Currencies currency))
-                    {
-                        IBankCurrencyService currencyService = GetCurrencyService(currency);
-                        Banks[] banks = currencyService.GetValidBanks();
-                        string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
-                        await ReplyAsync($"Parametros disponibles para utilizar en comandos de {Format.Bold(currency.GetDescription())}:".AppendLineBreak().AppendLineBreak() + $"{bankList}.");
-                    }
-                    else
-                    {
-                        //Unknown parameter
-                        await ReplyAsync($"Moneda '{Format.Bold(userInput)}' inexistente. Verifique las monedas disponibles con {Format.Code($"{commandPrefix}{currencyCommand}")}.");
-                    }
-                }
-                else
-                {
-                    //Parameter not specified
-                    Emoji bankEmoji = new Emoji(":bank:");
-                    string message = $"Parametros de {Format.Bold("bancos disponibles por moneda")}:".AppendLineBreak().AppendLineBreak();
-                    Currencies[] currencies = Enum.GetValues(typeof(Currencies)).Cast<Currencies>().ToArray();
-                    foreach (Currencies currency in currencies)
-                    {
-                        IBankCurrencyService currencyService = GetCurrencyService(currency);
-                        Banks[] banks = currencyService.GetValidBanks();
-                        string bankList = string.Join(", ", banks.Select(x => Format.Code(x.ToString())));
-                        message += $"{bankEmoji} {Format.Bold(currency.GetDescription())}: {bankList}.".AppendLineBreak();
-                    }
+                List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+                List<EmbedPage> pages = new List<EmbedPage>();
+                int pageCount = 0;
 
-                    await ReplyAsync(message);
+                Currencies[] currencies = Enum.GetValues(typeof(Currencies)).Cast<Currencies>().ToArray();
+                foreach (Currencies currency in currencies)
+                {
+                    IBankCurrencyService currencyService = GetCurrencyService(currency);
+                    Banks[] banks = currencyService.GetValidBanks();
+                    string bankList = string.Join(Environment.NewLine, banks.Select(x => $"{bankEmoji} {Format.Code(x.ToString().ToLower())}: {Format.Italics(x.GetDescription())}.")).AppendLineBreak();
+
+                    embeds.Add(new EmbedBuilder().AddField($"{Format.Bold(currency.GetDescription())} ({Format.Code($"{commandPrefix}{currency.ToString().ToLower()}")})", bankList));
                 }
+
+                foreach (EmbedBuilder embed in embeds)
+                {
+                    pages.Add(new EmbedPage
+                    {
+                        Description = $"Parámetros disponibles para utilizar en los comandos de las monedas principales ({string.Join(", ", currencies.Select(x => $"{Format.Code($"{commandPrefix}{x.ToString().ToLower()}")}"))}).".AppendLineBreak(),
+                        Title = "Bancos disponibles por moneda",
+                        Fields = embed.Fields,
+                        Color = GlobalConfiguration.Colors.Currency,
+                        FooterOverride = new EmbedFooterBuilder
+                        {
+                            Text = $"Página {++pageCount} de {embeds.Count}"
+                        },
+                        ThumbnailUrl = bankImageUrl
+                    });
+                }
+
+                await SendPagedReplyAsync(pages);
             }
             catch (Exception ex)
             {
@@ -130,7 +114,7 @@ namespace DolarBot.Modules.Commands
                 }
                 else
                 {
-                    await ReplyAsync($"{Format.Bold("Error")}. No se puede acceder a las frases célebres en este momento. Intentá nuevamente más tarde.");
+                    await ReplyAsync($"{Format.Bold("Error")}. No se puede acceder a la información solicitada en este momento. Por favor, intentá nuevamente más tarde.");
                 }
             }
             catch (Exception ex)

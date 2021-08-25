@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ParameterInfo = Discord.Commands.ParameterInfo;
+using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
 
 namespace DolarBot.Modules.Commands
 {
@@ -232,7 +233,7 @@ namespace DolarBot.Modules.Commands
         private async Task SendPagedHelpReplyAsync()
         {
             List<EmbedBuilder> embeds = GenerateEmbeddedHelp();
-            List<PaginatedMessage.Page> pages = new List<PaginatedMessage.Page>();
+            List<EmbedPage> pages = new List<EmbedPage>();
             int pageCount = 0;
             int totalPages = embeds.Select(x => x.Fields.Count).Sum();
 
@@ -240,7 +241,7 @@ namespace DolarBot.Modules.Commands
             {
                 foreach (EmbedFieldBuilder embedField in embed.Fields)
                 {
-                    pages.Add(new PaginatedMessage.Page
+                    pages.Add(new EmbedPage
                     {
                         Description = embed.Description,
                         Title = embed.Title,
@@ -256,22 +257,7 @@ namespace DolarBot.Modules.Commands
                 }
             }
 
-            PaginatedMessage pager = new PaginatedMessage
-            {
-                Pages = pages,
-                ThumbnailUrl = pages.First().ThumbnailUrl
-            };
-            ReactionList reactions = new ReactionList
-            {
-                Forward = true,
-                Backward = true,
-                First = false,
-                Last = false,
-                Info = false,
-                Jump = false,
-                Trash = false
-            };
-            await PagedReplyAsync(pager, reactions);
+            await SendPagedReplyAsync(pages);
         }
 
         /// <summary>

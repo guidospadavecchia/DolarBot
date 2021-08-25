@@ -15,7 +15,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains precious metal related commands.
     /// </summary>
-    [HelpOrder(4)]
+    [HelpOrder(5)]
     [HelpTitle("Metales")]
     public class MetalModule : BaseInteractiveModule
     {

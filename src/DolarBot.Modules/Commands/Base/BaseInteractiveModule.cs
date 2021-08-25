@@ -4,6 +4,7 @@ using DolarBot.Util;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands.Base
@@ -50,6 +51,15 @@ namespace DolarBot.Modules.Commands.Base
         {
             await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
             Logger.Error("Error al ejecutar comando.", ex);
+        }
+
+        /// <summary>
+        /// Sends a paged embed reply with default reactions.
+        /// </summary>
+        /// <param name="pages">The embed pages.</param>
+        protected async Task SendPagedReplyAsync(IEnumerable<PaginatedMessage.Page> pages)
+        {
+            await PagedReplyAsync(new PaginatedMessage { Pages = pages }, new ReactionList { Forward = true, Backward = true, First = false, Last = false, Info = false, Jump = false, Trash = false });
         }
 
         #endregion

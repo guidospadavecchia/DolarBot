@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Net;
@@ -22,12 +23,12 @@ namespace DolarBot.API
         /// <summary>
         /// Log4net logger.
         /// </summary>
-        private readonly ILog logger;
+        private readonly ILog Logger;
 
         /// <summary>
         /// A cache of in-memory objects.
         /// </summary>
-        private readonly ResponseCache cache;
+        private readonly ResponseCache Cache;
 
         #region Apis        
         public DolarBotApi DolarBot { get; private set; }
@@ -41,9 +42,9 @@ namespace DolarBot.API
         /// <param name="logger">The log4net logger.</param>
         public ApiCalls(IConfiguration configuration, ILog logger)
         {
-            this.logger = logger;
-            cache = new ResponseCache(configuration);
-            DolarBot = new DolarBotApi(configuration, cache, LogError);
+            Logger = logger;
+            Cache = new ResponseCache(configuration);
+            DolarBot = new DolarBotApi(configuration, Cache, LogError);
             Cuttly = new CuttlyApi(configuration);
         }
 
@@ -55,11 +56,11 @@ namespace DolarBot.API
         {
             if (response.ErrorException != null)
             {
-                logger.Error($"API error. Endpoint returned {response.StatusCode}: {response.StatusDescription}", response.ErrorException);
+                Logger.Error($"API error. Endpoint returned {response.StatusCode}: {response.StatusDescription}", response.ErrorException);
             }
             else
             {
-                logger.Error($"API error. Endpoint returned {response.StatusCode}: {response.StatusDescription}");
+                Logger.Error($"API error. Endpoint returned {response.StatusCode}: {response.StatusDescription}");
             }
         }
 
@@ -124,6 +125,11 @@ namespace DolarBot.API
             private const string REAL_PIANO_ENDPOINT = "/api/real/bancos/piano";
             private const string REAL_CIUDAD_ENDPOINT = "/api/real/bancos/ciudad";
             private const string REAL_SUPERVIELLE_ENDPOINT = "/api/real/bancos/supervielle";
+
+            //Other currencies
+            private const string WORLD_CURRENCY_ENDPOINT = "/api/monedas/valor";
+            private const string WORLD_CURRENCIES_LIST_ENDPOINT = "/api/monedas/lista";
+            private const string WORLD_CURRENCIES_LIST_KEY = "WorldCurrenciesList";
 
             //BCRA
             private const string RESERVAS_ENDPOINT = "/api/bcra/reservas";
@@ -438,7 +444,7 @@ namespace DolarBot.API
             public CultureInfo GetApiCulture() => CultureInfo.GetCultureInfo("en-US");
 
             /// <summary>
-            /// Querys the API and returns its current status.
+            /// Queries the API and returns its current status.
             /// </summary>
             /// <returns></returns>
             public async Task<HttpStatusCode?> GetApiStatus()
@@ -449,7 +455,68 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys an API endpoint asynchronously and returs its result.
+            /// Queries the API and returns the list of world currency codes.
+            /// </summary>
+            /// <returns>A task that contains a collection of <see cref="WorldCurrencyCodeResponse"/> objects.</returns>
+            public async Task<List<WorldCurrencyCodeResponse>> GetWorldCurrenciesList()
+            {
+                List<WorldCurrencyCodeResponse> cachedResponse = Cache.GetObject<List<WorldCurrencyCodeResponse>>(WORLD_CURRENCIES_LIST_KEY);
+
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    RestRequest request = new RestRequest(WORLD_CURRENCIES_LIST_ENDPOINT, DataFormat.Json);
+                    IRestResponse<List<WorldCurrencyCodeResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyCodeResponse>>(request);
+                    if (response.IsSuccessful)
+                    {
+                        Cache.SaveObject(WORLD_CURRENCIES_LIST_ENDPOINT, response.Data);
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Queries the API and returns the value of a world currency by it's unique code.
+            /// </summary>
+            /// <param name="currencyCode">The currency 3-digit code.</param>
+            /// <returns>A task that contains a normalized <see cref="WorldCurrencyResponse"/> object.</returns>
+            public async Task<WorldCurrencyResponse> GetWorldCurrencyValue(string currencyCode)
+            {
+                WorldCurrencyResponse cachedResponse = Cache.GetObject<WorldCurrencyResponse>(currencyCode);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    string endpoint = $"{WORLD_CURRENCY_ENDPOINT}/{currencyCode.ToUpper()}";
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<WorldCurrencyResponse> response = await Client.ExecuteGetAsync<WorldCurrencyResponse>(request);
+                    if (response.IsSuccessful)
+                    {
+                        WorldCurrencyResponse data = response.Data;
+                        data.Code = currencyCode.ToUpper().Trim();
+                        Cache.SaveObject(currencyCode, data);
+                        return data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Queries an API endpoint asynchronously and returs its result.
             /// </summary>
             /// <param name="type">The type of dollar (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="DollarResponse"/> object.</returns>
@@ -482,7 +549,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys an API endpoint asynchronously and returs its result.
+            /// Queries an API endpoint asynchronously and returs its result.
             /// </summary>
             /// <param name="type">The type of euro (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="EuroResponse"/> object.</returns>
@@ -515,7 +582,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys an API endpoint asynchronously and returs its result.
+            /// Queries an API endpoint asynchronously and returs its result.
             /// </summary>
             /// <param name="type">The type of Real (endpoint) to query.</param>
             /// <returns>A task that contains a normalized <see cref="RealResponse"/> object.</returns>
@@ -548,7 +615,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="CountryRiskResponse"/> object.
+            /// Queries the API endpoint asynchronously and returns a <see cref="CountryRiskResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="CountryRiskResponse"/> object.</returns>
             public async Task<CountryRiskResponse> GetCountryRiskValue()
@@ -576,7 +643,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="BcraResponse"/> object.
+            /// Queries the API endpoint asynchronously and returns a <see cref="BcraResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="BcraResponse"/> object.</returns>
             public async Task<BcraResponse> GetBcraValue(BcraValues bcraValue)
@@ -605,7 +672,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="MetalResponse"/> object.
+            /// Queries the API endpoint asynchronously and returns a <see cref="MetalResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="MetalResponse"/> object.</returns>
             public async Task<MetalResponse> GetMetalRate(Metals metal)
@@ -637,7 +704,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
+            /// Queries the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
             public async Task<CryptoResponse> GetCryptoCurrencyRate(CryptoCurrencies cryptoCurrency)
@@ -669,7 +736,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="VzlaResponse"/> object.
+            /// Queries the API endpoint asynchronously and returns a <see cref="VzlaResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="VzlaResponse"/> object.</returns>
             public async Task<VzlaResponse> GetVzlaRates(VenezuelaTypes type)
@@ -701,7 +768,7 @@ namespace DolarBot.API
             }
 
             /// <summary>
-            /// Querys the API endpoint asynchronously and returns a <see cref="HistoricalRatesResponse"/> object.
+            /// Queries the API endpoint asynchronously and returns a <see cref="HistoricalRatesResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="HistoricalRatesResponse"/> object.</returns>
             public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParams historicalRatesParam)

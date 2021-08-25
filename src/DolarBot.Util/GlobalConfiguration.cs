@@ -162,6 +162,10 @@ namespace DolarBot.Util
             /// </summary>
             public static readonly Color Info = new Color(23, 99, 154);
             /// <summary>
+            /// The color for misc commands.
+            /// </summary>
+            public static readonly Color Currency = Color.DarkGrey;
+            /// <summary>
             /// The color for Euro.
             /// </summary>
             public static readonly Color Euro = new Color(43, 71, 157);

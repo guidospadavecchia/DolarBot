@@ -43,6 +43,7 @@ namespace DolarBot.Services.Euro
         {
             return new[]
             {
+                Banks.Bancos,
                 Banks.Nacion,
                 Banks.Galicia,
                 Banks.BBVA,
@@ -105,7 +106,7 @@ namespace DolarBot.Services.Euro
         /// <inheritdoc />
         public override async Task<EuroResponse[]> GetAllBankRates()
         {
-            List<Banks> banks = GetValidBanks().ToList();
+            List<Banks> banks = GetValidBanks().Where(b => b != Banks.Bancos).ToList();
             Task<EuroResponse>[] tasks = new Task<EuroResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {

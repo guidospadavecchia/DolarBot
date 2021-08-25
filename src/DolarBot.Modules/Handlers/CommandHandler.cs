@@ -64,35 +64,40 @@ namespace DolarBot.Modules.Handlers
         /// </summary>
         /// <param name="arg">The received <see cref="SocketMessage"/>.</param>
         /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
-        public async Task HandleCommandAsync(SocketMessage arg)
+        public Task HandleCommand(SocketMessage arg)
         {
             if (!(arg is SocketUserMessage message) || message.Author.IsBot)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            SocketCommandContext context = new SocketCommandContext(Client, message);
-            int argPos = default;
-            if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
+            _ = Task.Run(async () =>
             {
-                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
-                if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+                SocketCommandContext context = new SocketCommandContext(Client, message);
+                int argPos = default;
+                if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
                 {
-                    switch (result.Error)
+                    IResult result = await Commands.ExecuteAsync(context, argPos, Services);
+                    if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     {
-                        case CommandError.BadArgCount:
-                            await ProcessBadArgCount(context, argPos);
-                            break;
-                        case CommandError.Exception:
-                        case CommandError.Unsuccessful:
-                        case CommandError.ParseFailed:
-                            ProcessCommandError(result);
-                            break;
-                        default:
-                            break;
+                        switch (result.Error)
+                        {
+                            case CommandError.BadArgCount:
+                                await ProcessBadArgCount(context, argPos);
+                                break;
+                            case CommandError.Exception:
+                            case CommandError.Unsuccessful:
+                            case CommandError.ParseFailed:
+                                ProcessCommandError(result);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
-            }
+            });
+
+            return Task.CompletedTask;
         }
         #endregion
 

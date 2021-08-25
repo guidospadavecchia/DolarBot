@@ -152,7 +152,7 @@ namespace DolarBot
             client.LeftGuild += clientHandler.OnGuildCountChanged;
 
             CommandHandler commandHandler = new(client, commands, services, Configuration, logger);
-            client.MessageReceived += commandHandler.HandleCommand;
+            client.MessageReceived += commandHandler.HandleCommandAsync;
             await commands.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
         }
 

@@ -119,7 +119,7 @@ namespace DolarBot.Modules.Commands
                         string currencyList = string.Join(Environment.NewLine, currenciesPage.Select(x => $"{coinEmoji} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
                         EmbedBuilder embed = new EmbedBuilder().AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList)
                                                                .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Italics($"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo:")} {Format.Code(currenciesList.First().Code)}.")
-                                                               .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, de la siguiente manera:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                                                               .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
                         embeds.Add(embed);
                     }
 

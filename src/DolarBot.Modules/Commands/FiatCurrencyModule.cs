@@ -29,7 +29,7 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// How many currencies to fit into each <see cref="EmbedPage"/>.
         /// </summary>
-        private const int CURRENCIES_PER_PAGE = 25;
+        private const int CURRENCIES_PER_PAGE = 25; 
         #endregion
 
         #region Vars
@@ -81,6 +81,7 @@ namespace DolarBot.Modules.Commands
         [Command("moneda", RunMode = RunMode.Async)]
         [Alias("m")]
         [Summary("Muestra el valor de una cotización o lista todos los códigos de monedas disponibles.")]
+        [HelpUsageExample(false, "$moneda", "$m", "$moneda CAD", "$ct AUD")]
         [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetCurrencies(
             [Summary("Código de la moneda a mostrar. Si no se especifica, mostrará la lista de todos los códigos de monedas disponibles.")]
@@ -118,7 +119,7 @@ namespace DolarBot.Modules.Commands
                     {
                         string currencyList = string.Join(Environment.NewLine, currenciesPage.Select(x => $"{coinEmoji} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
                         EmbedBuilder embed = new EmbedBuilder().AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList)
-                                                               .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Italics($"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo:")} {Format.Code(currenciesList.First().Code)}.")
+                                                               .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
                                                                .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
                         embeds.Add(embed);
                     }
@@ -139,7 +140,7 @@ namespace DolarBot.Modules.Commands
                         });
                     }
 
-                    await SendPagedReplyAsync(pages);
+                    await SendPagedReplyAsync(pages, true);
                     typingState.Dispose();
 
                     SocketMessage userResponse = await NextMessageAsync(timeout: TimeSpan.FromSeconds(replyTimeout));

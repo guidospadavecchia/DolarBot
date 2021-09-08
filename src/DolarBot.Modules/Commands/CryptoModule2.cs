@@ -28,6 +28,26 @@ namespace DolarBot.Modules.Commands
         public CryptoModule2(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
         #endregion
 
+        [Command("dai", RunMode = RunMode.Async)]
+        [Summary("Muestra la cotización del DAI (DAI) en pesos y dólares.")]
+        [HelpUsageExample(false, "$dai")]
+        [RateLimit(1, 3, Measure.Seconds)]
+        public async Task GetDaiRatesAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    CryptoResponse result = await CryptoService.GetDaiRate();
+                    await SendCryptoReply(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                await SendErrorReply(ex);
+            }
+        }
+
         [Command("dash", RunMode = RunMode.Async)]
         [Summary("Muestra la cotización del Dash (DASH) en pesos y dólares.")]
         [HelpUsageExample(false, "$dash")]
@@ -130,27 +150,6 @@ namespace DolarBot.Modules.Commands
             {
                 await SendErrorReply(ex);
             }
-        }
-
-        [Command("polkadot", RunMode = RunMode.Async)]
-        [Alias("dot")]
-        [Summary("Muestra la cotización del Polkadot (DOT) en pesos y dólares.")]
-        [HelpUsageExample(false, "$polkadot", "$dot")]
-        [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetPolkadotRatesAsync()
-        {
-            try
-            {
-                using (Context.Channel.EnterTypingState())
-                {
-                    CryptoResponse result = await CryptoService.GetPolkadotRate();
-                    await SendCryptoReply(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
-        }
+        }        
     }
 }

@@ -28,6 +28,27 @@ namespace DolarBot.Modules.Commands
         public CryptoModule3(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
         #endregion
 
+        [Command("polkadot", RunMode = RunMode.Async)]
+        [Alias("dot")]
+        [Summary("Muestra la cotización del Polkadot (DOT) en pesos y dólares.")]
+        [HelpUsageExample(false, "$polkadot", "$dot")]
+        [RateLimit(1, 3, Measure.Seconds)]
+        public async Task GetPolkadotRatesAsync()
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    CryptoResponse result = await CryptoService.GetPolkadotRate();
+                    await SendCryptoReply(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                await SendErrorReply(ex);
+            }
+        }
+
         [Command("ripple", RunMode = RunMode.Async)]
         [Alias("xrp")]
         [Summary("Muestra la cotización del Ripple (XRP) en pesos y dólares.")]

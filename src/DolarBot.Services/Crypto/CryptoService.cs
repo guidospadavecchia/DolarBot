@@ -6,6 +6,7 @@ using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using CryptoCurrencies = DolarBot.API.ApiCalls.DolarBotApi.CryptoCurrencies;
@@ -31,6 +32,35 @@ namespace DolarBot.Services.Crypto
         #region Methods
 
         #region API Calls
+
+        /// <summary>
+        /// Fetches all the available cryptocurrency codes.
+        /// </summary>
+        /// <returns>A collection of <see cref="CryptoCodeResponse"/> objects.</returns>
+        public async Task<List<CryptoCodeResponse>> GetCryptoCodeList()
+        {
+            return await Api.DolarBot.GetCryptoCurrenciesList();
+        }
+
+        /// <summary>
+        /// Fetches a single cryptocurrency rate.
+        /// </summary>
+        /// <param name="cryptoCurrencyCode">The cryptocurrency code as a string.</param>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetCryptoRateByCode(string cryptoCurrencyCode)
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(cryptoCurrencyCode);
+        }
+
+        /// <summary>
+        /// Fetches a single cryptocurrency rate.
+        /// </summary>
+        /// <param name="cryptoCurrencyCode">The cryptocurrency code as a standarized <see cref="CryptoCurrencies"/> value.</param>
+        /// <returns>A single <see cref="CryptoResponse"/>.</returns>
+        public async Task<CryptoResponse> GetCryptoRateByCode(CryptoCurrencies cryptoCurrencyCode)
+        {
+            return await Api.DolarBot.GetCryptoCurrencyRate(cryptoCurrencyCode);
+        }
 
         /// <summary>
         /// Fetches the price for Binance Coin (BNB).
@@ -194,7 +224,7 @@ namespace DolarBot.Services.Crypto
         /// </summary>
         /// <param name="cryptoResponse">The crypto response object.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateCryptoEmbedAsync(CryptoResponse cryptoResponse)
+        public async Task<EmbedBuilder> CreateCryptoEmbedAsync(CryptoResponse cryptoResponse, string cryptoCurrencyName = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji cryptoEmoji = new Emoji(emojis["cryptoCoin"]);
@@ -203,22 +233,23 @@ namespace DolarBot.Services.Crypto
             Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
-            string thumbnailUrl = Configuration.GetSection("images").GetSection("crypto")[cryptoResponse.Currency.ToString().ToLower()];
+            string thumbnailUrl = Configuration.GetSection("images").GetSection("crypto")[cryptoResponse.Currency?.ToString().ToLower() ?? "default"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
+            string cryptoCode = cryptoResponse.Code.Length > 10 ? $"{cryptoResponse.Code.Substring(0, 7)}..." : cryptoResponse.Code;
             string lastUpdated = cryptoResponse.Fecha.ToString(cryptoResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ars) ? ars.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string usdPrice = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal usd) ? usd.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string shareText = $"*{cryptoResponse.Currency.ToString().Capitalize()} ({cryptoResponse.Code})*{Environment.NewLine}{Environment.NewLine}Dólares: \t\tUS$ *{usdPrice}*{Environment.NewLine}Pesos: \t\t$ *{arsPrice}*{Environment.NewLine}Pesos c/Imp: \t$ *{arsPriceWithTaxes}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
+            string shareText = $"*{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})*{Environment.NewLine}{Environment.NewLine}Dólares: \t\tUS$ *{usdPrice}*{Environment.NewLine}Pesos: \t\t$ *{arsPrice}*{Environment.NewLine}Pesos c/Imp: \t$ *{arsPriceWithTaxes}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GetColor(cryptoResponse.Currency))
-                                                   .WithTitle($"{cryptoResponse.Currency.ToString().Capitalize()} ({cryptoResponse.Code})")
-                                                   .WithDescription($"Cotización de {Format.Bold(cryptoResponse.Currency.ToString().Capitalize())} ({Format.Bold(cryptoResponse.Code)}) expresada en {Format.Bold("pesos argentinos")} y {Format.Bold("dólares estadounidenses")}.".AppendLineBreak())
+                                                   .WithTitle($"{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})")
+                                                   .WithDescription($"Cotización de {Format.Bold(cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize())} ({Format.Bold(cryptoResponse.Code)}) expresada en {Format.Bold("pesos argentinos")} y {Format.Bold("dólares estadounidenses")}.".AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
-                                                   .AddField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"US$ {usdPrice}")}".AppendLineBreak())
-                                                   .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"1 {cryptoResponse.Code}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
+                                                   .AddField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"1 {cryptoCode}")} = {Format.Bold($"US$ {usdPrice}")}".AppendLineBreak())
+                                                   .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"1 {cryptoCode}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
+                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"1 {cryptoCode}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             embed = AddPlayStoreLink(embed);
@@ -231,7 +262,7 @@ namespace DolarBot.Services.Crypto
         /// </summary>
         /// <param name="cryptoCurrency">The cryptocurrency.</param>
         /// <returns>The corresponding color.</returns>
-        private Color GetColor(CryptoCurrencies cryptoCurrency)
+        private Color GetColor(CryptoCurrencies? cryptoCurrency)
         {
             return cryptoCurrency switch
             {
@@ -252,7 +283,7 @@ namespace DolarBot.Services.Crypto
                 CryptoCurrencies.Tether => GlobalConfiguration.Colors.Tether,
                 CryptoCurrencies.Theta => GlobalConfiguration.Colors.Theta,
                 CryptoCurrencies.Uniswap => GlobalConfiguration.Colors.Uniswap,
-                _ => throw new NotImplementedException()
+                _ => GlobalConfiguration.Colors.Crypto
             };
         }
 

@@ -14,6 +14,6 @@ namespace DolarBot.API.Models
         public string Code { get; set; }
 
         [JsonIgnore]
-        public CryptoCurrencies Currency;
+        public CryptoCurrencies? Currency;
     }
 }

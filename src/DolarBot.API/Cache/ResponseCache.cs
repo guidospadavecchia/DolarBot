@@ -83,6 +83,24 @@ namespace DolarBot.API.Cache
         {
             return int.TryParse(configuration.GetSection("cacheExpirationSeconds")["crypto"], out int result) ? result : 0;
         }
+
+        /// <summary>
+        /// Retrieves the TTL (time-to-live) for the list of cryptocurrency codes, in seconds, before an item expires from cache.
+        /// </summary>
+        /// <returns>The expiration TTL in seconds.</returns>
+        public int GetCryptoListExpiration()
+        {
+            return int.TryParse(configuration.GetSection("cacheExpirationSeconds")["cryptoList"], out int result) ? result : 0;
+        }
+
+        /// <summary>
+        /// Retrieves the TTL (time-to-live) for the list of currency codes, in seconds, before an item expires from cache.
+        /// </summary>
+        /// <returns>The expiration TTL in seconds.</returns>
+        public int GetCurrencyListExpiration()
+        {
+            return int.TryParse(configuration.GetSection("cacheExpirationSeconds")["currencyList"], out int result) ? result : 0;
+        }
         #endregion
     }
 }

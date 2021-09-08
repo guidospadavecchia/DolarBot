@@ -5,6 +5,7 @@ using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Commands.Base
@@ -57,9 +58,10 @@ namespace DolarBot.Modules.Commands.Base
         /// Sends a paged embed reply with default reactions.
         /// </summary>
         /// <param name="pages">The embed pages.</param>
-        protected async Task SendPagedReplyAsync(IEnumerable<PaginatedMessage.Page> pages)
+        /// <param name="includeFirstLast">Indicates wether to include reactions for first and last page.</param>
+        protected async Task SendPagedReplyAsync(IEnumerable<PaginatedMessage.Page> pages, bool includeFirstLast = false)
         {
-            await PagedReplyAsync(new PaginatedMessage { Pages = pages }, new ReactionList { Forward = true, Backward = true, First = false, Last = false, Info = false, Jump = false, Trash = false });
+            await PagedReplyAsync(new PaginatedMessage { Pages = pages }, new ReactionList { Forward = pages.Count() > 1, Backward = pages.Count() > 1, First = pages.Count() > 1 && includeFirstLast, Last = pages.Count() > 1 && includeFirstLast, Info = false, Jump = false, Trash = false });
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using DolarBot.API.Cache;
+﻿using DolarBot.API.Attributes;
+using DolarBot.API.Cache;
 using DolarBot.API.Models;
 using DolarBot.API.Models.Cuttly;
 using DolarBot.Util.Extensions;
@@ -143,6 +144,7 @@ namespace DolarBot.API
             private const string COBRE_ENDPOINT = "/api/metales/cobre";
 
             //Crypto
+            private const string CRYPTO_ENDPOINT = "/api/crypto";
             private const string BINANCECOIN_ENDPOINT = "/api/crypto/binancecoin";
             private const string BITCOIN_ENDPOINT = "/api/crypto/bitcoin";
             private const string BITCOINCASH_ENDPOINT = "/api/crypto/bitcoincash";
@@ -160,6 +162,8 @@ namespace DolarBot.API
             private const string TETHER_ENDPOINT = "/api/crypto/tether";
             private const string THETA_ENDPOINT = "/api/crypto/theta-token";
             private const string UNISWAP_ENDPOINT = "/api/crypto/uniswap";
+            private const string CRYPTO_CURRENCIES_LIST_ENDPOINT = "/api/crypto/list";
+            private const string CRYPTO_CURRENCIES_LIST_KEY = "CryptoCurrenciesList";
 
             //Venezuela
             private const string VZLA_DOLAR_ENDOPOINT = "/api/vzla/dolar";
@@ -347,38 +351,55 @@ namespace DolarBot.API
             public enum CryptoCurrencies
             {
                 [Description(BINANCECOIN_ENDPOINT)]
+                [CryptoCode("binancecoin", "BNB")]
                 BinanceCoin,
                 [Description(BITCOIN_ENDPOINT)]
+                [CryptoCode("bitcoin", "BTC")]
                 Bitcoin,
                 [Description(BITCOINCASH_ENDPOINT)]
+                [CryptoCode("bitcoin-cash", "BCH")]
                 BitcoinCash,
                 [Description(CARDANO_ENDPOINT)]
+                [CryptoCode("cardano", "ADA")]
                 Cardano,
                 [Description(CHAINLINK_ENDPOINT)]
+                [CryptoCode("chainlink", "LINK")]
                 Chainlink,
                 [Description(DAI_ENDPOINT)]
-                DAI, 
+                [CryptoCode("dai", "DAI")]
+                DAI,
                 [Description(DASH_ENDPOINT)]
+                [CryptoCode("dash", "DASH")]
                 Dash,
                 [Description(DOGECOIN_ENDPOINT)]
-                DogeCoin, 
+                [CryptoCode("dogecoin", "DOGE")]
+                DogeCoin,
                 [Description(ETHEREUM_ENDPOINT)]
+                [CryptoCode("ethereum", "ETH")]
                 Ethereum,
                 [Description(MONERO_ENDPOINT)]
+                [CryptoCode("monero", "XMR")]
                 Monero,
                 [Description(LITECOIN_ENDPOINT)]
+                [CryptoCode("litecoin", "LTC")]
                 Litecoin,
                 [Description(POLKADOT_ENDPOINT)]
+                [CryptoCode("polkadot", "DOT")]
                 Polkadot,
                 [Description(RIPPLE_ENDPOINT)]
+                [CryptoCode("ripple", "XRP")]
                 Ripple,
                 [Description(STELLAR_ENDPOINT)]
+                [CryptoCode("stellar", "XLM")]
                 Stellar,
                 [Description(TETHER_ENDPOINT)]
+                [CryptoCode("tether", "USDT")]
                 Tether,
                 [Description(THETA_ENDPOINT)]
+                [CryptoCode("theta-token", "THETA")]
                 Theta,
                 [Description(UNISWAP_ENDPOINT)]
+                [CryptoCode("uniswap", "UNI")]
                 Uniswap
             }
 
@@ -472,7 +493,7 @@ namespace DolarBot.API
                     IRestResponse<List<WorldCurrencyCodeResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyCodeResponse>>(request);
                     if (response.IsSuccessful)
                     {
-                        Cache.SaveObject(WORLD_CURRENCIES_LIST_ENDPOINT, response.Data);
+                        Cache.SaveObject(WORLD_CURRENCIES_LIST_KEY, response.Data, Cache.GetCurrencyListExpiration());
                         return response.Data;
                     }
                     else
@@ -490,21 +511,21 @@ namespace DolarBot.API
             /// <returns>A task that contains a normalized <see cref="WorldCurrencyResponse"/> object.</returns>
             public async Task<WorldCurrencyResponse> GetWorldCurrencyValue(string currencyCode)
             {
-                WorldCurrencyResponse cachedResponse = Cache.GetObject<WorldCurrencyResponse>(currencyCode);
+                string endpoint = $"{WORLD_CURRENCY_ENDPOINT}/{currencyCode.ToUpper()}";
+                WorldCurrencyResponse cachedResponse = Cache.GetObject<WorldCurrencyResponse>(endpoint);
                 if (cachedResponse != null)
                 {
                     return cachedResponse;
                 }
                 else
                 {
-                    string endpoint = $"{WORLD_CURRENCY_ENDPOINT}/{currencyCode.ToUpper()}";
                     RestRequest request = new RestRequest(endpoint, DataFormat.Json);
                     IRestResponse<WorldCurrencyResponse> response = await Client.ExecuteGetAsync<WorldCurrencyResponse>(request);
                     if (response.IsSuccessful)
                     {
                         WorldCurrencyResponse data = response.Data;
                         data.Code = currencyCode.ToUpper().Trim();
-                        Cache.SaveObject(currencyCode, data);
+                        Cache.SaveObject(endpoint, data);
                         return data;
                     }
                     else
@@ -704,6 +725,35 @@ namespace DolarBot.API
             }
 
             /// <summary>
+            /// Queries the API and returns the list of crypto currency codes.
+            /// </summary>
+            /// <returns>A task that contains a collection of <see cref="CryptoCodeResponse"/> objects.</returns>
+            public async Task<List<CryptoCodeResponse>> GetCryptoCurrenciesList()
+            {
+                List<CryptoCodeResponse> cachedResponse = Cache.GetObject<List<CryptoCodeResponse>>(CRYPTO_CURRENCIES_LIST_KEY);
+
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    RestRequest request = new RestRequest(CRYPTO_CURRENCIES_LIST_ENDPOINT, DataFormat.Json);
+                    IRestResponse<List<CryptoCodeResponse>> response = await Client.ExecuteGetAsync<List<CryptoCodeResponse>>(request);
+                    if (response.IsSuccessful)
+                    {
+                        Cache.SaveObject(CRYPTO_CURRENCIES_LIST_KEY, response.Data, Cache.GetCryptoListExpiration());
+                        return response.Data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
             /// Queries the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
             /// </summary>
             /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
@@ -725,6 +775,36 @@ namespace DolarBot.API
                         cryptoResponse.Currency = cryptoCurrency;
                         Cache.SaveObject(cryptoCurrency, cryptoResponse, Cache.GetCryptoExpiration());
 
+                        return cryptoResponse;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Queries the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
+            /// </summary>
+            /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
+            public async Task<CryptoResponse> GetCryptoCurrencyRate(string cryptoCurrencyCode)
+            {
+                string endpoint = $"{CRYPTO_ENDPOINT}/{cryptoCurrencyCode.ToUpper()}";
+                CryptoResponse cachedResponse = Cache.GetObject<CryptoResponse>(endpoint);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
+                    if (response.IsSuccessful)
+                    {
+                        CryptoResponse cryptoResponse = response.Data;
+                        Cache.SaveObject(endpoint, cryptoResponse, Cache.GetCryptoExpiration());
                         return cryptoResponse;
                     }
                     else
@@ -830,7 +910,7 @@ namespace DolarBot.API
                 ApiKey = Configuration["cuttlyApiKey"];
 
                 Client = new RestClient(Configuration["cuttlyBaseUrl"]);
-                Client.UseNewtonsoftJson();   
+                Client.UseNewtonsoftJson();
                 if (int.TryParse(Configuration["cuttlyRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
                 {
                     Client.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);

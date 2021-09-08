@@ -188,6 +188,10 @@ namespace DolarBot.Util
             /// <summary>
             /// The color for Binance Coin.
             /// </summary>
+            public static readonly Color Crypto = new Color(109, 75, 201);
+            /// <summary>
+            /// The color for Binance Coin.
+            /// </summary>
             public static readonly Color BinanceCoin = new Color(243, 186, 47);
             /// <summary>
             /// The color for Bitcoin.

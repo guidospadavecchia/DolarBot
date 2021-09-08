@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using CryptoCurrencies = DolarBot.API.ApiCalls.DolarBotApi.CryptoCurrencies;
 
@@ -30,6 +31,33 @@ namespace DolarBot.Services.Crypto
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Filters the <paramref name="cryptoCurrenciesList"/> searching first by code (equals), then by symbol (equals) and lastly by name (contains).
+        /// </summary>
+        /// <param name="cryptoCurrenciesList">The cryptocurrency list.</param>
+        /// <param name="searchText">The text to search.</param>
+        /// <returns></returns>
+        public List<CryptoCodeResponse> FilterByText(List<CryptoCodeResponse> cryptoCurrenciesList, string searchText)
+        {
+            CryptoCodeResponse cryptoCodeResponse = cryptoCurrenciesList.FirstOrDefault(x => x.Code.Equals(searchText, StringComparison.OrdinalIgnoreCase));
+            if (cryptoCodeResponse != null)
+            {
+                return new List<CryptoCodeResponse>() { cryptoCodeResponse };
+            }
+            else
+            {
+                List<CryptoCodeResponse> cryptoResults = cryptoCurrenciesList.Where(x => x.Symbol.Equals(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (cryptoResults.Count > 0)
+                {
+                    return cryptoResults;
+                }
+                else
+                {
+                    return searchText.Length >= 3 ? cryptoCurrenciesList.Where(x => x.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList() : new List<CryptoCodeResponse>();
+                }
+            }
+        }
 
         #region API Calls
 

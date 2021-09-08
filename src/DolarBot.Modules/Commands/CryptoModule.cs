@@ -53,19 +53,17 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Replies with an embed message for a single cryptocurrency value.
         /// </summary>
-        /// <param name="cryptoCurrencyCode">The cryptocurrency code.</param>
-        /// <param name="currenciesList">The collection of valid currency codes.</param>
+        /// <param name="searchText">The text to be searched.</param>
+        /// <param name="cryptoCurrenciesList">The collection of valid currency codes.</param>
         /// <param name="allowMultipleResults">Indicates wether the search result can return multiple results.</param>
-        private async Task SendCryptoCurrencyValueAsync(string cryptoCurrencyCode, List<CryptoCodeResponse> currenciesList, bool allowMultipleResults = true)
+        private async Task SendCryptoCurrencyValueAsync(string searchText, List<CryptoCodeResponse> cryptoCurrenciesList, bool allowMultipleResults = true, IDisposable typingState = null)
         {
-            CryptoCodeResponse cryptoCodeResponse = currenciesList.FirstOrDefault(x => x.Code.Equals(cryptoCurrencyCode, StringComparison.OrdinalIgnoreCase));
-            List<CryptoCodeResponse> cryptoCurrencyCodeResponses = cryptoCodeResponse != null ? new List<CryptoCodeResponse>() { cryptoCodeResponse } : currenciesList.Where(x => x.Symbol.Equals(cryptoCurrencyCode, StringComparison.OrdinalIgnoreCase)).ToList();
-
+            List<CryptoCodeResponse> cryptoCurrencyCodeResponses = CryptoService.FilterByText(cryptoCurrenciesList, searchText);
             if (allowMultipleResults && cryptoCurrencyCodeResponses.Count > 1)
             {
-                string title = $"Multiples resultados para {Format.Code(cryptoCurrencyCode)}";
+                string title = $"Multiples resultados para {Format.Code(searchText)}";
                 string description = $"La búsqueda retornó multiples resultados.";
-                await SendCryptoCurrencyListAsync(cryptoCurrencyCodeResponses, true, title, description);
+                await SendCryptoCurrencyListAsync(cryptoCurrencyCodeResponses, true, title, description, typingState);
             }
             else if (cryptoCurrencyCodeResponses.Count == 1)
             {
@@ -89,7 +87,12 @@ namespace DolarBot.Modules.Commands
             {
                 string commandPrefix = Configuration["commandPrefix"];
                 string currencyCommand = GetType().GetMethod(nameof(GetCryptoRatesAsync)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                await ReplyAsync($"El código {Format.Code(cryptoCurrencyCode)} no corresponde con ningún identificador válido. Para ver la lista de identificadores de criptomonedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
+                await ReplyAsync($"El código {Format.Code(searchText)} no corresponde con ningún identificador válido. Para ver la lista de identificadores de criptomonedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
+            }
+
+            if (typingState != null)
+            {
+                typingState.Dispose();
             }
         }
 
@@ -127,7 +130,7 @@ namespace DolarBot.Modules.Commands
                     embed = embed.AddInlineField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList);
                 }
 
-                embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código")} ó {Format.Bold("identificador")} de la criptomoneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
+                embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {(isSubSearch ? $"{Format.Bold("código")} ó " : string.Empty)}{Format.Bold("identificador")} de la criptomoneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
                              .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics($"Si ya sabés el identificador de la criptomoneda, podés indicárselo al comando directamente.{Environment.NewLine}Por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
                 embeds.Add(embed);
             }
@@ -162,7 +165,7 @@ namespace DolarBot.Modules.Commands
                 {
                     using (Context.Channel.EnterTypingState())
                     {
-                        await SendCryptoCurrencyValueAsync(currencyCode, currenciesList, !isSubSearch);
+                        await SendCryptoCurrencyValueAsync(currencyCode, currenciesList, !isSubSearch, typingState);
                     }
                 }
             }
@@ -176,19 +179,18 @@ namespace DolarBot.Modules.Commands
         [HelpUsageExample(false, "$crypto", "$ct", "$crypto bitcoin", "$ct ethereum")]
         [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetCryptoRatesAsync(
-            [Summary("Identificador o código de la criptomoneda a mostrar. Si no se especifica, mostrará la lista de todos los códigos de criptomonedas disponibles.")]
-            string codigo = null)
+            [Summary("Texto de búsqueda de la criptomoneda a mostrar (código, identificador o nombre). Si no se especifica, mostrará la lista de todos los códigos de criptomonedas disponibles.")]
+            string input = null)
         {
             try
             {
                 IDisposable typingState = Context.Channel.EnterTypingState();
                 List<CryptoCodeResponse> currenciesList = await CryptoService.GetCryptoCodeList();
 
-                if (codigo != null)
+                if (input != null)
                 {
-                    string currencyCode = Format.Sanitize(codigo).RemoveFormat(true).ToUpper().Trim();
-                    await SendCryptoCurrencyValueAsync(currencyCode, currenciesList);
-                    typingState.Dispose();
+                    string currencyCode = Format.Sanitize(input).RemoveFormat(true).ToUpper().Trim();
+                    await SendCryptoCurrencyValueAsync(currencyCode, currenciesList, typingState: typingState);
                 }
                 else
                 {

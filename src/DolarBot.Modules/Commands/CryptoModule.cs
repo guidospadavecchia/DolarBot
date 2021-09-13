@@ -7,7 +7,6 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Crypto;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static DolarBot.API.ApiCalls.DolarBotApi;
-using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
 
 namespace DolarBot.Modules.Commands
 {
@@ -27,17 +25,6 @@ namespace DolarBot.Modules.Commands
     [HelpTitle("Crypto")]
     public class CryptoModule : BaseCryptoModule
     {
-        #region Constants
-        /// <summary>
-        /// How many currencies to fit into each <see cref="EmbedPage"/>.
-        /// </summary>
-        private const int CURRENCIES_PER_PAGE = 12;
-        /// <summary>
-        /// How many inline fields to show per <see cref="EmbedPage"/>.
-        /// </summary>
-        private const int INLINE_FIELDS_PER_PAGE = 2;
-        #endregion
-
         #region Constructor
         /// <summary>
         /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
@@ -108,53 +95,8 @@ namespace DolarBot.Modules.Commands
             int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
             string currencyCommand = GetType().GetMethod(nameof(GetCryptoRatesAsync)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
 
-            var emojis = Configuration.GetSection("customEmojis");
-            Emoji cryptoEmoji = new Emoji(emojis["cryptoCoin"]);
-            string coinsImageUrl = Configuration.GetSection("images").GetSection("crypto")["default"];
-            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
-
-            int pageCount = 0;
-            int totalPages = (int)Math.Ceiling(Convert.ToDecimal(currenciesList.Count) / CURRENCIES_PER_PAGE);
-            List<IEnumerable<CryptoCodeResponse>> currenciesListPages = currenciesList.ChunkBy(CURRENCIES_PER_PAGE);
-
-            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
-            List<EmbedPage> pages = new List<EmbedPage>();
-
-            foreach (IEnumerable<CryptoCodeResponse> currenciesPage in currenciesListPages)
-            {
-                List<IEnumerable<CryptoCodeResponse>> chunks = currenciesPage.ChunkBy(CURRENCIES_PER_PAGE / INLINE_FIELDS_PER_PAGE);
-                EmbedBuilder embed = new EmbedBuilder();
-                foreach (IEnumerable<CryptoCodeResponse> chunk in chunks)
-                {
-                    string currencyList = string.Join(Environment.NewLine, chunk.Select(x => $"{cryptoEmoji} {Format.Bold($"[{x.Symbol}]")} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
-                    embed = embed.AddInlineField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList);
-                }
-
-                embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {(!isSubSearch ? $"{Format.Bold("código")} ó " : string.Empty)}{Format.Bold("identificador")} de la criptomoneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.");
-                if (!isSubSearch)
-                {
-                    embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics($"Si ya sabés el identificador de la criptomoneda, podés indicárselo al comando directamente.{Environment.NewLine}Por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
-                }
-                embeds.Add(embed);
-            }
-
-            foreach (EmbedBuilder embed in embeds)
-            {
-                pages.Add(new EmbedPage
-                {
-                    Title = title ?? "Criptomonedas disponibles",
-                    Description = description ?? $"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.",
-                    Fields = embed.Fields,
-                    Color = GlobalConfiguration.Colors.Crypto,
-                    FooterOverride = new EmbedFooterBuilder
-                    {
-                        Text = $"Página {++pageCount} de {totalPages}"
-                    },
-                    ThumbnailUrl = coinsImageUrl
-                });
-            }
-
-            await SendPagedReplyAsync(pages, true);
+            List<EmbedBuilder> embeds = CryptoService.CreateCryptoListEmbedAsync(currenciesList, currencyCommand, isSubSearch, Context.User.Username, title, description);
+            await SendPagedReplyAsync(embeds, true);
             if (typingState != null)
             {
                 typingState.Dispose();

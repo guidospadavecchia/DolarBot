@@ -1,8 +1,11 @@
 ﻿using Discord;
 using DolarBot.API;
 using DolarBot.Services.Banking;
+using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Globalization;
 
 namespace DolarBot.Services.Base
 {
@@ -38,6 +41,30 @@ namespace DolarBot.Services.Base
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Parses a date from a string input assuming standard date formats.
+        /// </summary>
+        /// <param name="input">The date as a string.</param>
+        /// <param name="date">The parsed date.</param>
+        /// <returns>A boolean value indicating whether the parsing was successful.</returns>
+        public bool ParseDate(string input, out DateTime? date)
+        {
+            bool validDate = DateTime.TryParseExact(input, "yyyy/M/d", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out DateTime result) ||
+                             DateTime.TryParseExact(input, "yyyy-M-d", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
+                             DateTime.TryParseExact(input, "d/M/yyyy", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
+                             DateTime.TryParseExact(input, "d-M-yyyy", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
+                             DateTime.TryParseExact(input, "yyyy/M", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
+                             DateTime.TryParseExact(input, "yyyy-M", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
+                             DateTime.TryParseExact(input, "yyyy", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result);
+            if(!validDate && input.Equals("hoy", StringComparison.OrdinalIgnoreCase))
+            {
+                result = DateTime.Now.Date;
+                validDate = true;
+            }
+            date = validDate ? result : default;
+            return validDate;
+        }
 
         /// <summary>
         /// Appends the play store link as a field into <paramref name="embed"/>.

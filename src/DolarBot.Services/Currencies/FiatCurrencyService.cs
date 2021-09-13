@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DolarBot.Services.Currencies
@@ -17,6 +19,17 @@ namespace DolarBot.Services.Currencies
     /// </summary>
     public class FiatCurrencyService : BaseService
     {
+        #region Constants
+        /// <summary>
+        /// How many currencies to fit into each embed page.
+        /// </summary>
+        private const int CURRENCIES_PER_PAGE = 25;
+        /// <summary>
+        /// How many days to fit into each embed page for historical commands.
+        /// </summary>
+        private const int HISTORICAL_DATES_PER_PAGE = 15;
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -49,6 +62,23 @@ namespace DolarBot.Services.Currencies
         public async Task<WorldCurrencyResponse> GetCurrencyValue(string currencyCode)
         {
             return await Api.DolarBot.GetWorldCurrencyValue(currencyCode);
+        }
+
+        /// <summary>
+        /// Fetches a collection of historical currency values between two dates.
+        /// </summary>
+        /// <param name="currencyCode">The currency 3-digit code.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        /// <returns>A collection of <see cref="WorldCurrencyResponse"/> objects.</returns>
+        public async Task<List<WorldCurrencyResponse>> GetHistoricalCurrencyValues(string currencyCode, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            List<WorldCurrencyResponse> historicalCurrencyValues = await Api.DolarBot.GetWorldCurrencyHistoricalValues(currencyCode);
+            if ((startDate != null && startDate.Value.Date <= DateTime.Now.Date) || (endDate != null && endDate.Value.Date <= DateTime.Now.Date))
+            {
+                historicalCurrencyValues = historicalCurrencyValues.Where(x => (!startDate.HasValue || x.Fecha.Date >= startDate.Value.Date) && (!endDate.HasValue || x.Fecha.Date <= endDate.Value.Date)).ToList();
+            }
+            return historicalCurrencyValues;
         }
 
         #endregion
@@ -89,6 +119,121 @@ namespace DolarBot.Services.Currencies
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             embed = AddPlayStoreLink(embed);
             return embed;
+        }
+
+        /// <summary>
+        /// Creates a collection of <see cref="EmbedBuilder"/> objects representing a list of currency codes.
+        /// </summary>
+        /// <param name="currenciesList">A collection of <see cref="WorldCurrencyCodeResponse"/> objects.</param>
+        /// <param name="currencyCommand">The executing currency command.</param>
+        /// <param name="username">The executing user name.</param>
+        /// <returns>A list of embeds ready to be built.</returns>
+        public List<EmbedBuilder> CreateWorldCurrencyListEmbedAsync(List<WorldCurrencyCodeResponse> currenciesList, string currencyCommand, string username)
+        {
+            string commandPrefix = Configuration["commandPrefix"];
+            int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
+
+            Emoji coinEmoji = new Emoji(":coin:");
+            string coinsImageUrl = Configuration.GetSection("images").GetSection("coins")["64"];
+            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+
+            int pageCount = 0;
+            int totalPages = (int)Math.Ceiling(Convert.ToDecimal(currenciesList.Count) / CURRENCIES_PER_PAGE);
+            List<IEnumerable<WorldCurrencyCodeResponse>> currenciesListPages = currenciesList.ChunkBy(CURRENCIES_PER_PAGE);
+
+            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            foreach (IEnumerable<WorldCurrencyCodeResponse> currenciesPage in currenciesListPages)
+            {
+                string currencyList = string.Join(Environment.NewLine, currenciesPage.Select(x => $"{coinEmoji} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
+                EmbedBuilder embed = new EmbedBuilder()
+                                     .WithColor(GlobalConfiguration.Colors.Currency)
+                                     .WithThumbnailUrl(coinsImageUrl)
+                                     .WithTitle("Monedas del mundo disponibles")
+                                     .WithDescription($"Códigos de monedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.")
+                                     .WithFooter($"Página {++pageCount} de {totalPages}")
+                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList)
+                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
+                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                embeds.Add(embed);
+            }
+
+            return embeds;
+        }
+
+        /// <summary>
+        /// Creates a collection of <see cref="EmbedBuilder"/> objects representing historical values.
+        /// </summary>
+        /// <param name="historicalCurrencyValues">A collection of <see cref="WorldCurrencyResponse"/> objects.</param>
+        /// <param name="currencyName">The currency name.</param>
+        /// <returns>A list of embeds ready to be built.</returns>
+        public List<EmbedBuilder> CreateHistoricalValuesEmbedsAsync(List<WorldCurrencyResponse> historicalCurrencyValues, string currencyName, DateTime? startDate, DateTime? endDate)
+        {
+            var emojis = Configuration.GetSection("customEmojis");
+            Emoji upEmoji = new Emoji(emojis["arrowUpRed"]);
+            Emoji downEmoji = new Emoji(emojis["arrowDownGreen"]);
+            Emoji neutralEmoji = new Emoji(emojis["neutral"]);
+            Emoji calendarEmoji = new Emoji(":calendar_spiral:");
+            string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];
+
+            int pageCount = 0;
+            int totalPages = (int)Math.Ceiling(Convert.ToDecimal(historicalCurrencyValues.Count) / HISTORICAL_DATES_PER_PAGE);
+            List<IEnumerable<WorldCurrencyResponse>> historicalCurrencyValuesPages = historicalCurrencyValues.ChunkBy(HISTORICAL_DATES_PER_PAGE);
+
+            if (!startDate.HasValue)
+            {
+                startDate = historicalCurrencyValues.First().Fecha.Date;
+            }
+            if (!endDate.HasValue || endDate.Value.Date > DateTime.Now.Date)
+            {
+                endDate = DateTime.Now.Date;
+            }
+            bool isSingleDate = startDate.Value.Date == endDate.Value.Date;
+
+            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            for (int i = 0; i < historicalCurrencyValuesPages.Count; i++)
+            {
+                IEnumerable<WorldCurrencyResponse> page = historicalCurrencyValuesPages.ElementAt(i);
+
+                StringBuilder sbField = new StringBuilder();
+                for (int j = 0; j < page.Count(); j++)
+                {
+                    WorldCurrencyResponse currencyValue = page.ElementAt(j);
+                    bool rateIsNumeric = decimal.TryParse(currencyValue.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal currencyRate);
+
+                    Emoji fieldEmoji = isSingleDate ? calendarEmoji : neutralEmoji;
+                    if (i > 0 || j > 0)
+                    {
+                        WorldCurrencyResponse previousCurrencyValue = j > 0 ? page.ElementAt(j - 1) : historicalCurrencyValuesPages.ElementAt(i - 1).Last();
+                        bool previousValueIsNumeric = decimal.TryParse(previousCurrencyValue.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal previousRate);
+                        if (rateIsNumeric && previousValueIsNumeric)
+                        {
+                            if (currencyRate >= previousRate)
+                            {
+                                fieldEmoji = currencyRate > previousRate ? upEmoji : neutralEmoji;
+                            }
+                            else
+                            {
+                                fieldEmoji = downEmoji;
+                            }
+                        }
+                    }
+                    string fieldText = $"{fieldEmoji} {Format.Code(currencyValue.Fecha.ToString("dd/MM/yyyy"))}: {Format.Bold($"$ {currencyRate}")}";
+                    sbField = sbField.AppendLine(fieldText);
+                }
+
+                string worldCurrencyCode = historicalCurrencyValues.First().Code;
+                string embedTitle = isSingleDate ? "Cotización por fecha" : "Cotizaciones por Fecha";
+                string embedDescription = $"{(isSingleDate ? "Cotización oficial" : "Cotizaciones oficiales")} de {Format.Bold($"{currencyName} ({worldCurrencyCode})")} {(isSingleDate ? $"para el día {Format.Code(startDate.Value.Date.ToString("dd/MM/yyyy"))}" : $"entre el {Format.Code(startDate.Value.Date.ToString("dd/MM/yyyy"))} y el {Format.Code(endDate.Value.Date.ToString("dd/MM/yyyy"))}")}, expresada en {Format.Bold("pesos argentinos")}.".AppendLineBreak();
+                EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Currency)
+                                                       .WithTitle($"{currencyName} ({worldCurrencyCode})")
+                                                       .WithDescription(embedDescription)
+                                                       .WithThumbnailUrl(chartImageUrl)
+                                                       .WithFooter($"Página {++pageCount} de {totalPages}")
+                                                       .AddField(embedTitle, sbField.AppendLineBreak().ToString());
+                embeds.Add(embed);
+            }
+
+            return embeds;
         }
 
         #endregion

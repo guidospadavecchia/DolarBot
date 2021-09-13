@@ -130,6 +130,7 @@ namespace DolarBot.API
             //Other currencies
             private const string WORLD_CURRENCY_ENDPOINT = "/api/monedas/valor";
             private const string WORLD_CURRENCIES_LIST_ENDPOINT = "/api/monedas/lista";
+            private const string WORLD_CURRENCIES_HISTORICAL_ENDPOINT = "/api/monedas/historico";
             private const string WORLD_CURRENCIES_LIST_KEY = "WorldCurrenciesList";
 
             //BCRA
@@ -526,6 +527,38 @@ namespace DolarBot.API
                         WorldCurrencyResponse data = response.Data;
                         data.Code = currencyCode.ToUpper().Trim();
                         Cache.SaveObject(endpoint, data);
+                        return data;
+                    }
+                    else
+                    {
+                        OnError(response);
+                        return null;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Queries the API and returns the historical values for a particular <paramref name="currencyCode"/>.
+            /// </summary>
+            /// <param name="currencyCode">The currency 3-digit code.</param>
+            /// <returns>A task that contains a collection of normalized <see cref="WorldCurrencyResponse"/> objects.</returns>
+            public async Task<List<WorldCurrencyResponse>> GetWorldCurrencyHistoricalValues(string currencyCode)
+            {
+                string endpoint = $"{WORLD_CURRENCIES_HISTORICAL_ENDPOINT}/{currencyCode.ToUpper()}";
+                List<WorldCurrencyResponse> cachedResponse = Cache.GetObject<List<WorldCurrencyResponse>>(endpoint);
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+                else
+                {
+                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
+                    IRestResponse<List<WorldCurrencyResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyResponse>>(request);
+                    if (response.IsSuccessful)
+                    {
+                        List<WorldCurrencyResponse> data = response.Data;
+                        data.ForEach(x => x.Code = currencyCode.ToUpper().Trim());
+                        Cache.SaveObject(endpoint, data, Cache.GetCurrencyListExpiration());
                         return data;
                     }
                     else

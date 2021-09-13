@@ -6,7 +6,6 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Currencies;
-using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
 
 namespace DolarBot.Modules.Commands
 {
@@ -25,13 +23,6 @@ namespace DolarBot.Modules.Commands
     [HelpTitle("Cotizaciones del Mundo")]
     public class FiatCurrencyModule : BaseInteractiveModule
     {
-        #region Constants
-        /// <summary>
-        /// How many currencies to fit into each <see cref="EmbedPage"/>.
-        /// </summary>
-        private const int CURRENCIES_PER_PAGE = 25; 
-        #endregion
-
         #region Vars
         /// <summary>
         /// Provides methods to retrieve information about bolivar rates.
@@ -70,10 +61,59 @@ namespace DolarBot.Modules.Commands
             }
             else
             {
-                string commandPrefix = Configuration["commandPrefix"];
-                string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                await ReplyAsync($"El código {Format.Code(currencyCode)} no corresponde con ningún código válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
+                await SendInvalidCurrencyCodeAsync(currencyCode);
             }
+        }
+
+        /// <summary>
+        /// Replies with a message indicating an invalid currency code.
+        /// </summary>
+        /// <param name="userInput">The user input.</param>
+        private async Task SendInvalidCurrencyCodeAsync(string userInput)
+        {
+            string commandPrefix = Configuration["commandPrefix"];
+            string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+            await ReplyAsync($"El código {Format.Code(userInput)} no corresponde con ningún código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
+        }
+
+        /// <summary>
+        /// Replies with a message indicating missing parameters for <see cref="GetHistoricalCurrencyValues(string, string, string)"/>.
+        /// </summary>
+        private async Task SendMissingParameterForHistoricalCurrencyCommandAsync()
+        {
+            string commandPrefix = Configuration["commandPrefix"];
+            string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+            string historicalcurrencyCommand = GetType().GetMethod(nameof(GetHistoricalCurrencyValues)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+            await ReplyAsync($"Este comando requiere un código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}. Para conocer más acerca de este comando, ejecutá {Format.Code($"{commandPrefix}ayuda {historicalcurrencyCommand}")}.");
+        }
+
+        /// <summary>
+        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// </summary>
+        /// <param name="userInput">The user input.</param>
+        private async Task SendInvalidDateParameterAsync(string userInput)
+        {
+            string commandPrefix = Configuration["commandPrefix"];
+            string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
+            await ReplyAsync($"La fecha '{Format.Bold(userInput)}' es inválida. Formatos de fecha aceptados: {Format.Code("AAAA/M/D")}, {Format.Code("AAAA-M-D")}, {Format.Code("D/M/AAAA")},{Format.Code("D-M-AAAA")}.");
+        }
+
+        /// <summary>
+        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// </summary>
+        /// <param name="userInput">The user input.</param>
+        private async Task SendInvalidDateRangeParametersAsync(DateTime? startDate, DateTime? endDate)
+        {
+            await ReplyAsync($"La fecha desde ({Format.Code((startDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}) debe ser menor o igual a la fecha hasta ({Format.Code((endDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}).");
+        }
+
+        /// <summary>
+        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// </summary>
+        /// <param name="userInput">The user input.</param>
+        private async Task SendNoDataForRangeAsync(DateTime? startDate, DateTime? endDate)
+        {
+            await ReplyAsync($"No hay datos históricos para el rango de fechas {Format.Code((startDate?.Date ?? DateTime.Now).ToString("dd/MM/yyyy"))} - {Format.Code((endDate?.Date ?? DateTime.Now).ToString("dd/MM/yyyy"))}.");
         }
 
         #endregion
@@ -83,9 +123,11 @@ namespace DolarBot.Modules.Commands
         [Summary("Muestra el valor de una cotización o lista todos los códigos de monedas disponibles.")]
         [HelpUsageExample(false, "$moneda", "$m", "$moneda CAD", "$ct AUD")]
         [RateLimit(1, 3, Measure.Seconds)]
-        public async Task GetCurrencies(
+        public async Task GetCurrencies
+        (
             [Summary("Código de la moneda a mostrar. Si no se especifica, mostrará la lista de todos los códigos de monedas disponibles.")]
-            string codigo = null)
+            string codigo = null
+        )
         {
             try
             {
@@ -102,45 +144,10 @@ namespace DolarBot.Modules.Commands
                 {
                     string commandPrefix = Configuration["commandPrefix"];
                     int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
-
-                    Emoji coinEmoji = new Emoji(":coin:");
                     string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
-                    string coinsImageUrl = Configuration.GetSection("images").GetSection("coins")["64"];
-                    TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
-                    int pageCount = 0;
-                    int totalPages = (int)Math.Ceiling(Convert.ToDecimal(currenciesList.Count) / CURRENCIES_PER_PAGE);
-                    List<IEnumerable<WorldCurrencyCodeResponse>> currenciesListPages = currenciesList.ChunkBy(CURRENCIES_PER_PAGE);
-
-                    List<EmbedBuilder> embeds = new List<EmbedBuilder>();
-                    List<EmbedPage> pages = new List<EmbedPage>();
-
-                    foreach (IEnumerable<WorldCurrencyCodeResponse> currenciesPage in currenciesListPages)
-                    {
-                        string currencyList = string.Join(Environment.NewLine, currenciesPage.Select(x => $"{coinEmoji} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
-                        EmbedBuilder embed = new EmbedBuilder().AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList)
-                                                               .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(Context.User.Username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
-                                                               .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
-                        embeds.Add(embed);
-                    }
-
-                    foreach (EmbedBuilder embed in embeds)
-                    {
-                        pages.Add(new EmbedPage
-                        {
-                            Description = $"Códigos de monedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.",
-                            Title = "Monedas del mundo disponibles",
-                            Fields = embed.Fields,
-                            Color = GlobalConfiguration.Colors.Currency,
-                            FooterOverride = new EmbedFooterBuilder
-                            {
-                                Text = $"Página {++pageCount} de {totalPages}"
-                            },
-                            ThumbnailUrl = coinsImageUrl
-                        });
-                    }
-
-                    await SendPagedReplyAsync(pages, true);
+                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username);
+                    await SendPagedReplyAsync(embeds, true);
                     typingState.Dispose();
 
                     SocketMessage userResponse = await NextMessageAsync(timeout: TimeSpan.FromSeconds(replyTimeout));
@@ -153,6 +160,83 @@ namespace DolarBot.Modules.Commands
                             {
                                 await SendCurrencyValueAsync(currencyCode, currenciesList);
                             }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await SendErrorReply(ex);
+            }
+        }
+
+        [Command("historico", RunMode = RunMode.Async)]
+        [Alias("h")]
+        [Summary("Muestra valores históricos entre fechas para una moneda determinada. Formatos válidos de fecha: `AAAA`, `AAAA/M`, `AAAA-M`, `AAAA/M/D`, `AAAA-M-D`, `D/M/AAAA`, `D-M-AAAA`, `hoy`.")]
+        [HelpUsageExample(false, "$historico USD", "$h EUR", "$h AUD 01/01/2010", "$h VES 2010 2012", "$historico CAD", "$historico CAD 2010-01-01 2020-12-31", "$historico ZAR 2015-08")]
+        [RateLimit(1, 5, Measure.Seconds)]
+        public async Task GetHistoricalCurrencyValues
+        (
+            [Summary("Código de la moneda a mostrar.")]
+            string codigo = null,
+            [Summary("(Opcional) Fecha desde. Si no se especifica, se mostrará todo el histórico.")]
+            string fechaDesde = null,
+            [Summary("(Opcional) Fecha hasta. Si no se especifica, se tomará la fecha del día actual.")]
+            string fechaHasta = null
+        )
+        {
+            try
+            {
+                using (Context.Channel.EnterTypingState())
+                {
+                    if (string.IsNullOrWhiteSpace(codigo))
+                    {
+                        await SendMissingParameterForHistoricalCurrencyCommandAsync();
+                    }
+                    else
+                    {
+                        string currencyCode = Format.Sanitize(codigo).RemoveFormat(true).ToUpper().Trim();
+                        List<WorldCurrencyCodeResponse> historicalCurrencyCodeList = await FiatCurrencyService.GetWorldCurrenciesList();
+                        WorldCurrencyCodeResponse worldCurrencyCodeResponse = historicalCurrencyCodeList.FirstOrDefault(x => x.Code.Equals(currencyCode, StringComparison.OrdinalIgnoreCase));
+                        if (worldCurrencyCodeResponse != null)
+                        {
+                            DateTime? startDate = null;
+                            DateTime? endDate = null;
+                            if (string.IsNullOrWhiteSpace(fechaDesde) || FiatCurrencyService.ParseDate(fechaDesde, out startDate))
+                            {
+                                if (string.IsNullOrWhiteSpace(fechaHasta) || FiatCurrencyService.ParseDate(fechaHasta, out endDate))
+                                {
+                                    if ((startDate?.Date ?? DateTime.Now) <= (endDate?.Date ?? DateTime.Now))
+                                    {
+                                        List<WorldCurrencyResponse> historicalCurrencyValues = await FiatCurrencyService.GetHistoricalCurrencyValues(currencyCode, startDate, endDate);
+                                        if (historicalCurrencyValues != null && historicalCurrencyValues.Count > 0)
+                                        {
+                                            List<EmbedBuilder> embeds = FiatCurrencyService.CreateHistoricalValuesEmbedsAsync(historicalCurrencyValues, worldCurrencyCodeResponse.Name, startDate?.Date, endDate?.Date);
+                                            await SendPagedReplyAsync(embeds, true);
+                                        }
+                                        else
+                                        {
+                                            await SendNoDataForRangeAsync(startDate, endDate);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        await SendInvalidDateRangeParametersAsync(startDate, endDate);
+                                    }
+                                }
+                                else
+                                {
+                                    await SendInvalidDateParameterAsync(fechaHasta);
+                                }
+                            }
+                            else
+                            {
+                                await SendInvalidDateParameterAsync(fechaDesde);
+                            }
+                        }
+                        else
+                        {
+                            await SendInvalidCurrencyCodeAsync(currencyCode);
                         }
                     }
                 }

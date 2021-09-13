@@ -59,12 +59,19 @@ A continuación se listan los comandos disponibles:
 - \[`$realahorro` | `$ra`]: Muestra la cotización del Real ahorro (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
 - \[`$realblue` | `$rb`]: Muestra la cotización del Real blue. 
 
+### Monedas del mundo
+- \[`$moneda` | `$m`]: Muestra la lista de todos los códigos de monedas disponibles.  
+- \[`$moneda <codigo>` | `$m <codigo>`]: Muestra la cotización actual de una moneda determinada (ver `$moneda`).   
+- \[`$historico <codigo>` | `$h <codigo>`]: Muestra valores históricos entre fechas para una moneda determinada (ver `$moneda`).  
+
 ### Metales
 - \[`$oro`]: Muestra la cotización internacional del Oro.  
 - \[`$plata`]: Muestra la cotización internacional de la Plata.  
 - \[`$cobre`]: Muestra la cotización internacional del Cobre.  
 
 ### Criptomonedas
+- \[`$crypto` | `$ct`]: Muestra la lista de todos los códigos de criptomonedas disponibles.  
+- \[`$crypto <codigo>` | `$ct <codigo>`]: Muestra la cotización actual de una criptomoneda determinada (ver `$crypto`).  
 - \[`$binance` | `$bnb`]: Muestra la cotización del **Binance Coin (BNB)** en pesos y dólares.  
 - \[`$bitcoin` | `$btc`]: Muestra la cotización del **Bitcoin (BTC)** en pesos y dólares.  
 - \[`$bitcoincash` | `$bch`]: Muestra la cotización del **Bitcoin Cash (BCH)** en pesos y dólares.  
@@ -105,9 +112,7 @@ A continuación se listan los comandos disponibles:
 - \[`$votar` | `$vote`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
 
 ### Otros
-- \[`$monedas`]: Muestra la lista de monedas soportadas.  
-- \[`$bancos`]: Muestra la lista de bancos disponibles para cada una de las monedas (Ver `$monedas`).  
-- \[`$bancos`] `<moneda>`: Muestra la lista de bancos disponibles la moneda especificada (Ver `$monedas`).  
+- \[`$bancos`]: Muestra la lista de bancos disponibles para cada una de las monedas principales (Dólar, Euro y Real).  
 - \[`$frase` | `$f`]: Muestra una frase célebre acerca de la economía argentina.  
 
 ## Librerías

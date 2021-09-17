@@ -129,7 +129,7 @@ Reportá problemas en la sección [issues](https://github.com/guidospadavecchia/
 Si deseás contribuir, podés abrir un [pull request](https://github.com/guidospadavecchia/DolarBot/pulls).  
 
 ¿Te gusta **DolarBot**? Apoyalo [votándolo en top.gg](https://top.gg/bot/752669185053818941/vote).  
-También podes impulsar su avance y mantenimiento con una [pequeña contribución](https://www.mercadopago.com.ar/checkout/v1/redirect?preference-id=644604751-7a01236a-d22c-49f9-9194-f77c58485af1).
+También podes impulsar su avance y mantenimiento con una [pequeña contribución](http://paypal.me/guidospadavecchia).
 
 ## Autor
 Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  

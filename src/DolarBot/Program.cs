@@ -122,7 +122,7 @@ namespace DolarBot
         /// </summary>
         /// <param name="discordClient">The <see cref="DiscordSocketClient"/> instance.</param>
         /// <param name="commands">The <see cref="CommandService"/> instance.</param>
-        /// <param name="api">The <see cref="ApiCalls0"/> instance.</param>
+        /// <param name="api">The <see cref="ApiCalls"/> instance.</param>
         /// <returns>A built service provider.</returns>
         private IServiceProvider ConfigureServices(DiscordSocketClient discordClient, CommandService commands, ApiCalls api)
         {

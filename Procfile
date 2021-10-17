@@ -1,1 +1,1 @@
-worker: DolarBot
+worker: ./DolarBot

@@ -1,1 +1,1 @@
-worker: cd $HOME/heroku_output/DolarBot && dotnet ./DolarBot.dll
+worker: cd /app/heroku_output && ./DolarBot

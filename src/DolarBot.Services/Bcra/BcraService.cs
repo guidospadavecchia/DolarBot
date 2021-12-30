@@ -189,7 +189,7 @@ namespace DolarBot.Services.Bcra
             string shareText = $"*Pesos en circulación*{Environment.NewLine}{Environment.NewLine}{(isNumber ? $"$ *{value}*" : value)}{Environment.NewLine}Hora: {lastUpdated} (UTC {utcOffset})";
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Main)
                                                    .WithTitle("Pesos en circulación")
-                                                   .WithDescription($"Cantidad total de {Format.Bold("pesos argentinos")} en circulación.".AppendLineBreak())
+                                                   .WithDescription($"Cantidad total aproximada de {Format.Bold("pesos argentinos")} en circulación.".AppendLineBreak())
                                                    .WithThumbnailUrl(reservesImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {

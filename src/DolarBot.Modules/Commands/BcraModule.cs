@@ -99,7 +99,7 @@ namespace DolarBot.Modules.Commands
 
         [Command("circulante", RunMode = RunMode.Async)]
         [Alias("c")]
-        [Summary("Muestra la cantidad total de pesos en circulación a la fecha.")]
+        [Summary("Muestra la cantidad total aproximada de pesos en circulación a la fecha.")]
         [HelpUsageExample(false, "$circulante", "$c")]
         [RateLimit(1, 3, Measure.Seconds)]
         public async Task GetCirculanteAsync()

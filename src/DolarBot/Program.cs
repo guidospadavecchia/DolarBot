@@ -92,7 +92,7 @@ namespace DolarBot
         /// <summary>
         /// Prints the current assembly version to console.
         /// </summary>
-        private void PrintCurrentVersion()
+        private static void PrintCurrentVersion()
         {
             string assemblyVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
             Console.WriteLine(Debugger.IsAttached ? $"DolarBot v{assemblyVersion} (DEV)" : $"DolarBot v{assemblyVersion}");
@@ -111,7 +111,7 @@ namespace DolarBot
         /// <summary>
         /// Configures the file logger.
         /// </summary>
-        private void ConfigureLogger()
+        private static void ConfigureLogger()
         {
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo(GlobalConfiguration.GetLogConfigFileName()));

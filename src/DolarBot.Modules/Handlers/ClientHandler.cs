@@ -125,7 +125,7 @@ namespace DolarBot.Modules.Handlers
                 }
                 else
                 {
-                    Logger.Error("Cannot write to Server list log: Not configured.");
+                    Logger.Warn("Cannot write to Server list log: Not configured.");
                 }
             }
             catch (Exception ex)

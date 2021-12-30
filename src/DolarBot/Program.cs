@@ -52,7 +52,8 @@ namespace DolarBot
             ApiCalls api = new(Configuration, logger);
             DiscordSocketClient client = new(new DiscordSocketConfig()
             {
-                ExclusiveBulkDelete = true,
+                /* Remove GuildMessages after it becomes privileged intent and all commands are replaced by slash commands */
+                GatewayIntents = GatewayIntents.GuildMessages | GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.GuildMessageTyping | GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions | GatewayIntents.DirectMessageTyping,
             });
             CommandService commands = new();
 

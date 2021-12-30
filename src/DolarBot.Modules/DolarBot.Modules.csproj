@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.3.0" />
+    <PackageReference Include="Discord.Net" Version="3.1.0" />
     <PackageReference Include="DiscordBotsList.Api" Version="1.5.0" />
     <PackageReference Include="log4net" Version="2.0.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
@@ -17,15 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DolarBot.Addons\DolarBot.Addons.csproj" />
     <ProjectReference Include="..\DolarBot.API\DolarBot.API.csproj" />
     <ProjectReference Include="..\DolarBot.Services\DolarBot.Services.csproj" />
     <ProjectReference Include="..\DolarBot.Util\DolarBot.Util.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Discord.Addons.Interactive">
-      <HintPath>..\libs\Discord.Addons.Interactive.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

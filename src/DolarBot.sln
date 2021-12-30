@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30406.217
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot", "DolarBot\DolarBot.csproj", "{BA49DF19-9927-4E67-A79A-CD86E3FF0E89}"
 EndProject
@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.Util", "DolarBot.U
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.API", "DolarBot.API\DolarBot.API.csproj", "{399E55F8-15C4-4C0A-B566-F4A927E44F54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DolarBot.Services", "DolarBot.Services\DolarBot.Services.csproj", "{BEF52310-C831-4F69-8AA3-7358CEF42875}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.Services", "DolarBot.Services\DolarBot.Services.csproj", "{BEF52310-C831-4F69-8AA3-7358CEF42875}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DolarBot.Addons", "DolarBot.Addons\DolarBot.Addons.csproj", "{8F2FEB6B-6C0D-4D65-A372-9EBC2B0CF25B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BEF52310-C831-4F69-8AA3-7358CEF42875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F2FEB6B-6C0D-4D65-A372-9EBC2B0CF25B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F2FEB6B-6C0D-4D65-A372-9EBC2B0CF25B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F2FEB6B-6C0D-4D65-A372-9EBC2B0CF25B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F2FEB6B-6C0D-4D65-A372-9EBC2B0CF25B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

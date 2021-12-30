@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -229,7 +230,7 @@ namespace DolarBot.Modules.Commands
                                      .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor oficial de DolarBot", supportServerUrl)}".AppendLineBreak())
                                      .AddField("Web", InfoService.GetWebsiteEmbedDescription().AppendLineBreak())
                                      .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())
-                                     .WithFooter($"Hecho con {blueHeartEmoji} en .NET 5");
+                                     .WithFooter($"Hecho con {blueHeartEmoji} en {RuntimeInformation.FrameworkDescription}");
 
                 await ReplyAsync(embed: embed.Build());
             }

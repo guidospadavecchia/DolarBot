@@ -119,7 +119,7 @@ A continuación se listan los comandos disponibles:
 - [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
 - [Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive)
-- [top-gg/DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
+- [DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 
 ## APIS
 - [DolarBot-Api](https://github.com/guidospadavecchia/DolarBot-Api)

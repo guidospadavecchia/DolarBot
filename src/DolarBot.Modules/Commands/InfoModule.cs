@@ -22,7 +22,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(99)]
     [HelpTitle("Información")]
-    public class InfoModule : BaseInteractiveModule
+    public class InfoModule : BaseModule
     {
         #region Vars
         /// <summary>

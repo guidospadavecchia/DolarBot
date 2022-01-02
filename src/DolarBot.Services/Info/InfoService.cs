@@ -26,7 +26,7 @@ namespace DolarBot.Services.Info
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="BcraService"/> object with the provided configuration and API object.
+        /// Creates a new <see cref="InfoService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>

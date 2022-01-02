@@ -28,7 +28,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(98)]
     [HelpTitle("Otros")]
-    public class MiscModule : BaseInteractiveModule
+    public class MiscModule : BaseModule
     {
         #region Vars
         /// <summary>

@@ -20,7 +20,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(11)]
     [HelpTitle("Evolución Anual")]
-    public class HistoricalRatesModule : BaseInteractiveModule
+    public class HistoricalRatesModule : BaseModule
     {
         #region Vars
         /// <summary>

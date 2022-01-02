@@ -15,7 +15,7 @@ namespace DolarBot.Modules.Commands.Base
     /// <summary>
     /// Base class for interactive modules.
     /// </summary>
-    public class BaseInteractiveModule : InteractiveBase<SocketCommandContext>
+    public class BaseModule : InteractiveBase<SocketCommandContext>
     {
         #region Constants
         protected const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización ya que el servicio se encuentra inaccesible. Intente nuevamente en más tarde.";
@@ -37,7 +37,7 @@ namespace DolarBot.Modules.Commands.Base
         /// Initializes the object using the <see cref="IConfiguration"/> object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
-        public BaseInteractiveModule(IConfiguration configuration, ILog logger)
+        public BaseModule(IConfiguration configuration, ILog logger)
         {
             Configuration = configuration;
             Logger = logger;
@@ -74,7 +74,7 @@ namespace DolarBot.Modules.Commands.Base
         /// <returns></returns>
         protected async Task SendPagedReplyAsync(IEnumerable<EmbedBuilder> embeds, bool includeFirstLast = false)
         {
-            List<EmbedPage> pages = new List<EmbedPage>();
+            List<EmbedPage> pages = new();
             foreach (EmbedBuilder embed in embeds)
             {
                 pages.Add(new EmbedPage

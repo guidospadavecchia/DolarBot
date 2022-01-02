@@ -21,7 +21,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(4)]
     [HelpTitle("Cotizaciones del Mundo")]
-    public class FiatCurrencyModule : BaseInteractiveModule
+    public class FiatCurrencyModule : BaseModule
     {
         #region Vars
         /// <summary>

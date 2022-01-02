@@ -17,7 +17,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(10)]
     [HelpTitle("Cotizaciones de Venezuela")]
-    public class VzlaModule : BaseInteractiveModule
+    public class VzlaModule : BaseModule
     {
         #region Vars
         /// <summary>

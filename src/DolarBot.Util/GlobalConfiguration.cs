@@ -124,12 +124,7 @@ namespace DolarBot.Util
             if (string.IsNullOrWhiteSpace(dblToken))
             {
                 dblToken = Environment.GetEnvironmentVariable(GetDblTokenEnvVarName());
-                if (string.IsNullOrWhiteSpace(dblToken))
-                {
-                    throw new SystemException("Missing DBL token");
-                }
             }
-
             return dblToken;
         }
 

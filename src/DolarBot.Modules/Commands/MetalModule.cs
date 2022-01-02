@@ -17,7 +17,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(5)]
     [HelpTitle("Metales")]
-    public class MetalModule : BaseInteractiveModule
+    public class MetalModule : BaseModule
     {
         #region Vars
         /// <summary>

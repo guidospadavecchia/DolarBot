@@ -20,7 +20,7 @@ namespace DolarBot.Modules.Commands
     /// <summary>
     /// Contains help related commands.
     /// </summary>
-    public class HelpModule : BaseInteractiveModule
+    public class HelpModule : BaseModule
     {
         #region Constants
         private const string HELP_COMMAND = "ayuda";
@@ -106,10 +106,10 @@ namespace DolarBot.Modules.Commands
         /// <returns>A collection of <see cref="EmbedBuilder"/> objects ready to be built.</returns>
         private List<EmbedBuilder> GenerateEmbeddedHelp()
         {
-            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            List<EmbedBuilder> embeds = new();
 
-            Emoji moduleBullet = new Emoji("\uD83D\uDD37");
-            Emoji commandBullet = new Emoji("\uD83D\uDD39");
+            Emoji moduleBullet = new("\uD83D\uDD37");
+            Emoji commandBullet = new("\uD83D\uDD39");
             string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
             string commandPrefix = Configuration["commandPrefix"];
 
@@ -150,7 +150,7 @@ namespace DolarBot.Modules.Commands
                                         .WithCurrentTimestamp();
 
                     ModuleInfo m = module.Value.ElementAt(i);
-                    StringBuilder commandsBuilder = new StringBuilder();
+                    StringBuilder commandsBuilder = new();
                     foreach (CommandInfo commandInfo in m.Commands)
                     {
                         string commandSummary = Format.Italics(commandInfo.Summary);
@@ -190,7 +190,7 @@ namespace DolarBot.Modules.Commands
 
             if (commandInfo.Parameters.Count > 0)
             {
-                StringBuilder parameterBuilder = new StringBuilder();
+                StringBuilder parameterBuilder = new();
                 foreach (ParameterInfo parameter in commandInfo.Parameters)
                 {
                     parameterBuilder.AppendLine($"{Format.Code($"<{parameter.Name}>")}: {Format.Italics(parameter.Summary)}");
@@ -214,7 +214,7 @@ namespace DolarBot.Modules.Commands
             {
                 HelpUsageExampleAttribute attribute = commandInfo.GetAttribute<HelpUsageExampleAttribute>();
                 IEnumerable<string> examples = attribute.Examples;
-                StringBuilder exampleBuilder = new StringBuilder();
+                StringBuilder exampleBuilder = new();
                 foreach (string example in examples)
                 {
                     string exampleText = attribute.IsPreformatted ? example : Format.Code(example);
@@ -233,7 +233,7 @@ namespace DolarBot.Modules.Commands
         private async Task SendPagedHelpReplyAsync()
         {
             List<EmbedBuilder> embeds = GenerateEmbeddedHelp();
-            List<EmbedPage> pages = new List<EmbedPage>();
+            List<EmbedPage> pages = new();
             int pageCount = 0;
             int totalPages = embeds.Select(x => x.Fields.Count).Sum();
 

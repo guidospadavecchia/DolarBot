@@ -17,7 +17,7 @@ namespace DolarBot.Modules.Commands.Base
     /// Base class for fiat currency related modules.
     /// </summary>
     /// <typeparam name="TypeService">The type of service associated with this class.</typeparam>
-    public abstract class BaseFiatCurrencyModule<TypeService, TypeResponse> : BaseInteractiveModule where TypeService : BaseCurrencyService<TypeResponse> where TypeResponse : CurrencyResponse
+    public abstract class BaseFiatCurrencyModule<TypeService, TypeResponse> : BaseModule where TypeService : BaseCurrencyService<TypeResponse> where TypeResponse : CurrencyResponse
     {
         #region Vars
         /// <summary>

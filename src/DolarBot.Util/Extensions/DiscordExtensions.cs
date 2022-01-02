@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,18 @@ namespace DolarBot.Util.Extensions
         /// <typeparam name="T">The attribute's type.</typeparam>
         /// <param name="module">The current module.</param>
         /// <returns>True if the module has the attribute, otherwise false.</returns>
-        public static bool HasAttribute<T>(this ModuleInfo module) where T : Attribute
+        public static bool HasAttribute<T>(this Discord.Commands.ModuleInfo module) where T : Attribute
+        {
+            return module.Attributes.Any(a => (a as T) != null);
+        }
+
+        /// <summary>
+        /// Returns true if the current module contains the <typeparamref name="T"/> typed attribute, otherwise false.
+        /// </summary>
+        /// <typeparam name="T">The attribute's type.</typeparam>
+        /// <param name="module">The current module.</param>
+        /// <returns>True if the module has the attribute, otherwise false.</returns>
+        public static bool HasAttribute<T>(this Discord.Interactions.ModuleInfo module) where T : Attribute
         {
             return module.Attributes.Any(a => (a as T) != null);
         }
@@ -33,12 +45,34 @@ namespace DolarBot.Util.Extensions
         }
 
         /// <summary>
+        /// Returns true if the current command contains the <typeparamref name="T"/> typed attribute, otherwise false.
+        /// </summary>
+        /// <typeparam name="T">The attribute's type.</typeparam>
+        /// <param name="command">The current command.</param>
+        /// <returns>True if the module has the attribute, otherwise false.</returns>
+        public static bool HasAttribute<T, TParameter>(this CommandInfo<TParameter> command) where T : Attribute where TParameter : class, IParameterInfo
+        {
+            return command.Attributes.Any(a => (a as T) != null);
+        }
+
+        /// <summary>
         /// Gets the attribute, if found, from the current module.
         /// </summary>
         /// <typeparam name="T">The attribute's type.</typeparam>
         /// <param name="module">The current module.</param>
         /// <returns>The attribute if found, otherwise null.</returns>
-        public static T GetAttribute<T>(this ModuleInfo module) where T : Attribute
+        public static T GetAttribute<T>(this Discord.Commands.ModuleInfo module) where T : Attribute
+        {
+            return module.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the attribute, if found, from the current module.
+        /// </summary>
+        /// <typeparam name="T">The attribute's type.</typeparam>
+        /// <param name="module">The current module.</param>
+        /// <returns>The attribute if found, otherwise null.</returns>
+        public static T GetAttribute<T>(this Discord.Interactions.ModuleInfo module) where T : Attribute
         {
             return module.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
         }
@@ -55,6 +89,17 @@ namespace DolarBot.Util.Extensions
         }
 
         /// <summary>
+        /// Gets the attribute, if found, from the current command.
+        /// </summary>
+        /// <typeparam name="T">The attribute's type.</typeparam>
+        /// <param name="command">>The current command.</param>
+        /// <returns>The attribute if found, otherwise null.</returns>
+        public static T GetAttribute<T, TParameter>(this CommandInfo<TParameter> command) where T : Attribute where TParameter : class, IParameterInfo
+        {
+            return command.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Finds and returns a particular command from an <see cref="IEnumerable"/> commands collection.
         /// </summary>
         /// <param name="commands">The current collection of commands.</param>
@@ -63,6 +108,17 @@ namespace DolarBot.Util.Extensions
         public static CommandInfo GetCommand(this IEnumerable<CommandInfo> commands, string command)
         {
             return commands.FirstOrDefault(c => c.Aliases.Select(a => a.ToUpper().Trim()).Contains(command.ToUpper().Trim()));
+        }
+
+        /// <summary>
+        /// Finds and returns a particular slash command from an <see cref="IEnumerable"/> slash commands collection.
+        /// </summary>
+        /// <param name="commands">The current collection of commands.</param>
+        /// <param name="command">The command's name to find.</param>
+        /// <returns>The <see cref="CommandInfo"/> object if found, otherwise null.</returns>
+        public static SlashCommandInfo GetSlashCommand(this IEnumerable<SlashCommandInfo> commands, string command)
+        {
+            return commands.FirstOrDefault(c => c.Name.Equals(command, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

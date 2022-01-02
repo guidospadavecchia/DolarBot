@@ -63,15 +63,15 @@ namespace DolarBot.Modules.Handlers
         /// Processes user input and, if valid, executes the command.
         /// </summary>
         /// <param name="arg">The received <see cref="SocketMessage"/>.</param>
-        /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
+        /// <returns>A task that represents the asynchronous execution operation. The task contains the result of the command execution.</returns>
         public async Task HandleCommandAsync(SocketMessage arg)
         {
-            if (!(arg is SocketUserMessage message) || message.Author.IsBot)
+            if (arg is not SocketUserMessage message || message.Author.IsBot)
             {
                 return;
             }
 
-            SocketCommandContext context = new SocketCommandContext(Client, message);
+            SocketCommandContext context = new(Client, message);
             int argPos = default;
             if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
             {

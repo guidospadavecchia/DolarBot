@@ -11,7 +11,7 @@ namespace DolarBot.Modules.Commands.Base
     /// <summary>
     /// Base class for crypto-related modules.
     /// </summary>
-    public class BaseCryptoModule : BaseInteractiveModule
+    public class BaseCryptoModule : BaseModule
     {
         #region Vars
         /// <summary>

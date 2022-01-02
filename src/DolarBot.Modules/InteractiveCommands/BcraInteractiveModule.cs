@@ -1,23 +1,23 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
-using DolarBot.Modules.Commands.Base;
+using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Bcra;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
-namespace DolarBot.Modules.Commands
+namespace DolarBot.Modules.InteractiveCommands
 {
     /// <summary>
     /// Contains the BCRA (Argentine Republic Central Bank) related commands.
     /// </summary>
     [HelpOrder(9)]
     [HelpTitle("Indicadores BCRA")]
-    public class BcraModule : BaseModule
+    public class BcraInteractiveModule : BaseInteractiveModule
     {
         #region Vars
         /// <summary>
@@ -33,97 +33,85 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public BcraModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        public BcraInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
             BcraService = new BcraService(configuration, api);
         }
         #endregion
 
-        [Command("riesgopais", RunMode = RunMode.Async)]
-        [Alias("rp")]
-        [Summary("Muestra el valor del riesgo país.")]
-        [HelpUsageExample(false, "$riesgopais", "$rp")]
-        [RateLimit(1, 3, Measure.Seconds)]
+        [SlashCommand("riesgopais", "Muestra el valor del riesgo país de la República Argentina.", false, RunMode.Async)]
         public async Task GetRiesgoPaisValueAsync()
         {
-            try
+            await DeferAsync().ContinueWith(async (task) =>
             {
-                using (Context.Channel.EnterTypingState())
+                try
                 {
                     CountryRiskResponse result = await BcraService.GetCountryRisk();
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateCountryRiskEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
+                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                }
+            });
         }
 
-        [Command("reservas", RunMode = RunMode.Async)]
-        [Alias("rs")]
-        [Summary("Muestra las reservas de dólares del Banco Central a la fecha.")]
-        [HelpUsageExample(false, "$reservas", "$rs")]
-        [RateLimit(1, 3, Measure.Seconds)]
+        [SlashCommand("reservas", "Muestra las reservas aproximadas de dólares a la fecha del Banco Central de la República Argentina.", false, RunMode.Async)]
         public async Task GetReservasAsync()
         {
-            try
+            await DeferAsync().ContinueWith(async (task) =>
             {
-                using (Context.Channel.EnterTypingState())
+                try
                 {
                     BcraResponse result = await BcraService.GetReserves();
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateReservesEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
+                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                }
+            });
         }
 
-        [Command("circulante", RunMode = RunMode.Async)]
-        [Alias("c")]
-        [Summary("Muestra la cantidad total aproximada de pesos en circulación a la fecha.")]
-        [HelpUsageExample(false, "$circulante", "$c")]
-        [RateLimit(1, 3, Measure.Seconds)]
+        [SlashCommand("circulante", "Muestra la cantidad total aproximada de pesos argentinos en circulación a la fecha.", false, RunMode.Async)]
         public async Task GetCirculanteAsync()
         {
-            try
+            await DeferAsync().ContinueWith(async (task) =>
             {
-                using (Context.Channel.EnterTypingState())
+                try
                 {
                     BcraResponse result = await BcraService.GetCirculatingMoney();
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateCirculatingMoneyEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
+                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                }
+            });
         }
     }
 }

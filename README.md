@@ -132,7 +132,7 @@ Si deseás contribuir, podés abrir un [pull request](https://github.com/guidosp
 También podes impulsar su avance y mantenimiento con una [pequeña contribución](http://paypal.me/guidospadavecchia).
 
 ## Autor
-Guido Spadavecchia (Contacto: guido.spadavecchia@gmail.com).  
+[Guido Spadavecchia](https://github.com/guidospadavecchia) (Contacto: guido.spadavecchia@gmail.com).  
 
 ## Licencia
 **DolarBot** es *open-source*, libre y gratuito. Está licenciado bajo la [MIT License](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE).  

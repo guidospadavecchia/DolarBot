@@ -26,7 +26,7 @@ namespace DolarBot.Modules.Commands
     {
         #region Vars
         /// <summary>
-        /// Provides methods to retrieve information about euro rates.
+        /// Provides methods to retrieve general information about the bot and the server.
         /// </summary>
         private readonly InfoService InfoService;
         #endregion
@@ -158,7 +158,7 @@ namespace DolarBot.Modules.Commands
                                      .WithTitle("DolarBot")
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
-                                     .WithDescription($"Invita al bot haciendo {Format.Url("click acá", inviteLink)}");
+                                     .WithDescription($"Invita al bot haciendo {Format.Url("click aquí", inviteLink)}");
 
                 await ReplyAsync(embed: embed.Build());
             }
@@ -226,7 +226,7 @@ namespace DolarBot.Modules.Commands
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"{versionEmoji} Versión {versionDescription}".AppendLineBreak())
                                      .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}".AppendLineBreak())
-                                     .AddField("Uptime", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
+                                     .AddField("Uptime (Desde último reinicio)", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
                                      .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor oficial de DolarBot", supportServerUrl)}".AppendLineBreak())
                                      .AddField("Web", InfoService.GetWebsiteEmbedDescription().AppendLineBreak())
                                      .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())

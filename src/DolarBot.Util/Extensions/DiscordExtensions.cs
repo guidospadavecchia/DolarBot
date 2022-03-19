@@ -186,5 +186,15 @@ namespace DolarBot.Util.Extensions
         {
             return embedBuilder.AddField(title, $"{emoji} {Format.Url(linkText, url)}".AppendLineBreak());
         }
+
+        /// <summary>
+        /// Transforms a collection of <see cref="EmbedBuilder"/> objects by building them into <see cref="Embed"/> objects.
+        /// </summary>
+        /// <param name="embedBuilderCollection">Collection of <see cref="EmbedBuilder"/>.</param>
+        /// <returns>An array of <see cref="Embed"/>.</returns>
+        public static Embed[] Build(this IEnumerable<EmbedBuilder> embedBuilderCollection)
+        {
+            return embedBuilderCollection.Select(x => x.Build()).ToArray();
+        }
     }
 }

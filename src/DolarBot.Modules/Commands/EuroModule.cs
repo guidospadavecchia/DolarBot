@@ -59,7 +59,7 @@ namespace DolarBot.Modules.Commands
                     if (banco != null)
                     {
                         string userInput = Format.Sanitize(banco).RemoveFormat(true);
-                        if (Enum.TryParse(userInput, true, out Banks bank))
+                        if (!userInput.IsNumeric() && Enum.TryParse(userInput, true, out Banks bank))
                         {
                             if (bank == Banks.Bancos)
                             {

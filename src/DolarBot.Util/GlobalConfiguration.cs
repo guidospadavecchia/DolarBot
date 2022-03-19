@@ -21,7 +21,7 @@ namespace DolarBot.Util
         /// Gets the status text for the bot.
         /// </summary>
         /// <returns></returns>
-        public static string GetStatusText(string prefix) => $"{prefix}ayuda";
+        public static string GetStatusText() => $"/ayuda";
         /// <summary>
         /// Gets the application settings file name.
         /// </summary>

@@ -69,7 +69,7 @@ namespace DolarBot
             await RegisterEventsAsync(client, commandsService, interactionService, services);
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
-            await client.SetGameAsync(GlobalConfiguration.GetStatusText(commandPrefix), type: ActivityType.Listening);
+            await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
 
             await Task.Delay(Timeout.Infinite);
         }

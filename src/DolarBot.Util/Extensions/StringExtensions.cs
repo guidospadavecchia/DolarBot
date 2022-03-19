@@ -81,5 +81,15 @@ namespace DolarBot.Util.Extensions
             }
             return text;
         }
+
+        /// <summary>
+        /// Tests if the current <see cref="text"/> is a number.
+        /// </summary>
+        /// <param name="text">The current string.</param>
+        /// <returns>True if the text is a number, otherwise false.</returns>
+        public static bool IsNumeric(this string text)
+        {
+            return long.TryParse(text, out long _) || double.TryParse(text, out double _);
+        }
     }
 }

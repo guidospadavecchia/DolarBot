@@ -60,7 +60,7 @@ namespace DolarBot.Modules.Commands
                     else
                     {
                         string userInput = Format.Sanitize(cotizacion).RemoveFormat(true);
-                        if (Enum.TryParse(userInput, true, out HistoricalRatesParams historicalRateParam))
+                        if (!userInput.IsNumeric() && Enum.TryParse(userInput, true, out HistoricalRatesParams historicalRateParam))
                         {
                             HistoricalRatesResponse result = await HistoricalRatesService.GetHistoricalRates(historicalRateParam);
                             if (result != null && result.Meses != null && result.Meses.Count > 0)

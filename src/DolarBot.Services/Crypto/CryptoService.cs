@@ -276,9 +276,9 @@ namespace DolarBot.Services.Crypto
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string cryptoCode = cryptoResponse.Code.Length > 10 ? $"{cryptoResponse.Code.Substring(0, 7)}..." : cryptoResponse.Code;
             string lastUpdated = cryptoResponse.Fecha.ToString(cryptoResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ars) ? ars.ToString($"N{(ars < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString($"N{(arsTaxed < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string usdPrice = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal usd) ? usd.ToString($"N{(usd < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal ars) ? ars.ToString($"N{(ars < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString($"N{(arsTaxed < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string usdPrice = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal usd) ? usd.ToString($"N{(usd < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string shareText = $"*{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})*{Environment.NewLine}{Environment.NewLine}Dólares: \t\tUS$ *{usdPrice}*{Environment.NewLine}Pesos: \t\t$ *{arsPrice}*{Environment.NewLine}Pesos c/Imp: \t$ *{arsPriceWithTaxes}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GetColor(cryptoResponse.Currency))

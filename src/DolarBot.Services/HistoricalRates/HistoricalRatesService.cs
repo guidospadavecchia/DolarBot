@@ -76,14 +76,14 @@ namespace DolarBot.Services.HistoricalRates
             {
                 HistoricalMonthlyRate month = monthlyRates.ElementAt(i);
                 string monthName = GlobalConfiguration.GetLocalCultureInfo().DateTimeFormat.GetMonthName(Convert.ToInt32(month.Mes)).Capitalize();
-                bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal monthRate);
+                bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal monthRate);
                 string monthRateText = monthRateIsNumeric ? monthRate.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 Emoji fieldEmoji = neutralEmoji;
                 if (i > 0)
                 {
                     HistoricalMonthlyRate previousMonth = monthlyRates.ElementAt(i - 1);
-                    bool previousMonthRateIsNumeric = decimal.TryParse(previousMonth.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal previousMonthRate);
+                    bool previousMonthRateIsNumeric = decimal.TryParse(previousMonth.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal previousMonthRate);
                     if (monthRateIsNumeric && previousMonthRateIsNumeric)
                     {
                         if (monthRate >= previousMonthRate)

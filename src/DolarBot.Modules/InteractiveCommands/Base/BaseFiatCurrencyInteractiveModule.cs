@@ -1,13 +1,9 @@
 ﻿using Discord;
-using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models.Base;
-using DolarBot.Modules.InteractiveCommands;
-using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Base;
 using DolarBot.Services.Currencies;
-using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
@@ -21,13 +17,15 @@ namespace DolarBot.Modules.InteractiveCommands.Base
     /// <typeparam name="TypeService">The type of service associated with this class.</typeparam>
     public abstract class BaseFiatCurrencyInteractiveModule<TypeService, TypeResponse> : BaseInteractiveModule where TypeService : BaseCurrencyService<TypeResponse> where TypeResponse : CurrencyResponse
     {
+        #region Constants
+        private readonly string PARTIAL_RESPONSE_MESSAGE = $"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.";
+        #endregion
+
         #region Vars
         /// <summary>
         /// Provides methods to retrieve information about currency rates and values.
         /// </summary>
         protected readonly TypeService Service;
-
-        private readonly string PARTIAL_RESPONSE_MESSAGE = $"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.";
         #endregion
 
         #region Constructor
@@ -60,6 +58,14 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         protected abstract Currencies GetCurrentCurrency();
 
         /// <summary>
+        /// Modifies the original deferred response by indicating that some responses failed to be fetched.
+        /// </summary>
+        protected async Task SendPartialResponseWarning()
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = PARTIAL_RESPONSE_MESSAGE);
+        }
+
+        /// <summary>
         /// Replies with an embed message containing all available standard rates for this currency.
         /// </summary>
         protected async Task SendAllStandardRates()
@@ -71,13 +77,13 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses);
                 if (responses.Length != successfulResponses.Length)
                 {
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = PARTIAL_RESPONSE_MESSAGE);
+                    await SendPartialResponseWarning();
                 }
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                await SendDeferredEmbed(embed.Build());
             }
             else
             {
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                await SendDeferredApiErrorResponse();
             }
         }
 
@@ -95,13 +101,13 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses, description, thumbnailUrl);
                 if (responses.Length != successfulResponses.Length)
                 {
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = PARTIAL_RESPONSE_MESSAGE);
+                    await SendPartialResponseWarning();
                 }
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                await SendDeferredEmbed(embed.Build());
             }
             else
             {
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                await SendDeferredApiErrorResponse();
             }
         }
 
@@ -116,11 +122,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             if (result != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, null, thumbnailUrl);
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                await SendDeferredEmbed(embed.Build());
             }
             else
             {
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                await SendDeferredApiErrorResponse();
             }
         }
 
@@ -134,11 +140,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             if (response != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(response, description);
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                await SendDeferredEmbed(embed.Build());
             }
             else
             {
-                await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                await SendDeferredApiErrorResponse();
             }
         }
 

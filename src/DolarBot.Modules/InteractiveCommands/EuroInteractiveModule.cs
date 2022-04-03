@@ -64,7 +64,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -92,7 +92,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }

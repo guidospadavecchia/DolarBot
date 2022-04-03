@@ -66,11 +66,11 @@ namespace DolarBot.Modules.InteractiveCommands
                                          .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
                                          .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                    await SendDeferredEmbed(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -90,11 +90,11 @@ namespace DolarBot.Modules.InteractiveCommands
                                          .WithThumbnailUrl(infoImageUrl)
                                          .WithDescription($"El ID del servidor es {sid}");
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                    await SendDeferredEmbed(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -135,7 +135,7 @@ namespace DolarBot.Modules.InteractiveCommands
             }
             catch (Exception ex)
             {
-                await SendDeferredErrorResponse(Context.Interaction, ex);
+                await SendDeferredErrorResponse(ex);
             }
         }
 
@@ -160,11 +160,11 @@ namespace DolarBot.Modules.InteractiveCommands
                                          .WithThumbnailUrl(infoImageUrl)
                                          .WithDescription($"Invita al bot haciendo {Format.Url("click aquí", inviteLink)}");
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                    await SendDeferredEmbed(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -187,7 +187,7 @@ namespace DolarBot.Modules.InteractiveCommands
             }
             catch (Exception ex)
             {
-                await SendDeferredErrorResponse(Context.Interaction, ex);
+                await SendDeferredErrorResponse(ex);
             }
         }
 
@@ -234,11 +234,11 @@ namespace DolarBot.Modules.InteractiveCommands
                          .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())
                          .WithFooter($"Hecho con {blueHeartEmoji} en {RuntimeInformation.FrameworkDescription}");
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                    await SendDeferredEmbed(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -254,11 +254,11 @@ namespace DolarBot.Modules.InteractiveCommands
                     int? latency = Context.Client is DiscordSocketClient socketClient ? socketClient.Latency : null;
                     EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, latency);
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                    await SendDeferredEmbed(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }

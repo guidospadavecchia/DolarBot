@@ -50,16 +50,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateCountryRiskEmbedAsync(result);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -75,16 +75,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateReservesEmbedAsync(result);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -100,16 +100,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateCirculatingMoneyEmbedAsync(result);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }

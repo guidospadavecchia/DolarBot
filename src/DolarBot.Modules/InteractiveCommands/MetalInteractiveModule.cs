@@ -4,10 +4,7 @@ using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
-using DolarBot.Services.Banking;
-using DolarBot.Services.Currencies;
 using DolarBot.Services.Metals;
-using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -36,7 +33,7 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public MetalInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger) 
+        public MetalInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
             MetalService = new MetalService(configuration, api);
         }
@@ -53,17 +50,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
-
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -79,16 +75,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -104,16 +100,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }

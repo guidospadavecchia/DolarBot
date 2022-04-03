@@ -192,17 +192,17 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (SlashCommandExists(comando))
                     {
                         EmbedBuilder embed = GenerateEmbeddedSlashCommandHelp(comando);
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        List<EmbedBuilder> embeds = GenerateEmbeddedSlashCommandsHelp();
-                        await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embeds = new Optional<Embed[]>(embeds.Select(e => e.Build()).ToArray()));
+                        List<EmbedBuilder> embedbuilders = GenerateEmbeddedSlashCommandsHelp();
+                        await SendDeferredEmbed(embedbuilders.Select(e => e.Build()).ToArray());
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }

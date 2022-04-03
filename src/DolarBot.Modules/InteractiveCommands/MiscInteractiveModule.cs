@@ -94,11 +94,11 @@ namespace DolarBot.Modules.InteractiveCommands
                         embeds.Add(embed);
                     }
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embeds = embeds.Build());
+                    await SendDeferredEmbed(embeds.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }
@@ -121,11 +121,11 @@ namespace DolarBot.Modules.InteractiveCommands
                         responseMessage = $"{Format.Bold("Error")}. No se puede acceder a la información solicitada en este momento. Por favor, intentá nuevamente más tarde.";
                     }
 
-                    await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = responseMessage);
+                    await SendDeferredMessage(responseMessage);
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(Context.Interaction, ex);
+                    await SendDeferredErrorResponse(ex);
                 }
             });
         }

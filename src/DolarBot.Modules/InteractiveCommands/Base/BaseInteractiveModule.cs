@@ -10,11 +10,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
 {
     public class BaseInteractiveModule : InteractionModuleBase
     {
-        #region Constants
-        protected const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización ya que el servicio se encuentra inaccesible. Intente nuevamente en más tarde.";
-        #endregion
-
         #region Vars
+        /// <summary>
+        /// The message to show when there is an error with the API.
+        /// </summary>
+        private readonly string RequestErrorMessage = $"{Format.Bold("Error")}: No se pudo obtener la cotización ya que el servicio se encuentra inaccesible. Intente nuevamente en más tarde.";
         /// <summary>
         /// Provides access to application settings.
         /// </summary>
@@ -38,25 +38,51 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         #endregion
 
         #region Methods
+
         /// <summary>
-        /// Sends a reply indicating an error has occurred.
+        /// Modifies the original deferred response by sending an embed message.
         /// </summary>
-        /// <param name="ex">The exception to log.</param>
-        protected async Task SendErrorResponse(Exception ex)
+        /// <param name="embed">The embed to be sent.</param>
+        protected async Task SendDeferredEmbed(Embed embed)
         {
-            await RespondAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-            Logger.Error("Error al ejecutar comando.", ex);
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed);
+        }
+
+        /// <summary>
+        /// Modifies the original deferred response by sending multiple embed messages.
+        /// </summary>
+        /// <param name="embeds">The embed messages to be sent.</param>
+        protected async Task SendDeferredEmbed(Embed[] embeds)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embeds = embeds);
+        }
+
+        /// <summary>
+        /// Modifies the original deferred response by sending a message.
+        /// </summary>
+        /// <param name="message">The message to be sent.</param>
+        protected async Task SendDeferredMessage(string message)
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = message);
+        }
+
+        /// <summary>
+        /// Modifies the original deferred response by sending a message indicating an error has ocurred with the API.
+        /// </summary>
+        /// <returns></returns>
+        protected async Task SendDeferredApiErrorResponse()
+        {
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = RequestErrorMessage);
         }
 
         /// <summary>
         /// Sends a reply indicating an error has occurred, by modifying the original deferred response.
         /// </summary>
-        /// <param name="interaction">The interaction context.</param>
         /// <param name="ex">The exception to log.</param>
-        protected async Task SendDeferredErrorResponse(IDiscordInteraction interaction, Exception ex)
+        protected async Task SendDeferredErrorResponse(Exception ex)
         {
             string errorMessage = GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]);
-            await interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = errorMessage);
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = errorMessage);
             Logger.Error("Error al ejecutar comando.", ex);
         }
         #endregion

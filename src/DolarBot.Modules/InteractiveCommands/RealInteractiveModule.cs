@@ -19,7 +19,7 @@ namespace DolarBot.Modules.InteractiveCommands
     /// <summary>
     /// Contains the Real related commands.
     /// </summary>
-    [HelpOrder(1)]
+    [HelpOrder(3)]
     [HelpTitle("Cotizaciones del Real")]
     public class RealInteractiveModule : BaseFiatCurrencyInteractiveModule<RealService, RealResponse>
     {

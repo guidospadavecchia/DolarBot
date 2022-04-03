@@ -19,7 +19,7 @@ namespace DolarBot.Modules.InteractiveCommands
     /// <summary>
     /// Contains the euro related commands.
     /// </summary>
-    [HelpOrder(1)]
+    [HelpOrder(2)]
     [HelpTitle("Cotizaciones del Euro")]
     public class EuroInteractiveModule : BaseFiatCurrencyInteractiveModule<EuroService, EuroResponse>
     {
@@ -69,7 +69,7 @@ namespace DolarBot.Modules.InteractiveCommands
             });
         }
 
-        [SlashCommand("eurobancos", "Muestra las cotizaciones bancarias del euro.", false, RunMode.Async)]
+        [SlashCommand("euro-bancos", "Muestra las cotizaciones bancarias del euro.", false, RunMode.Async)]
         public async Task GetBankEuroPriceAsync(
             [Summary("banco", "Indica el banco a mostrar. Si no se especifica, se mostrarán todas las cotizaciones bancarias.")]
             EuroBankChoices? bankChoice = null)

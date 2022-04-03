@@ -69,7 +69,7 @@ namespace DolarBot.Modules.InteractiveCommands
             });
         }
 
-        [SlashCommand("dolarbancos", "Muestra las cotizaciones bancarias del dólar.", false, RunMode.Async)]
+        [SlashCommand("dolar-bancos", "Muestra las cotizaciones bancarias del dólar.", false, RunMode.Async)]
         public async Task GetBankDollarPriceAsync(
             [Summary("banco", "Indica el banco a mostrar. Si no se especifica, se mostrarán todas las cotizaciones bancarias.")]
             DollarBankChoices? bankChoice = null)

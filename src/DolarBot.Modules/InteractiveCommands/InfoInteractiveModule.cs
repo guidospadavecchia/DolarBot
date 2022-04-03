@@ -75,7 +75,7 @@ namespace DolarBot.Modules.InteractiveCommands
             });
         }
 
-        [SlashCommand("sid", "Muestra el ID del servidor de Discord actual.", false, RunMode.Async)]
+        [SlashCommand("server-id", "Muestra el ID del servidor de Discord actual.", false, RunMode.Async)]
         public async Task GetServerId()
         {
             await DeferAsync().ContinueWith(async (task) =>

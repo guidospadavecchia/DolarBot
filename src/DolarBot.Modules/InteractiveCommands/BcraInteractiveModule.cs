@@ -39,7 +39,7 @@ namespace DolarBot.Modules.InteractiveCommands
         }
         #endregion
 
-        [SlashCommand("riesgopais", "Muestra el valor del riesgo país de la República Argentina.", false, RunMode.Async)]
+        [SlashCommand("riesgo-pais", "Muestra el valor del riesgo país de la República Argentina.", false, RunMode.Async)]
         public async Task GetRiesgoPaisValueAsync()
         {
             await DeferAsync().ContinueWith(async (task) =>

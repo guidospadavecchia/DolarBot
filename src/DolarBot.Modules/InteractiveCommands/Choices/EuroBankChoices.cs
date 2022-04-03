@@ -3,9 +3,9 @@
 namespace DolarBot.Modules.InteractiveCommands.Choices
 {
     /// <summary>
-    /// The available choices of banks for the dollar command.
+    /// The available choices of banks for the Euro command.
     /// </summary>
-    public enum DollarBankChoices
+    public enum EuroBankChoices
     {
         [ChoiceDisplay("Banco Nación")]
         Nacion,
@@ -27,16 +27,10 @@ namespace DolarBot.Modules.InteractiveCommands.Choices
         Patagonia,
         [ChoiceDisplay("Banco Comafi")]
         Comafi,
-        [ChoiceDisplay("Banco de Córdoba")]
-        Bancor,
         [ChoiceDisplay("Nuevo Banco del Chaco")]
         Chaco,
         [ChoiceDisplay("Banco de La Pampa")]
         Pampa,
-        [ChoiceDisplay("Banco ICBC")]
-        ICBC,
-        [ChoiceDisplay("Banco Provincia")]
-        Provincia,
         [ChoiceDisplay("Rebanking")]
         Reba,
         [ChoiceDisplay("Banco Roela")]

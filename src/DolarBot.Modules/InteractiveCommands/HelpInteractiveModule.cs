@@ -54,7 +54,7 @@ namespace DolarBot.Modules.InteractiveCommands
         /// Initializes the Help module registering the slash command with dynamically generated choices.
         /// </summary>
         /// <param name="client">The <see cref="DiscordSocketClient"/> instance.</param>
-        /// <param name="interactionService">The <see cref="InteractionService"/> instance.</param>
+        /// <param name="interactionService">The interaction service instance.</param>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="isDebug">Indicates wether the current instance is running in a debug state.</param>
         public static void RegisterSlashCommand(DiscordSocketClient client, InteractionService interactionService, IConfiguration configuration, bool isDebug)

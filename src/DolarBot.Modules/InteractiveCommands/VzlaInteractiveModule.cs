@@ -15,7 +15,7 @@ namespace DolarBot.Modules.InteractiveCommands
     /// <summary>
     /// Contains the euro related commands.
     /// </summary>
-    [HelpOrder(5)]
+    [HelpOrder(10)]
     [HelpTitle("Cotizaciones del Venezuela")]
     public class VzlaInteractiveModule : BaseInteractiveModule
     {

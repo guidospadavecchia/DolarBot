@@ -1,27 +1,27 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
-using DolarBot.Modules.Commands.Base;
+using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Venezuela;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
-namespace DolarBot.Modules.Commands
+namespace DolarBot.Modules.InteractiveCommands
 {
     /// <summary>
-    /// Contains Venezuela related commands.
+    /// Contains the euro related commands.
     /// </summary>
-    [HelpOrder(10)]
-    [HelpTitle("Cotizaciones de Venezuela")]
-    public class VzlaModule : BaseModule
+    [HelpOrder(5)]
+    [HelpTitle("Cotizaciones del Venezuela")]
+    public class VzlaInteractiveModule : BaseInteractiveModule
     {
         #region Vars
         /// <summary>
-        /// Provides methods to retrieve information about bolivar rates.
+        /// Provides methods to retrieve information about Venezuela's currency.
         /// </summary>
         private readonly VzlaService VzlaService;
         #endregion
@@ -33,68 +33,60 @@ namespace DolarBot.Modules.Commands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public VzlaModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        public VzlaInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
         {
             VzlaService = new VzlaService(configuration, api);
         }
         #endregion
 
-        [Command("bolivardolar", RunMode = RunMode.Async)]
-        [Alias("bd")]
-        [Summary("Muestra las distintas cotizaciones del dólar para Venezuela.")]
-        [HelpUsageExample(false, "$bolivardolar", "$bd")]
-        [RateLimit(1, 3, Measure.Seconds)]
+        [SlashCommand("bolivar-dolar", "Muestra las distintas cotizaciones del dólar para Venezuela.", false, RunMode.Async)]
         public async Task GetDollarRatesAsync()
         {
-            try
+            await DeferAsync().ContinueWith(async (task) =>
             {
-                using (Context.Channel.EnterTypingState())
+                try
                 {
                     VzlaResponse result = await VzlaService.GetDollarRates();
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponse(ex);
+                }
+            });
         }
 
-        [Command("bolivareuro", RunMode = RunMode.Async)]
-        [Alias("be")]
-        [Summary("Muestra las distintas cotizaciones del Euro para Venezuela.")]
-        [HelpUsageExample(false, "$bolivareuro", "$be")]
-        [RateLimit(1, 3, Measure.Seconds)]
+        [SlashCommand("bolivar-euro", "Muestra las distintas cotizaciones del Euro para Venezuela.", false, RunMode.Async)]
         public async Task GetEuroRatesAsync()
         {
-            try
+            await DeferAsync().ContinueWith(async (task) =>
             {
-                using (Context.Channel.EnterTypingState())
+                try
                 {
                     VzlaResponse result = await VzlaService.GetEuroRates();
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await ReplyAsync(embed: embed.Build());
+                        await SendDeferredEmbed(embed.Build());
                     }
                     else
                     {
-                        await ReplyAsync(REQUEST_ERROR_MESSAGE);
+                        await SendDeferredApiErrorResponse();
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                await SendErrorReply(ex);
-            }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponse(ex);
+                }
+            });
         }
     }
 }

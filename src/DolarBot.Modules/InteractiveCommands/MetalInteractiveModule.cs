@@ -16,7 +16,7 @@ namespace DolarBot.Modules.InteractiveCommands
     /// Contains the euro related commands.
     /// </summary>
     [HelpOrder(5)]
-    [HelpTitle("Cotizaciones del Metal")]
+    [HelpTitle("Cotizaciones del metales")]
     public class MetalInteractiveModule : BaseInteractiveModule
     {
         #region Vars

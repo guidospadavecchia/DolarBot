@@ -70,10 +70,7 @@ namespace DolarBot.Modules.Handlers
             try
             {
                 bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl;
-                if (shouldUpdateDbl)
-                {
-                    await UpdateStatsDbl();
-                }
+                Task updateStatsDbl = shouldUpdateDbl ? UpdateStatsDbl() : Task.CompletedTask;
                 Task updateServerLog = UpdateServerLogAsync(false);
 
                 bool testGuildConfigured = ulong.TryParse(Configuration["testServerId"], out ulong testServerId);
@@ -81,11 +78,11 @@ namespace DolarBot.Modules.Handlers
 
                 HelpInteractiveModule.RegisterSlashCommand(Client, InteractionService, Configuration, IsDebug);
 
-                await Task.WhenAll(updateServerLog, registerCommands);
+                await Task.WhenAll(updateStatsDbl, updateServerLog, registerCommands);
             }
             catch (Exception ex)
             {
-                Logger.Error("Error updating server log", ex);
+                Logger.Error("Error initializing", ex);
             }
         }
 
@@ -174,7 +171,7 @@ namespace DolarBot.Modules.Handlers
                     Logger.Warn("Cannot update DBL stats: Not configured.");
                 }
             }
-            catch (SystemException ex)
+            catch (Exception ex)
             {
                 Logger.Error("Error updating DBL stats.", ex);
             }

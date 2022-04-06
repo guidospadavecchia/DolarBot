@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace DolarBot.Modules.InteractiveCommands
 {
     /// <summary>
-    /// Contains the euro related commands.
+    /// Contains the world currencies related commands.
     /// </summary>
     [HelpOrder(10)]
     [HelpTitle("Cotizaciones del Mundo")]

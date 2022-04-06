@@ -153,27 +153,31 @@ namespace DolarBot.Modules.Handlers
         /// Sends a request to DBL (top.gg) to update the bot stats.
         /// </summary>
         /// <returns>A completed task.</returns>
-        private async Task UpdateStatsDbl()
+        private Task UpdateStatsDbl()
         {
             try
             {
-                string dblToken = GlobalConfiguration.GetDblToken(Configuration);
-                bool isConfigured = ulong.TryParse(Configuration["botDiscordId"], out ulong botDiscordId) && !string.IsNullOrWhiteSpace(dblToken);
-                if (isConfigured)
+                return Task.Run(async () =>
                 {
-                    AuthDiscordBotListApi dblApi = new(botDiscordId, dblToken);
-                    IDblSelfBot self = await dblApi.GetMeAsync();
+                    string dblToken = GlobalConfiguration.GetDblToken(Configuration);
+                    bool isConfigured = ulong.TryParse(Configuration["botDiscordId"], out ulong botDiscordId) && !string.IsNullOrWhiteSpace(dblToken);
+                    if (isConfigured)
+                    {
+                        AuthDiscordBotListApi dblApi = new(botDiscordId, dblToken);
+                        IDblSelfBot self = await dblApi.GetMeAsync();
 
-                    var updateStatsTask = self.UpdateStatsAsync(Client.Guilds.Count);
-                }
-                else
-                {
-                    Logger.Warn("Cannot update DBL stats: Not configured.");
-                }
+                        var updateStatsTask = self.UpdateStatsAsync(Client.Guilds.Count);
+                    }
+                    else
+                    {
+                        Logger.Warn("Cannot update DBL stats: Not configured.");
+                    }
+                });
             }
             catch (Exception ex)
             {
                 Logger.Error("Error updating DBL stats.", ex);
+                return Task.FromException(ex);
             }
         }
 

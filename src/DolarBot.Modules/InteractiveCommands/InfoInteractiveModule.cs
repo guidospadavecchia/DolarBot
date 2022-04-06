@@ -7,6 +7,7 @@ using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Info;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -39,7 +40,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public InfoInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        /// <param name="interactiveService">The interactive service.</param>
+        public InfoInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api, InteractiveService interactiveService) : base(configuration, logger, interactiveService)
         {
             InfoService = new InfoService(configuration, api);
         }
@@ -66,11 +68,11 @@ namespace DolarBot.Modules.InteractiveCommands
                                          .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
                                          .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
 
-                    await SendDeferredEmbed(embed.Build());
+                    await SendDeferredEmbedAsync(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -90,11 +92,11 @@ namespace DolarBot.Modules.InteractiveCommands
                                          .WithThumbnailUrl(infoImageUrl)
                                          .WithDescription($"El ID del servidor es {sid}");
 
-                    await SendDeferredEmbed(embed.Build());
+                    await SendDeferredEmbedAsync(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -135,7 +137,7 @@ namespace DolarBot.Modules.InteractiveCommands
             }
             catch (Exception ex)
             {
-                await SendDeferredErrorResponse(ex);
+                await SendDeferredErrorResponseAsync(ex);
             }
         }
 
@@ -160,11 +162,11 @@ namespace DolarBot.Modules.InteractiveCommands
                                          .WithThumbnailUrl(infoImageUrl)
                                          .WithDescription($"Invita al bot haciendo {Format.Url("click aquí", inviteLink)}");
 
-                    await SendDeferredEmbed(embed.Build());
+                    await SendDeferredEmbedAsync(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -187,7 +189,7 @@ namespace DolarBot.Modules.InteractiveCommands
             }
             catch (Exception ex)
             {
-                await SendDeferredErrorResponse(ex);
+                await SendDeferredErrorResponseAsync(ex);
             }
         }
 
@@ -234,11 +236,11 @@ namespace DolarBot.Modules.InteractiveCommands
                          .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())
                          .WithFooter($"Hecho con {blueHeartEmoji} en {RuntimeInformation.FrameworkDescription}");
 
-                    await SendDeferredEmbed(embed.Build());
+                    await SendDeferredEmbedAsync(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -254,11 +256,11 @@ namespace DolarBot.Modules.InteractiveCommands
                     int? latency = Context.Client is DiscordSocketClient socketClient ? socketClient.Latency : null;
                     EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, latency);
 
-                    await SendDeferredEmbed(embed.Build());
+                    await SendDeferredEmbedAsync(embed.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }

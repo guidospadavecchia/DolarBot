@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.Interactions;
+using Fergun.Interactive.Pagination;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,6 +197,28 @@ namespace DolarBot.Util.Extensions
         public static Embed[] Build(this IEnumerable<EmbedBuilder> embedBuilderCollection)
         {
             return embedBuilderCollection.Select(x => x.Build()).ToArray();
+        }
+
+        /// <summary>
+        /// Configures the paginator with the default buttons.
+        /// </summary>
+        /// <param name="builder">The paginator builder.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+        public static StaticPaginatorBuilder WithDefaultButtons(this StaticPaginatorBuilder builder, IConfiguration configuration)
+        {
+            var emojis = configuration.GetSection("customEmojis");
+            IEmote firstEmoji = Emote.Parse(emojis["firstPage"]);
+            IEmote forwardEmoji = Emote.Parse(emojis["nextPage"]);
+            IEmote backwardEmoji = Emote.Parse(emojis["previousPage"]);
+            IEmote lastEmoji = Emote.Parse(emojis["lastPage"]);
+
+            Dictionary<IEmote, PaginatorAction> actions = new();
+            actions.Add(firstEmoji, PaginatorAction.SkipToStart);
+            actions.Add(backwardEmoji, PaginatorAction.Backward);
+            actions.Add(forwardEmoji, PaginatorAction.Forward);
+            actions.Add(lastEmoji, PaginatorAction.SkipToEnd);
+
+            return builder.WithOptions(actions);
         }
     }
 }

@@ -5,6 +5,7 @@ using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -42,7 +43,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">The log4net logger.</param>
         /// <param name="interactionService">Provides the framework for building and registering Discord Application Commands.</param>
-        public HelpInteractiveModule(IConfiguration configuration, ILog logger, InteractionService interactionService) : base(configuration, logger)
+        /// <param name="interactiveService">The interactive service.</param>
+        public HelpInteractiveModule(IConfiguration configuration, ILog logger, InteractionService interactionService, InteractiveService interactiveService) : base(configuration, logger, interactiveService)
         {
             InteractionService = interactionService;
         }
@@ -192,17 +194,17 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (SlashCommandExists(comando))
                     {
                         EmbedBuilder embed = GenerateEmbeddedSlashCommandHelp(comando);
-                        await SendDeferredEmbed(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build());
                     }
                     else
                     {
                         List<EmbedBuilder> embedbuilders = GenerateEmbeddedSlashCommandsHelp();
-                        await SendDeferredEmbed(embedbuilders.Select(e => e.Build()).ToArray());
+                        await SendDeferredEmbedAsync(embedbuilders.Select(e => e.Build()).ToArray());
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }

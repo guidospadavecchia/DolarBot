@@ -4,6 +4,7 @@ using DolarBot.API.Models.Base;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Base;
 using DolarBot.Services.Currencies;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
@@ -35,7 +36,8 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">The log4net logger.</param>
         /// <param name="api">Provides access to the different APIs.</param>
-        public BaseFiatCurrencyInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        /// <param name="interactiveService">The interactive service.</param>
+        public BaseFiatCurrencyInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api, InteractiveService interactiveService) : base(configuration, logger, interactiveService)
         {
             Service = CreateService(configuration, api);
         }
@@ -79,11 +81,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 {
                     await SendPartialResponseWarning();
                 }
-                await SendDeferredEmbed(embed.Build());
+                await SendDeferredEmbedAsync(embed.Build());
             }
             else
             {
-                await SendDeferredApiErrorResponse();
+                await SendDeferredApiErrorResponseAsync();
             }
         }
 
@@ -103,11 +105,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 {
                     await SendPartialResponseWarning();
                 }
-                await SendDeferredEmbed(embed.Build());
+                await SendDeferredEmbedAsync(embed.Build());
             }
             else
             {
-                await SendDeferredApiErrorResponse();
+                await SendDeferredApiErrorResponseAsync();
             }
         }
 
@@ -122,11 +124,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             if (result != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, null, thumbnailUrl);
-                await SendDeferredEmbed(embed.Build());
+                await SendDeferredEmbedAsync(embed.Build());
             }
             else
             {
-                await SendDeferredApiErrorResponse();
+                await SendDeferredApiErrorResponseAsync();
             }
         }
 
@@ -140,11 +142,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             if (response != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(response, description);
-                await SendDeferredEmbed(embed.Build());
+                await SendDeferredEmbedAsync(embed.Build());
             }
             else
             {
-                await SendDeferredApiErrorResponse();
+                await SendDeferredApiErrorResponseAsync();
             }
         }
 

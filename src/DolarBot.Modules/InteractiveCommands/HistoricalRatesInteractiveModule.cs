@@ -6,6 +6,7 @@ using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Modules.InteractiveCommands.Choices;
 using DolarBot.Services.HistoricalRates;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -35,7 +36,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public HistoricalRatesInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        /// <param name="interactiveService">The interactive service.</param>
+        public HistoricalRatesInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api, InteractiveService interactiveService) : base(configuration, logger, interactiveService)
         {
             HistoricalRatesService = new HistoricalRatesService(configuration, api);
         }
@@ -56,16 +58,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null && result.Meses != null && result.Meses.Count > 0)
                     {
                         EmbedBuilder embed = HistoricalRatesService.CreateHistoricalRatesEmbed(result, historicalRatesParam);
-                        await SendDeferredEmbed(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponse();
+                        await SendDeferredApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }

@@ -146,7 +146,7 @@ namespace DolarBot.Modules.Commands
                     int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
                     string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
 
-                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username);
+                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username, true);
                     await SendPagedReplyAsync(embeds, true);
                     typingState.Dispose();
 

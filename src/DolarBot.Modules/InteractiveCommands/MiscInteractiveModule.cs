@@ -12,6 +12,7 @@ using DolarBot.Services.Quotes;
 using DolarBot.Services.Real;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -41,7 +42,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="logger">Provides access to the different APIs.</param>
-        public MiscInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        /// <param name="interactiveService">The interactive service.</param>
+        public MiscInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api, InteractiveService interactiveService) : base(configuration, logger, interactiveService)
         {
             Api = api;
         }
@@ -94,11 +96,11 @@ namespace DolarBot.Modules.InteractiveCommands
                         embeds.Add(embed);
                     }
 
-                    await SendDeferredEmbed(embeds.Build());
+                    await SendDeferredEmbedAsync(embeds.Build());
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -121,11 +123,11 @@ namespace DolarBot.Modules.InteractiveCommands
                         responseMessage = $"{Format.Bold("Error")}. No se puede acceder a la información solicitada en este momento. Por favor, intentá nuevamente más tarde.";
                     }
 
-                    await SendDeferredMessage(responseMessage);
+                    await SendDeferredMessageAsync(responseMessage);
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }

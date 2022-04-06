@@ -9,6 +9,7 @@ using DolarBot.Services.Banking;
 using DolarBot.Services.Currencies;
 using DolarBot.Services.Dolar;
 using DolarBot.Util.Extensions;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -30,7 +31,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public DolarInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger, api) { }
+        /// <param name="interactiveService">The interactive service.</param>
+        public DolarInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api, InteractiveService interactiveService) : base(configuration, logger, api, interactiveService) { }
         #endregion
 
         #region Methods
@@ -64,7 +66,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -92,7 +94,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }

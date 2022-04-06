@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 
 namespace DolarBot
 {
+    using FergunInteractiveService = Fergun.Interactive.InteractiveService;
+
     public class Program
     {
         #region Vars
@@ -59,14 +61,15 @@ namespace DolarBot
             });
             CommandService commandsService = new();
             InteractionService interactionService = new(client);
+            FergunInteractiveService fergunInteractiveService = new(client);
 
-            using ServiceProvider services = ConfigureServices(client, commandsService, interactionService, api);
+            using ServiceProvider services = ConfigureServices(client, commandsService, interactionService, fergunInteractiveService, api);
             
             string commandPrefix = Configuration["commandPrefix"];
             string token = GlobalConfiguration.GetToken(Configuration);
 
             PrintCurrentVersion();
-            await RegisterEventsAsync(client, commandsService, interactionService, services);
+            await RegisterEventsAsync(client, commandsService, interactionService, fergunInteractiveService, services);
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
             await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
@@ -127,13 +130,15 @@ namespace DolarBot
         /// <param name="discordClient">The <see cref="DiscordSocketClient"/> instance.</param>
         /// <param name="commandsService">The <see cref="CommandService"/> instance.</param>
         /// <param name="interactionService">The <see cref="InteractionService"/> instance.</param>
+        /// <param name="fergunInteractiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="api">The <see cref="ApiCalls"/> instance.</param>
         /// <returns>A built service provider.</returns>
-        private ServiceProvider ConfigureServices(DiscordSocketClient discordClient, CommandService commandsService, InteractionService interactionService, ApiCalls api)
+        private ServiceProvider ConfigureServices(DiscordSocketClient discordClient, CommandService commandsService, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, ApiCalls api)
         {
             return new ServiceCollection().AddSingleton(discordClient)
                                           .AddSingleton(commandsService)
                                           .AddSingleton(interactionService)
+                                          .AddSingleton(fergunInteractiveService)
                                           .AddSingleton(Configuration)
                                           .AddSingleton<InteractiveService>()
                                           .AddSingleton(api)
@@ -146,14 +151,16 @@ namespace DolarBot
         /// </summary>
         /// <param name="client">The Discord client.</param>
         /// <param name="commandsService">The <see cref="CommandService"/> object.</param>
+        /// <param name="interactionService">The <see cref="InteractionService"/> object.</param>
+        /// <param name="fergunInteractiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="services">A collection of services to use throughout the application.</param>
         /// <returns>A task with the result of the asynchronous operation.</returns>
-        private async Task RegisterEventsAsync(DiscordSocketClient client, CommandService commandsService, InteractionService interactionService, IServiceProvider services)
+        private async Task RegisterEventsAsync(DiscordSocketClient client, CommandService commandsService, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, IServiceProvider services)
         {
 
             ClientHandler clientHandler = new(client, interactionService, Configuration, logger: logger, isDebug: Debugger.IsAttached);
             CommandHandler commandHandler = new(client, commandsService, services, Configuration, logger);
-            InteractionHandler interactionHandler = new(client, interactionService, services, Configuration, logger);
+            InteractionHandler interactionHandler = new(client, interactionService, fergunInteractiveService, services, Configuration, logger);
 
             client.Log += LogClientEvent;
             client.Ready += clientHandler.OnReady;

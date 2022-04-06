@@ -61,7 +61,7 @@ namespace DolarBot.Modules.Commands.Base
         /// </summary>
         /// <param name="pages">The embed pages.</param>
         /// <param name="includeFirstLast">Indicates wether to include reactions for first and last page.</param>
-        protected async Task SendPagedReplyAsync(IEnumerable<PaginatedMessage.Page> pages, bool includeFirstLast = false)
+        protected async Task SendPagedReplyAsync(IEnumerable<EmbedPage> pages, bool includeFirstLast = false)
         {
             await PagedReplyAsync(new PaginatedMessage { Pages = pages }, new ReactionList { Forward = pages.Count() > 1, Backward = pages.Count() > 1, First = pages.Count() > 2 && includeFirstLast, Last = pages.Count() > 2 && includeFirstLast, Info = false, Jump = false, Trash = false });
         }

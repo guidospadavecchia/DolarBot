@@ -1,12 +1,10 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.Handlers
@@ -27,6 +25,10 @@ namespace DolarBot.Modules.Handlers
         /// </summary>
         private readonly InteractionService InteractionCommands;
         /// <summary>
+        /// The interactive service to handle pagination and selections.
+        /// </summary>
+        private readonly InteractiveService InteractiveService;
+        /// <summary>
         /// Provides access to the different services instances.
         /// </summary>
         private readonly IServiceProvider Services;
@@ -46,13 +48,15 @@ namespace DolarBot.Modules.Handlers
         /// </summary>
         /// <param name="client">The current <see cref="DiscordSocketClient"/>.</param>
         /// <param name="interactionCommands">The Discord interaction command service.</param>
+        /// <param name="InteractiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="services">The service provider.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
         /// <param name="logger">The log4net <see cref="ILog"/> instance.</param>
-        public InteractionHandler(DiscordSocketClient client, InteractionService interactionCommands, IServiceProvider services, IConfiguration configuration, ILog logger = null)
+        public InteractionHandler(DiscordSocketClient client, InteractionService interactionCommands, InteractiveService interactiveService, IServiceProvider services, IConfiguration configuration, ILog logger = null)
         {
             Client = client;
             InteractionCommands = interactionCommands;
+            InteractiveService = interactiveService;
             Services = services;
             Configuration = configuration;
             Logger = logger;
@@ -97,9 +101,10 @@ namespace DolarBot.Modules.Handlers
         {
             try
             {
-                SocketInteractionContext context = new(Client, socketInteraction);
-                if (!socketInteraction.User.IsBot)
+                bool isInteractiveServiceCallback = socketInteraction is SocketMessageComponent messageComponent && InteractiveService.Callbacks.ContainsKey(messageComponent.Message.Id);
+                if (!isInteractiveServiceCallback)
                 {
+                    SocketInteractionContext context = new(Client, socketInteraction);
                     await InteractionCommands.ExecuteCommandAsync(context, Services);
                 }
             }

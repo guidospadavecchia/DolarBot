@@ -5,6 +5,7 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Bcra;
+using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -33,7 +34,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public BcraInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api) : base(configuration, logger)
+        /// <param name="interactiveService">The interactive service.</param>
+        public BcraInteractiveModule(IConfiguration configuration, ILog logger, ApiCalls api, InteractiveService interactiveService) : base(configuration, logger, interactiveService)
         {
             BcraService = new BcraService(configuration, api);
         }
@@ -50,16 +52,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateCountryRiskEmbedAsync(result);
-                        await SendDeferredEmbed(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponse();
+                        await SendDeferredApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -75,16 +77,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateReservesEmbedAsync(result);
-                        await SendDeferredEmbed(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponse();
+                        await SendDeferredApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }
@@ -100,16 +102,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await BcraService.CreateCirculatingMoneyEmbedAsync(result);
-                        await SendDeferredEmbed(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponse();
+                        await SendDeferredApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponse(ex);
+                    await SendDeferredErrorResponseAsync(ex);
                 }
             });
         }

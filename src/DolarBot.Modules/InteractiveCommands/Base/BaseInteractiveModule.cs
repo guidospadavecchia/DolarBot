@@ -1,9 +1,15 @@
 ﻿using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using DolarBot.Util;
+using DolarBot.Util.Extensions;
+using Fergun.Interactive;
+using Fergun.Interactive.Pagination;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.InteractiveCommands.Base
@@ -23,6 +29,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// The log4net logger.
         /// </summary>
         protected readonly ILog Logger;
+
+        /// <summary>
+        /// The service to interact with messages.
+        /// </summary>
+        private readonly InteractiveService InteractiveService;
         #endregion
 
         #region Constructor
@@ -30,20 +41,75 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Initializes the object using the <see cref="IConfiguration"/> object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
-        public BaseInteractiveModule(IConfiguration configuration, ILog logger)
+        /// <param name="logger">The log4net logger.</param>
+        /// <param name="interactiveService">The interactive service.</param>
+        public BaseInteractiveModule(IConfiguration configuration, ILog logger, InteractiveService interactiveService)
         {
             Configuration = configuration;
             Logger = logger;
+            InteractiveService = interactiveService;
         }
         #endregion
 
         #region Methods
 
         /// <summary>
+        /// Sends a deferred paginated message from an <see cref="EmbedBuilder[]"/>.
+        /// </summary>
+        /// <param name="embedBuilders">The embed builders.</param>
+        protected Task SendDeferredPaginatedEmbedAsync(EmbedBuilder[] embedBuilders)
+        {
+            return SendDeferredPaginatedEmbedAsync(embedBuilders.Select(x => x.Build()).ToArray());
+        }
+
+        /// <summary>
+        /// Sends a deferred paginated message.
+        /// </summary>
+        /// <param name="embeds">The embed pages.</param>
+        protected async Task SendDeferredPaginatedEmbedAsync(Embed[] embeds)
+        {
+            List<PageBuilder> pages = new();
+            foreach (Embed embed in embeds)
+            {
+                PageBuilder pageBuilder = new PageBuilder().WithTitle(embed.Title)
+                                                           .WithDescription(embed.Description);
+                foreach (EmbedField field in embed.Fields)
+                {
+                    pageBuilder.AddField(new EmbedFieldBuilder()
+                    {
+                        Name = field.Name,
+                        Value = field.Value,
+                        IsInline = field.Inline,
+                    });
+                }
+                if (embed.Color.HasValue)
+                {
+                    pageBuilder.WithColor(embed.Color.Value);
+                }
+                if (embed.Thumbnail.HasValue)
+                {
+                    pageBuilder.WithThumbnailUrl(embed.Thumbnail.Value.Url);
+                }
+                if (embed.Footer.HasValue)
+                {
+                    pageBuilder.WithFooter(new EmbedFooterBuilder()
+                    {
+                        Text = embed.Footer.Value.Text,
+                        IconUrl = embed.Footer.HasValue ? embed.Footer.Value.IconUrl : null,
+                    });
+                }
+                pages.Add(pageBuilder);
+            }
+
+            StaticPaginator paginator = new StaticPaginatorBuilder().WithPages(pages).WithDefaultButtons(Configuration).Build();
+            await InteractiveService.SendPaginatorAsync(paginator, Context.Interaction as SocketInteraction, responseType: InteractionResponseType.DeferredChannelMessageWithSource, resetTimeoutOnInput: true);
+        }
+
+        /// <summary>
         /// Modifies the original deferred response by sending an embed message.
         /// </summary>
         /// <param name="embed">The embed to be sent.</param>
-        protected async Task SendDeferredEmbed(Embed embed)
+        protected async Task SendDeferredEmbedAsync(Embed embed)
         {
             await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed);
         }
@@ -52,7 +118,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Modifies the original deferred response by sending multiple embed messages.
         /// </summary>
         /// <param name="embeds">The embed messages to be sent.</param>
-        protected async Task SendDeferredEmbed(Embed[] embeds)
+        protected async Task SendDeferredEmbedAsync(Embed[] embeds)
         {
             await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embeds = embeds);
         }
@@ -61,7 +127,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Modifies the original deferred response by sending a message.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
-        protected async Task SendDeferredMessage(string message)
+        protected async Task SendDeferredMessageAsync(string message)
         {
             await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = message);
         }
@@ -70,7 +136,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Modifies the original deferred response by sending a message indicating an error has ocurred with the API.
         /// </summary>
         /// <returns></returns>
-        protected async Task SendDeferredApiErrorResponse()
+        protected async Task SendDeferredApiErrorResponseAsync()
         {
             await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = RequestErrorMessage);
         }
@@ -79,12 +145,13 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Sends a reply indicating an error has occurred, by modifying the original deferred response.
         /// </summary>
         /// <param name="ex">The exception to log.</param>
-        protected async Task SendDeferredErrorResponse(Exception ex)
+        protected async Task SendDeferredErrorResponseAsync(Exception ex)
         {
             string errorMessage = GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]);
             await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = errorMessage);
             Logger.Error("Error al ejecutar comando.", ex);
         }
+
         #endregion
     }
 }

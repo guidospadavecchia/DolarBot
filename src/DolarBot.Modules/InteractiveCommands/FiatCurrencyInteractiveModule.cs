@@ -75,7 +75,7 @@ namespace DolarBot.Modules.InteractiveCommands
 
                     if (codigo != null)
                     {
-                        string currencyCode = Format.Sanitize(codigo).RemoveFormat(true).ToUpper().Trim();
+                        string currencyCode = Format.Sanitize(codigo).ToUpper().Trim();
                         WorldCurrencyCodeResponse worldCurrencyCode = currenciesList.FirstOrDefault(x => x.Code.Equals(currencyCode, StringComparison.OrdinalIgnoreCase));
                         if (worldCurrencyCode != null)
                         {

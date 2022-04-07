@@ -3,6 +3,7 @@ using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
+using DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Currencies;
 using DolarBot.Util.Extensions;
@@ -62,6 +63,7 @@ namespace DolarBot.Modules.InteractiveCommands
         [SlashCommand("cotizacion", "Muestra el valor de una cotización o lista todos los códigos de monedas disponibles.", false, RunMode.Async)]
         public async Task GetCurrenciesAsync(
             [Summary("moneda", "Código de la moneda. Si no se especifica, mostrará todos los códigos de monedas disponibles.")]
+            [Autocomplete(typeof(FiatCurrencyCodeAutocompleteHandler))]
             string codigo = null
         )
         {

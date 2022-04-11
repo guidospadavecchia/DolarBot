@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.Modules.InteractiveCommands.Autocompletion.Base;
 using DolarBot.Services.Currencies;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -11,21 +12,19 @@ using System.Threading.Tasks;
 
 namespace DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency
 {
-    public class FiatCurrencyCodeAutocompleteHandler : AutocompleteHandler
+    public class FiatCurrencyCodeAutocompleteHandler : InteractiveAutocompleteHandler
     {
         /// <summary>
-        /// Provides access to application settings.
+        /// The fiat currency service.
         /// </summary>
-        private IConfiguration Configuration { get; set; }
-
-        /// <summary>
-        /// Provides access to the different APIs.
-        /// </summary>
-        private ApiCalls ApiCalls { get; set; }
-
         private FiatCurrencyService FiatCurrencyService { get; set; }
 
-        public FiatCurrencyCodeAutocompleteHandler(IConfiguration configuration, ApiCalls apiCalls)
+        /// <summary>
+        /// Creates a new <see cref="FiatCurrencyCodeAutocompleteHandler"/>.
+        /// </summary>
+        /// <param name="configuration">Provides access to application settings.</param>
+        /// <param name="apiCalls">Provides access to the different APIs.</param>
+        public FiatCurrencyCodeAutocompleteHandler(IConfiguration configuration, ApiCalls apiCalls) : base(configuration, apiCalls)
         {
             Configuration = configuration;
             ApiCalls = apiCalls;
@@ -38,7 +37,10 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 List<WorldCurrencyCodeResponse> currencyCodes = await FiatCurrencyService.GetWorldCurrenciesList();
-                List<WorldCurrencyCodeResponse> filteredCurrencyCodes = currencyCodes.Where(x => x.Code.StartsWith(filter, StringComparison.OrdinalIgnoreCase) || x.Name.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                List<WorldCurrencyCodeResponse> filteredCurrencyCodes = currencyCodes.Where(x => x.Code.Contains(filter, StringComparison.OrdinalIgnoreCase) || 
+                                                                                                 x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
+                                                                                     .Take(MAX_AUTOCOMPLETE_RESULTS)
+                                                                                     .ToList();
                 IEnumerable<AutocompleteResult> autocompletionCollection = filteredCurrencyCodes.Select(x => new AutocompleteResult($"{x.Code} ({x.Name})", x.Code));
                 return AutocompletionResult.FromSuccess(autocompletionCollection);
             }

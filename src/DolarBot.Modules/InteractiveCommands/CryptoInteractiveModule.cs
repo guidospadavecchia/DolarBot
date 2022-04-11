@@ -110,7 +110,7 @@ namespace DolarBot.Modules.InteractiveCommands
 
         [SlashCommand("crypto", "Muestra el valor de una cotización o lista todos los códigos de criptomonedas disponibles.", false, RunMode.Async)]
         public async Task GetCryptoCurrenciesAsync(
-            [Summary("codigo", "Código de la criptomoneda.")]
+            [Summary("código", "Código de la criptomoneda.")]
             [Autocomplete(typeof(CryptoSymbolAutocompleteHandler))]
             string symbol = null,
             [Summary("nombre", "Nombre de la criptomoneda.")]

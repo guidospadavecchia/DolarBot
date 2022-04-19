@@ -65,6 +65,8 @@ namespace DolarBot.Modules.Commands.Base
             {
                 TypeResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses);
+                embed.AddCommandDeprecationNotice(Configuration);
+                
                 if (responses.Length != successfulResponses.Length)
                 {
                     await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
@@ -89,6 +91,8 @@ namespace DolarBot.Modules.Commands.Base
                 string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
                 TypeResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses, description, thumbnailUrl);
+                embed.AddCommandDeprecationNotice(Configuration);
+
                 if (responses.Length != successfulResponses.Length)
                 {
                     await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");
@@ -112,6 +116,7 @@ namespace DolarBot.Modules.Commands.Base
             if (result != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, null, thumbnailUrl);
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             else
@@ -130,6 +135,7 @@ namespace DolarBot.Modules.Commands.Base
             if (response != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(response, description);
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             else

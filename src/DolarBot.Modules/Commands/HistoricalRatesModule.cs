@@ -66,6 +66,7 @@ namespace DolarBot.Modules.Commands
                             if (result != null && result.Meses != null && result.Meses.Count > 0)
                             {
                                 EmbedBuilder embed = HistoricalRatesService.CreateHistoricalRatesEmbed(result, historicalRateParam);
+                                embed.AddCommandDeprecationNotice(Configuration);
                                 await ReplyAsync(embed: embed.Build());
                             }
                             else
@@ -90,12 +91,10 @@ namespace DolarBot.Modules.Commands
         /// Retrieves the error message to show when the command is called with invalid parameters.
         /// </summary>
         /// <returns>An error message.</returns>
-        private string GetEvolucionInvalidParamsMessage()
+        private static string GetEvolucionInvalidParamsMessage()
         {
-            string commandPrefix = Configuration["commandPrefix"];
             string parameters = string.Join(", ", Enum.GetNames(typeof(HistoricalRatesParams)).Select(x => Format.Code(x.ToLower())));
-
-            return $"Debe especificar un parámetro válido para este comando. Las opciones disponibles son: {parameters}. Para más información, ejecute {Format.Code($"{commandPrefix}ayuda evolucion")}.";
+            return $"Debe especificar un parámetro válido para este comando. Las opciones disponibles son: {parameters}. Para más información, ejecute {Format.Code($"/ayuda evolucion")}.";
         }
     }
 }

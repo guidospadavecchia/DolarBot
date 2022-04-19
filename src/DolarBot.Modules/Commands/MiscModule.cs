@@ -58,11 +58,11 @@ namespace DolarBot.Modules.Commands
             try
             {
                 string commandPrefix = Configuration["commandPrefix"];
-                Emoji bankEmoji = new Emoji(":bank:");
+                Emoji bankEmoji = new(":bank:");
                 string bankImageUrl = Configuration.GetSection("images").GetSection("bank")["64"];
 
-                List<EmbedBuilder> embeds = new List<EmbedBuilder>();
-                List<EmbedPage> pages = new List<EmbedPage>();
+                List<EmbedBuilder> embeds = new();
+                List<EmbedPage> pages = new();
                 int pageCount = 0;
 
                 Currencies[] currencies = Enum.GetValues(typeof(Currencies)).Cast<Currencies>().ToArray();
@@ -77,6 +77,7 @@ namespace DolarBot.Modules.Commands
 
                 foreach (EmbedBuilder embed in embeds)
                 {
+                    embed.AddCommandDeprecationNotice(Configuration);
                     pages.Add(new EmbedPage
                     {
                         Description = $"Parámetros disponibles para utilizar en los comandos de las monedas principales ({string.Join(", ", currencies.Select(x => $"{Format.Code($"{commandPrefix}{x.ToString().ToLower()}")}"))}).".AppendLineBreak(),

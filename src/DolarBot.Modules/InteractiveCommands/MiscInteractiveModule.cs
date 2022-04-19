@@ -76,7 +76,6 @@ namespace DolarBot.Modules.InteractiveCommands
             {
                 try
                 {
-                    string commandPrefix = Configuration["commandPrefix"];
                     Emoji bankEmoji = new(":bank:");
                     string bankImageUrl = Configuration.GetSection("images").GetSection("bank")["64"];
 
@@ -88,15 +87,15 @@ namespace DolarBot.Modules.InteractiveCommands
                         Banks[] banks = currencyService.GetValidBanks();
                         string bankList = string.Join(Environment.NewLine, banks.Select(x => $"{bankEmoji} {Format.Code(x.ToString().ToLower())}: {Format.Italics(x.GetDescription())}.")).AppendLineBreak();
 
-                        EmbedBuilder embed = new EmbedBuilder().WithTitle($"{Format.Bold(currency.GetDescription())} ({Format.Code($"{commandPrefix}{currency.ToString().ToLower()}")})")
-                                                               .WithDescription($"Bancos disponibles para utilizar como parámetro en el comando {Format.Code($"{commandPrefix}{currency.ToString().ToLower()}")}.")
+                        EmbedBuilder embed = new EmbedBuilder().WithTitle($"{Format.Bold(currency.GetDescription())} ({Format.Code($"/{currency.ToString().ToLower()}")})")
+                                                               .WithDescription($"Bancos disponibles para utilizar como parámetro en el comando {Format.Code($"/{currency.ToString().ToLower()}")}.")
                                                                .WithColor(GlobalConfiguration.Colors.Currency)
                                                                .WithThumbnailUrl(bankImageUrl)
                                                                .AddField(GlobalConfiguration.Constants.BLANK_SPACE, bankList);
                         embeds.Add(embed);
                     }
 
-                    await SendDeferredEmbedAsync(embeds.Build());
+                    await SendDeferredPaginatedEmbedAsync(embeds.Build());
                 }
                 catch (Exception ex)
                 {

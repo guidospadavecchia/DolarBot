@@ -77,7 +77,6 @@ namespace DolarBot.Modules.InteractiveCommands
                                               .WithName(HELP_COMMAND)
                                               .WithDescription(HELP_SUMMARY)
                                               .AddOption(slashCommandOption);
-
             if (isDebug)
             {
                 bool testGuildConfigured = ulong.TryParse(configuration["testServerId"], out ulong testServerId);
@@ -113,7 +112,6 @@ namespace DolarBot.Modules.InteractiveCommands
             Emoji moduleBullet = new("\uD83D\uDD37");
             Emoji commandBullet = new("\uD83D\uDD39");
             string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
-            string commandPrefix = Configuration["commandPrefix"];
 
             EmbedBuilder helpEmbed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
                                                        .WithTitle(Format.Bold("Ayuda"))
@@ -121,10 +119,10 @@ namespace DolarBot.Modules.InteractiveCommands
                                                        .WithCurrentTimestamp();
 
             string helpCommands = new StringBuilder()
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")}")
+                                  .AppendLine($"{commandBullet} {Format.Code($"/{HELP_COMMAND}")}")
                                   .AppendLine(Format.Italics(HELP_SUMMARY))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} {Format.Code("<comando>")}")
+                                  .AppendLine($"{commandBullet} {Format.Code($"/{HELP_COMMAND}")} {Format.Code("<comando>")}")
                                   .AppendLine(Format.Italics(HELP_COMMAND_SUMMARY))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
                                   .ToString();

@@ -2,6 +2,7 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Util;
+using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -77,6 +78,7 @@ namespace DolarBot.Modules.Commands.Base
             List<EmbedPage> pages = new();
             foreach (EmbedBuilder embed in embeds)
             {
+                embed.AddCommandDeprecationNotice(Configuration);
                 pages.Add(new EmbedPage
                 {
                     Title = embed.Title,

@@ -131,9 +131,7 @@ namespace DolarBot.Services.Currencies
         /// <returns>A list of embeds ready to be built.</returns>
         public List<EmbedBuilder> CreateWorldCurrencyListEmbedAsync(List<WorldCurrencyCodeResponse> currenciesList, string currencyCommand, string username, bool interactive = false)
         {
-            string commandPrefix = Configuration["commandPrefix"];
             int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
-
             Emoji coinEmoji = new(":coin:");
             string coinsImageUrl = Configuration.GetSection("images").GetSection("coins")["64"];
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
@@ -150,17 +148,17 @@ namespace DolarBot.Services.Currencies
                                      .WithColor(GlobalConfiguration.Colors.Currency)
                                      .WithThumbnailUrl(coinsImageUrl)
                                      .WithTitle("Monedas del mundo disponibles")
-                                     .WithDescription($"Códigos de monedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.")
+                                     .WithDescription($"Códigos de monedas disponibles para utilizar como parámetro del comando {Format.Code($"/{currencyCommand}")}.")
                                      .WithFooter($"Página {++pageCount} de {totalPages}")
                                      .AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList);
                 if (interactive)
                 {
                     embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
-                         .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                         .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"/{currencyCommand} {currenciesList.First().Code}")}.");
                 }
                 else
                 {
-                    embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Para ver una cotización, indica el código de la moneda. Por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                    embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Para ver una cotización, indica el código de la moneda. Por ejemplo:")} {Format.Code($"/{currencyCommand} {currenciesList.First().Code}")}.");
                 }
                 embeds.Add(embed);
             }

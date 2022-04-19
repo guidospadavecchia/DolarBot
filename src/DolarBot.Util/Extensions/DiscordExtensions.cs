@@ -176,6 +176,24 @@ namespace DolarBot.Util.Extensions
         }
 
         /// <summary>
+        /// Adds a new field with a message that warns about Message Content becoming a privileged intent, and as a result, regular commands being deprecated.
+        /// </summary>
+        /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/> object.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> object with an added deprecation notice.</returns>
+        public static EmbedBuilder AddCommandDeprecationNotice(this EmbedBuilder embedBuilder, IConfiguration configuration)
+        {
+            const string DEPRECATION_NOTICE_URL = "https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ";
+            string commandPrefix = configuration["commandPrefix"];
+            DateTime? deprecationDate = DateTime.TryParse(configuration["messageContentPrivilegedIntentDate"], out DateTime maxDate) ? maxDate : null;
+            if (deprecationDate.HasValue && DateTime.Now < deprecationDate.Value)
+            {
+                embedBuilder.AddField("Atención", $"Por decisión de {Format.Bold("Discord")}, desde el {Format.Bold(deprecationDate.Value.ToString("dd/MM/yyyy"))}, sólo se podrán utilizar los comandos interactivos con prefijo {Format.Code("/")} (los comandos con prefijo {Format.Code(commandPrefix)} dejarán de funcionar). Para ver los nuevos comandos, ejecutá {Format.Code("/ayuda")}. Más información en el siguiente {Format.Url("enlace", DEPRECATION_NOTICE_URL)}.");
+            }
+            return embedBuilder;
+        }
+
+        /// <summary>
         /// Adds a new field with a clickable link.
         /// </summary>
         /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>

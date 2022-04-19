@@ -107,8 +107,6 @@ namespace DolarBot.Modules.InteractiveCommands
             try
             {
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
-                string commandPrefix = Configuration["commandPrefix"];
-
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("Procesando...")
                                      .WithColor(GlobalConfiguration.Colors.Info);
@@ -125,7 +123,7 @@ namespace DolarBot.Modules.InteractiveCommands
                     Emoji pingEmoji = new("\uD83D\uDCE1");
                     Emoji gatewayEmoji = new("\uD83D\uDEAA");
 
-                    embed.WithTitle($"Resultado del {Format.Code($"{commandPrefix}ping")}").WithThumbnailUrl(infoImageUrl);
+                    embed.WithTitle($"Resultado del {Format.Code($"/ping")}").WithThumbnailUrl(infoImageUrl);
                     if (responseTime != null)
                     {
                         embed.AddInlineField("Tiempo de respuesta", $"{pingEmoji} {responseTime}").AddInlineField();
@@ -150,6 +148,8 @@ namespace DolarBot.Modules.InteractiveCommands
                 {
                     string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
                     string inviteLink = Configuration["inviteLink"];
+                    var emojis = Configuration.GetSection("customEmojis");
+                    Emoji dolarbotEmoji = new(emojis["dolarbot"]);
 
                     if (string.IsNullOrWhiteSpace(inviteLink))
                     {
@@ -157,7 +157,7 @@ namespace DolarBot.Modules.InteractiveCommands
                     }
 
                     EmbedBuilder embed = new EmbedBuilder()
-                                         .WithTitle("DolarBot")
+                                         .WithTitle($"{dolarbotEmoji} DolarBot")
                                          .WithColor(GlobalConfiguration.Colors.Info)
                                          .WithThumbnailUrl(infoImageUrl)
                                          .WithDescription($"Invita al bot haciendo {Format.Url("click aquí", inviteLink)}");
@@ -178,9 +178,11 @@ namespace DolarBot.Modules.InteractiveCommands
             {
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
                 string voteLink = Configuration["voteUrl"];
+                var emojis = Configuration.GetSection("customEmojis");
+                Emoji dolarbotEmoji = new(emojis["dolarbot"]);
 
                 EmbedBuilder embed = new EmbedBuilder()
-                                     .WithTitle("Votar")
+                                     .WithTitle($"{dolarbotEmoji} Votar")
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");

@@ -308,7 +308,6 @@ namespace DolarBot.Services.Crypto
         /// <returns>A list of embeds ready to be built.</returns>
         public List<EmbedBuilder> CreateCryptoListEmbedAsync(List<CryptoCodeResponse> currenciesList, string currencyCommand, bool isSubSearch, string username, string title = null, string description = null)
         {
-            string commandPrefix = Configuration["commandPrefix"];
             int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
 
             var emojis = Configuration.GetSection("customEmojis");
@@ -328,7 +327,7 @@ namespace DolarBot.Services.Crypto
                                      .WithColor(GlobalConfiguration.Colors.Crypto)
                                      .WithThumbnailUrl(coinsImageUrl)
                                      .WithTitle(title ?? "Criptomonedas disponibles")
-                                     .WithDescription(description ?? $"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.")
+                                     .WithDescription(description ?? $"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"/{currencyCommand}")}.")
                                      .WithFooter($"Página {++pageCount} de {totalPages}");
                 foreach (IEnumerable<CryptoCodeResponse> chunk in chunks)
                 {
@@ -339,7 +338,7 @@ namespace DolarBot.Services.Crypto
                 embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {(!isSubSearch ? $"{Format.Bold("código")} ó " : string.Empty)}{Format.Bold("identificador")} de la criptomoneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.");
                 if (!isSubSearch)
                 {
-                    embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics($"Si ya sabés el identificador de la criptomoneda, podés indicárselo al comando directamente.{Environment.NewLine}Por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                    embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics($"Si ya sabés el identificador de la criptomoneda, podés indicárselo al comando directamente.{Environment.NewLine}Por ejemplo:")} {Format.Code($"/{currencyCommand} {currenciesList.First().Code}")}.");
                 }
                 embeds.Add(embed);
             }
@@ -375,7 +374,7 @@ namespace DolarBot.Services.Crypto
                                      .WithColor(GlobalConfiguration.Colors.Crypto)
                                      .WithThumbnailUrl(coinsImageUrl)
                                      .WithTitle("Criptomonedas disponibles")
-                                     .WithDescription($"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.")
+                                     .WithDescription($"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"/{currencyCommand}")}.")
                                      .WithFooter($"Página {++pageCount} de {totalPages}");
                 foreach (IEnumerable<CryptoCodeResponse> chunk in chunks)
                 {

@@ -160,8 +160,7 @@ namespace DolarBot.Modules.Handlers
         /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
         private async Task ProcessBadArgs(IInteractionContext context)
         {
-            string commandPrefix = Configuration["commandPrefix"];
-            await context.Interaction.RespondAsync($"Error al ejecutar el comando. Verificá los parámetros con {Format.Bold($"{commandPrefix}ayuda")}.");
+            await context.Interaction.RespondAsync($"Error al ejecutar el comando. Verificá los parámetros con {Format.Bold($"/ayuda")}.");
         }
 
         /// <summary>

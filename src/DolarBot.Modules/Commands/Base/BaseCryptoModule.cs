@@ -2,6 +2,7 @@
 using DolarBot.API;
 using DolarBot.API.Models;
 using DolarBot.Services.Crypto;
+using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
@@ -42,6 +43,7 @@ namespace DolarBot.Modules.Commands.Base
             if (response != null)
             {
                 EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(response);
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             else

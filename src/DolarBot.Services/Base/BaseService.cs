@@ -43,6 +43,24 @@ namespace DolarBot.Services.Base
         #region Methods
 
         /// <summary>
+        /// Returns an array of valid date formats for command parameters.
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetValidDateFormats()
+        {
+            return new[]
+            {
+                "yyyy/M/d",
+                "yyyy-M-d",
+                "d/M/yyyy",
+                "d-M-yyyy",
+                "yyyy/M",
+                "yyyy-M",
+                "yyyy"
+            };
+        }
+
+        /// <summary>
         /// Parses a date from a string input assuming standard date formats.
         /// </summary>
         /// <param name="input">The date as a string.</param>
@@ -50,19 +68,24 @@ namespace DolarBot.Services.Base
         /// <returns>A boolean value indicating whether the parsing was successful.</returns>
         public bool ParseDate(string input, out DateTime? date)
         {
-            bool validDate = DateTime.TryParseExact(input, "yyyy/M/d", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out DateTime result) ||
-                             DateTime.TryParseExact(input, "yyyy-M-d", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
-                             DateTime.TryParseExact(input, "d/M/yyyy", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
-                             DateTime.TryParseExact(input, "d-M-yyyy", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
-                             DateTime.TryParseExact(input, "yyyy/M", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
-                             DateTime.TryParseExact(input, "yyyy-M", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result) ||
-                             DateTime.TryParseExact(input, "yyyy", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result);
+            DateTime result = default;
+            bool validDate = false;
+            foreach (string format in GetValidDateFormats())
+            {
+                validDate = DateTime.TryParseExact(input, "yyyy/M/d", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result);
+                if (validDate)
+                {
+                    break;
+                }
+            }
+
             if(!validDate && input.Equals("hoy", StringComparison.OrdinalIgnoreCase))
             {
                 result = DateTime.Now.Date;
                 validDate = true;
             }
-            date = validDate ? result : default;
+
+            date = result;
             return validDate;
         }
 
@@ -74,7 +97,7 @@ namespace DolarBot.Services.Base
         public EmbedBuilder AddPlayStoreLink(EmbedBuilder embed)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
+            Emoji playStoreEmoji = new(emojis["playStore"]);
             string playStoreUrl = Configuration["playStoreLink"];
 
             if (!string.IsNullOrWhiteSpace(playStoreUrl))

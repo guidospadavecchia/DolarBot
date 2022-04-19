@@ -76,8 +76,6 @@ namespace DolarBot.Modules.Handlers
                 bool testGuildConfigured = ulong.TryParse(Configuration["testServerId"], out ulong testServerId);
                 Task registerCommands = IsDebug && testGuildConfigured ? InteractionService.RegisterCommandsToGuildAsync(testServerId) : InteractionService.RegisterCommandsGloballyAsync();
 
-                HelpInteractiveModule.RegisterSlashCommand(Client, InteractionService, Configuration, IsDebug);
-
                 await Task.WhenAll(updateStatsDbl, updateServerLog, registerCommands);
             }
             catch (Exception ex)

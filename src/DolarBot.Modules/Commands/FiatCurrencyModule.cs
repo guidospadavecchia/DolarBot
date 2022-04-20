@@ -102,7 +102,8 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Replies with a message indicating one of the date parameters was not correcly specified.
         /// </summary>
-        /// <param name="userInput">The user input.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
         private async Task SendInvalidDateRangeParametersAsync(DateTime? startDate, DateTime? endDate)
         {
             await ReplyAsync($"La fecha desde ({Format.Code((startDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}) debe ser {Format.Bold("menor o igual")} a la fecha hasta ({Format.Code((endDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}) y el rango debe ser {Format.Bold("menor")} a {Format.Code("1 año")}.");
@@ -111,7 +112,8 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Replies with a message indicating one of the date parameters was not correcly specified.
         /// </summary>
-        /// <param name="userInput">The user input.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
         private async Task SendNoDataForRangeAsync(DateTime? startDate, DateTime? endDate)
         {
             await ReplyAsync($"No hay datos históricos para el rango de fechas {Format.Code((startDate?.Date ?? DateTime.Now).ToString("dd/MM/yyyy"))} - {Format.Code((endDate?.Date ?? DateTime.Now).ToString("dd/MM/yyyy"))}.");
@@ -209,7 +211,7 @@ namespace DolarBot.Modules.Commands
                                 {
                                     DateTime dateFrom = startDate?.Date ?? DateTime.Now;
                                     DateTime dateTo = endDate?.Date ?? DateTime.Now;
-                                    TimeSpan oneYear = TimeSpan.FromHours(24 * 365);
+                                    TimeSpan oneYear = TimeSpan.FromDays(365);
                                     if (dateFrom <= dateTo && (dateTo.Subtract(dateFrom) < oneYear))
                                     {
                                         List<WorldCurrencyResponse> historicalCurrencyValues = await FiatCurrencyService.GetHistoricalCurrencyValues(currencyCode, startDate, endDate);

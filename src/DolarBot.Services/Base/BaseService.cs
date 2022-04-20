@@ -72,7 +72,7 @@ namespace DolarBot.Services.Base
             bool validDate = false;
             foreach (string format in GetValidDateFormats())
             {
-                validDate = DateTime.TryParseExact(input, "yyyy/M/d", GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result);
+                validDate = DateTime.TryParseExact(input, format, GlobalConfiguration.GetLocalCultureInfo(), DateTimeStyles.None, out result);
                 if (validDate)
                 {
                     break;

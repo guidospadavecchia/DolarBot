@@ -6,7 +6,6 @@ using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Services.Currencies;
-using DolarBot.Util.Extensions;
 using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -58,6 +57,37 @@ namespace DolarBot.Modules.InteractiveCommands
             await SendDeferredMessageAsync($"El código {Format.Code(userInput)} no corresponde con ningún código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
         }
 
+        /// <summary>
+        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// </summary>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        private async Task SendInvalidDateRangeParametersAsync(DateTime startDate, DateTime endDate)
+        {
+            await SendDeferredMessageAsync($"La {Format.Bold("fecha desde")} ({Format.Code(startDate.ToString("dd/MM/yyyy"))}) debe ser {Format.Bold("menor o igual")} a la {Format.Bold("fecha hasta")} ({Format.Code(endDate.ToString("dd/MM/yyyy"))}) y el rango debe ser {Format.Bold("menor")} a {Format.Code("1 año")}.");
+        }
+
+        /// <summary>
+        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// </summary>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
+        private async Task SendNoDataForRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            await SendDeferredMessageAsync($"No hay datos históricos para el rango de fechas {Format.Code(startDate.ToString("dd/MM/yyyy"))} - {Format.Code(endDate.ToString("dd/MM/yyyy"))}.");
+        }
+
+        /// <summary>
+        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// </summary>
+        /// <param name="userInput">The user input.</param>
+        private async Task SendInvalidDateParameterAsync()
+        {
+            string currencyCommand = GetType().GetMethod(nameof(GetCurrenciesAsync)).GetCustomAttributes(true).OfType<SlashCommandAttribute>().First().Name;
+            string validDateFormats = string.Join(", ", FiatCurrencyService.GetValidDateFormats().Select(x => Format.Code(x)));
+            await ReplyAsync($"La fecha desde/hasta es inválida. Formatos de fecha aceptados: {validDateFormats}.");
+        }
+
         #endregion
 
         [SlashCommand("cotizacion", "Muestra el valor de una cotización o lista todos los códigos de monedas disponibles.", false, RunMode.Async)]
@@ -97,6 +127,69 @@ namespace DolarBot.Modules.InteractiveCommands
                         EmbedBuilder[] embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username).ToArray();
                         await SendDeferredPaginatedEmbedAsync(embeds);
                     }
+                }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponseAsync(ex);
+                }
+            });
+        }
+
+        [SlashCommand("historico", "Muestra valores históricos entre fechas para una moneda determinada.", false, RunMode.Async)]
+        public async Task GetHistoricalCurrencyValuesAsync(
+            [Summary("moneda", "Código de la moneda.")]
+            [Autocomplete(typeof(FiatCurrencyCodeAutocompleteHandler))]
+            string codigo,
+            [Summary("desde", "Fecha desde.")]
+            string startDate,
+            [Summary("hasta", "Fecha hasta.")]
+            string endDate
+        )
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                try
+                {
+                    string currencyCode = Format.Sanitize(codigo).ToUpper().Trim();
+                    List<WorldCurrencyCodeResponse> historicalCurrencyCodeList = await FiatCurrencyService.GetWorldCurrenciesList();
+                    WorldCurrencyCodeResponse worldCurrencyCodeResponse = historicalCurrencyCodeList.FirstOrDefault(x => x.Code.Equals(currencyCode, StringComparison.OrdinalIgnoreCase));
+                    if (worldCurrencyCodeResponse != null)
+                    {
+                        TimeSpan oneYear = TimeSpan.FromDays(366);
+                        bool validStartDate = FiatCurrencyService.ParseDate(startDate, out DateTime? startDateResult) && startDateResult.HasValue;
+                        bool validEndDate = FiatCurrencyService.ParseDate(endDate, out DateTime? endDateResult) && endDateResult.HasValue;
+                        if (validStartDate && validEndDate)
+                        {
+                            DateTime dateFrom = startDateResult.Value;
+                            DateTime dateTo = endDateResult.Value;
+                            if (dateFrom <= dateTo && (dateTo.Subtract(dateFrom) <= oneYear))
+                            {
+                                List<WorldCurrencyResponse> historicalCurrencyValues = await FiatCurrencyService.GetHistoricalCurrencyValues(currencyCode, dateFrom, dateTo);
+                                if (historicalCurrencyValues != null && historicalCurrencyValues.Count > 0)
+                                {
+                                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateHistoricalValuesEmbedsAsync(historicalCurrencyValues, worldCurrencyCodeResponse.Name, dateFrom, dateTo);
+                                    await SendDeferredPaginatedEmbedAsync(embeds);
+                                }
+                                else
+                                {
+                                    await SendNoDataForRangeAsync(dateFrom, dateTo);
+                                }
+                            }
+                            else
+                            {
+                                await SendInvalidDateRangeParametersAsync(dateFrom, dateTo);
+                            }
+                        }
+                        else
+                        {
+                            await SendInvalidDateParameterAsync();
+                        }
+                    }
+                    else
+                    {
+                        await SendInvalidCurrencyCodeAsync(currencyCode);
+                    }
+
                 }
                 catch (Exception ex)
                 {

@@ -54,10 +54,10 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         #region Methods
 
         /// <summary>
-        /// Sends a deferred paginated message from an <see cref="EmbedBuilder[]"/>.
+        /// Sends a deferred paginated message from an <see cref="IEnumerable{T}"/> of <see cref="EmbedBuilder"/> objects.
         /// </summary>
         /// <param name="embedBuilders">The embed builders.</param>
-        protected Task SendDeferredPaginatedEmbedAsync(EmbedBuilder[] embedBuilders)
+        protected Task SendDeferredPaginatedEmbedAsync(IEnumerable<EmbedBuilder> embedBuilders)
         {
             return SendDeferredPaginatedEmbedAsync(embedBuilders.Select(x => x.Build()).ToArray());
         }

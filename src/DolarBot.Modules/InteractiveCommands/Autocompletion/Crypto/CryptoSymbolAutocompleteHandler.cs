@@ -34,21 +34,22 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
         {
             string filter = autocompleteInteraction.Data.Current.Value.ToString();
+            List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
-                List<CryptoCodeResponse> filteredCurrencyCodes = currencyCodes.Where(x => x.Symbol.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-                if (!filteredCurrencyCodes.Any())
+                currencyCodes = currencyCodes.Where(x => x.Symbol.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                if (!currencyCodes.Any())
                 {
-                    filteredCurrencyCodes = currencyCodes.Where(x => x.Symbol.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                    currencyCodes = currencyCodes.Where(x => x.Symbol.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
                 }
-                IEnumerable<AutocompleteResult> autocompletionCollection = filteredCurrencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code));
-                return AutocompletionResult.FromSuccess(autocompletionCollection);
             }
             else
             {
-                return AutocompletionResult.FromSuccess();
+                currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
             }
+
+            IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
+            return AutocompletionResult.FromSuccess(autocompletionCollection);
         }
     }
 }

@@ -31,16 +31,15 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Help
             List<SlashCommandInfo> slashCommands = InteractionService.SlashCommands.Where(x => !x.Name.Equals(HELP_COMMAND, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x.Name).ToList();
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                List<SlashCommandInfo> filteredSlashCommands = slashCommands.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-                IEnumerable<AutocompleteResult> autocompletionCollection = filteredSlashCommands.Select(x => new AutocompleteResult(x.Name, x.Name));
-                return Task.FromResult(AutocompletionResult.FromSuccess(autocompletionCollection));
+                slashCommands = slashCommands.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).OrderBy(x => x.Name).ToList();
             }
             else
             {
-                List<SlashCommandInfo> topSlashCommands = slashCommands.Take(MAX_AUTOCOMPLETE_RESULTS).OrderBy(x => x.Name).ToList();
-                IEnumerable<AutocompleteResult> autocompletionCollection = topSlashCommands.Select(x => new AutocompleteResult(x.Name, x.Name));
-                return Task.FromResult(AutocompletionResult.FromSuccess(autocompletionCollection));
+                slashCommands = slashCommands.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
             }
+
+            IEnumerable<AutocompleteResult> autocompletionCollection = slashCommands.Select(x => new AutocompleteResult(x.Name, x.Name));
+            return Task.FromResult(AutocompletionResult.FromSuccess(autocompletionCollection));
         }
     }
 }

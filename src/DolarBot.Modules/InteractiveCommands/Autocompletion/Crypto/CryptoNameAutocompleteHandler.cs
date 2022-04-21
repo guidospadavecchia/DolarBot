@@ -34,19 +34,18 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
         {
             string filter = autocompleteInteraction.Data.Current.Value.ToString();
+            List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
-                List<CryptoCodeResponse> filteredCurrencyCodes = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
-                                                                              .Take(MAX_AUTOCOMPLETE_RESULTS)
-                                                                              .ToList();
-                IEnumerable<AutocompleteResult> autocompletionCollection = filteredCurrencyCodes.Select(x => new AutocompleteResult($"{x.Name} ({x.Symbol.ToUpper()})", x.Code));
-                return AutocompletionResult.FromSuccess(autocompletionCollection);
+                currencyCodes = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
             }
             else
             {
-                return AutocompletionResult.FromSuccess();
+                currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
             }
+
+            IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"{x.Name} ({x.Symbol.ToUpper()})", x.Code)).OrderBy(x => x.Name);
+            return AutocompletionResult.FromSuccess(autocompletionCollection);
         }
     }
 }

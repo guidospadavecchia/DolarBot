@@ -52,10 +52,12 @@ namespace DolarBot.Services.Base
             {
                 "yyyy/M/d",
                 "yyyy-M-d",
-                "d/M/yyyy",
-                "d-M-yyyy",
                 "yyyy/M",
                 "yyyy-M",
+                "d/M/yyyy",
+                "d-M-yyyy",
+                "M/yyyy",
+                "M-yyyy",
                 "yyyy"
             };
         }

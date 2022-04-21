@@ -122,9 +122,16 @@ namespace DolarBot.Modules.InteractiveCommands
             {
                 try
                 {
-                    List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
-                    string cryptoCurrencyCode = symbol != null ? Format.Sanitize(symbol).ToUpper().Trim() : Format.Sanitize(name).ToUpper().Trim();
-                    await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
+                    if (!string.IsNullOrWhiteSpace(symbol) && !string.IsNullOrWhiteSpace(name))
+                    {
+                        await SendDeferredMessageAsync($"{Format.Bold("Atención")}: Debe especificar el {Format.Bold("código")} o el {Format.Bold("nombre")} de la criptomoneda, pero no ambos.");
+                    }
+                    else
+                    {
+                        List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
+                        string cryptoCurrencyCode = symbol != null ? Format.Sanitize(symbol).ToUpper().Trim() : Format.Sanitize(name).ToUpper().Trim();
+                        await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
+                    }
                 }
                 catch (Exception ex)
                 {

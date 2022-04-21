@@ -160,7 +160,7 @@ namespace DolarBot
 
             ClientHandler clientHandler = new(client, interactionService, Configuration, logger: logger, isDebug: Debugger.IsAttached);
             CommandHandler commandHandler = new(client, commandsService, services, Configuration, logger);
-            InteractionHandler interactionHandler = new(client, interactionService, fergunInteractiveService, services, Configuration, logger);
+            InteractionHandler interactionHandler = new(client, interactionService, fergunInteractiveService, services, logger);
 
             client.Log += LogClientEvent;
             client.Ready += clientHandler.OnReady;

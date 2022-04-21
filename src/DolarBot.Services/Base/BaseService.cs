@@ -46,21 +46,18 @@ namespace DolarBot.Services.Base
         /// Returns an array of valid date formats for command parameters.
         /// </summary>
         /// <returns></returns>
-        public string[] GetValidDateFormats()
+        public string[] GetValidDateFormats() => new[]
         {
-            return new[]
-            {
-                "yyyy/M/d",
-                "yyyy-M-d",
-                "yyyy/M",
-                "yyyy-M",
-                "d/M/yyyy",
-                "d-M-yyyy",
-                "M/yyyy",
-                "M-yyyy",
-                "yyyy"
-            };
-        }
+            "yyyy/M/d",
+            "yyyy-M-d",
+            "yyyy/M",
+            "yyyy-M",
+            "d/M/yyyy",
+            "d-M-yyyy",
+            "M/yyyy",
+            "M-yyyy",
+            "yyyy"
+        };
 
         /// <summary>
         /// Parses a date from a string input assuming standard date formats.
@@ -81,7 +78,7 @@ namespace DolarBot.Services.Base
                 }
             }
 
-            if(!validDate && input.Equals("hoy", StringComparison.OrdinalIgnoreCase))
+            if (!validDate && input.Equals("hoy", StringComparison.OrdinalIgnoreCase))
             {
                 result = DateTime.Now.Date;
                 validDate = true;

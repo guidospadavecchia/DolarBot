@@ -33,10 +33,6 @@ namespace DolarBot.Modules.Handlers
         /// </summary>
         private readonly IServiceProvider Services;
         /// <summary>
-        /// Allows access to application settings.
-        /// </summary>
-        private readonly IConfiguration Configuration;
-        /// <summary>
         /// Log4net logger.
         /// </summary>
         private readonly ILog Logger;
@@ -48,17 +44,15 @@ namespace DolarBot.Modules.Handlers
         /// </summary>
         /// <param name="client">The current <see cref="DiscordSocketClient"/>.</param>
         /// <param name="interactionCommands">The Discord interaction command service.</param>
-        /// <param name="InteractiveService">The interactive service to handle pagination and selections.</param>
+        /// <param name="interactiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="services">The service provider.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
         /// <param name="logger">The log4net <see cref="ILog"/> instance.</param>
-        public InteractionHandler(DiscordSocketClient client, InteractionService interactionCommands, InteractiveService interactiveService, IServiceProvider services, IConfiguration configuration, ILog logger = null)
+        public InteractionHandler(DiscordSocketClient client, InteractionService interactionCommands, InteractiveService interactiveService, IServiceProvider services, ILog logger = null)
         {
             Client = client;
             InteractionCommands = interactionCommands;
             InteractiveService = interactiveService;
             Services = services;
-            Configuration = configuration;
             Logger = logger;
         }
         #endregion
@@ -158,7 +152,7 @@ namespace DolarBot.Modules.Handlers
         /// </summary>
         /// <param name="context">The current command context.</param>
         /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
-        private async Task ProcessBadArgs(IInteractionContext context)
+        private static async Task ProcessBadArgs(IInteractionContext context)
         {
             await context.Interaction.RespondAsync($"Error al ejecutar el comando. Verificá los parámetros con {Format.Bold($"/ayuda")}.");
         }

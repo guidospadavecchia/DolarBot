@@ -1,8 +1,9 @@
 ﻿using Discord;
-using Discord.Addons.Interactive;
 using Discord.Commands;
+using Discord.Interactions;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
+using DolarBot.Modules.InteractiveCommands;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
 using log4net;
@@ -12,15 +13,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ParameterInfo = Discord.Commands.ParameterInfo;
 using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
+using ModuleInfo = Discord.Interactions.ModuleInfo;
+using RunMode = Discord.Commands.RunMode;
+using SummaryAttribute = Discord.Commands.SummaryAttribute;
 
 namespace DolarBot.Modules.Commands
 {
     /// <summary>
     /// Contains help related commands.
     /// </summary>
-    public class HelpModule : BaseInteractiveModule
+    public class HelpModule : BaseModule
     {
         #region Constants
         private const string HELP_COMMAND = "ayuda";
@@ -30,14 +33,13 @@ namespace DolarBot.Modules.Commands
         private const string HELP_SUMMARY = "Muestra los comandos disponibles.";
         private const string HELP_COMMAND_SUMMARY = "Muestra información sobre un comando.";
         private const string HELP_SUMMARY_DM = "Envía la ayuda por mensaje privado.";
-        private const string HELP_COMMAND_SUMMARY_DM = "Envía la ayuda del comando por mensaje privado.";
         #endregion
 
         #region Vars
         /// <summary>
         /// Service which provides access to the available commands.
         /// </summary>
-        private readonly CommandService Commands;
+        private readonly InteractionService InteractionService;
         #endregion
 
         #region Constructor
@@ -45,11 +47,11 @@ namespace DolarBot.Modules.Commands
         /// Creates the module using the specified <see cref="IConfiguration"/>, <see cref="ILog"/> and <see cref="CommandService"/> objects.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
-        /// <param name="api">Provides access to the different APIs.</param>
         /// <param name="logger">The log4net logger.</param>
-        public HelpModule(IConfiguration configuration, ILog logger, CommandService commands) : base(configuration, logger)
+        /// <param name="interactionService">Provides a framework for building Discord commands.</param>
+        public HelpModule(IConfiguration configuration, ILog logger, InteractionService interactionService) : base(configuration, logger)
         {
-            Commands = commands;
+            InteractionService = interactionService;
         }
         #endregion
 
@@ -61,9 +63,10 @@ namespace DolarBot.Modules.Commands
         {
             try
             {
-                if (CommandExists(command))
+                if (SlashCommandExists(command))
                 {
-                    EmbedBuilder embed = GenerateEmbeddedHelpCommand(command);
+                    EmbedBuilder embed = GenerateEmbeddedSlashCommandHelp(command);
+                    embed.AddCommandDeprecationNotice(Configuration);
                     await ReplyAsync(embed: embed.Build());
                 }
                 else
@@ -85,9 +88,9 @@ namespace DolarBot.Modules.Commands
         {
             try
             {
-                List<EmbedBuilder> embeds = CommandExists(command) ? new List<EmbedBuilder>() { GenerateEmbeddedHelpCommand(command) } : GenerateEmbeddedHelp();
+                List<EmbedBuilder> embeds = SlashCommandExists(command) ? new List<EmbedBuilder>() { GenerateEmbeddedSlashCommandHelp(command) } : GenerateEmbeddedSlashCommandsHelp();
                 await ReplyAsync($"{Context.User.Mention}, se envió la ayuda por mensaje privado.");
-                foreach (var embed in embeds)
+                foreach (EmbedBuilder embed in embeds)
                 {
                     await Context.User.SendMessageAsync(embed: embed.Build());
                 }
@@ -101,17 +104,16 @@ namespace DolarBot.Modules.Commands
         #region Methods
 
         /// <summary>
-        /// Creates an <see cref="EmbedBuilder"/> object for help using reflection and attribute values.
+        /// Creates an <see cref="EmbedBuilder"/> object for help regarding slash commands, using reflection and attribute values.
         /// </summary>
         /// <returns>A collection of <see cref="EmbedBuilder"/> objects ready to be built.</returns>
-        private List<EmbedBuilder> GenerateEmbeddedHelp()
+        private List<EmbedBuilder> GenerateEmbeddedSlashCommandsHelp()
         {
-            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            List<EmbedBuilder> embeds = new();
 
-            Emoji moduleBullet = new Emoji("\uD83D\uDD37");
-            Emoji commandBullet = new Emoji("\uD83D\uDD39");
+            Emoji moduleBullet = new("\uD83D\uDD37");
+            Emoji commandBullet = new("\uD83D\uDD39");
             string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
-            string commandPrefix = Configuration["commandPrefix"];
 
             EmbedBuilder helpEmbed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Help)
                                                        .WithTitle(Format.Bold("Ayuda"))
@@ -119,23 +121,17 @@ namespace DolarBot.Modules.Commands
                                                        .WithCurrentTimestamp();
 
             string helpCommands = new StringBuilder()
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")}")
+                                  .AppendLine($"{commandBullet} {Format.Code($"/{HELP_COMMAND}")}")
                                   .AppendLine(Format.Italics(HELP_SUMMARY))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND_DM}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS_DM}")}")
-                                  .AppendLine(Format.Italics(HELP_SUMMARY_DM))
-                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS}")} {Format.Code("<comando>")}")
+                                  .AppendLine($"{commandBullet} {Format.Code($"/{HELP_COMMAND}")} {Format.Code("<comando>")}")
                                   .AppendLine(Format.Italics(HELP_COMMAND_SUMMARY))
-                                  .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
-                                  .AppendLine($"{commandBullet} {Format.Code($"{commandPrefix}{HELP_COMMAND_DM}")} | {Format.Code($"{commandPrefix}{HELP_ALIAS_DM}")} {Format.Code("<comando>")}")
-                                  .AppendLine(Format.Italics(HELP_COMMAND_SUMMARY_DM))
                                   .AppendLine(GlobalConfiguration.Constants.BLANK_SPACE)
                                   .ToString();
             helpEmbed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, helpCommands);
             embeds.Add(helpEmbed);
 
-            Dictionary<string, List<ModuleInfo>> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
+            Dictionary<string, List<ModuleInfo>> modules = InteractionService.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
                                                                .OrderBy(m => (m.GetAttribute<HelpOrderAttribute>()?.Order))
                                                                .GroupBy(m => m.GetAttribute<HelpTitleAttribute>()?.Title)
                                                                .Where(x => !string.IsNullOrWhiteSpace(x.Key))
@@ -150,12 +146,12 @@ namespace DolarBot.Modules.Commands
                                         .WithCurrentTimestamp();
 
                     ModuleInfo m = module.Value.ElementAt(i);
-                    StringBuilder commandsBuilder = new StringBuilder();
-                    foreach (CommandInfo commandInfo in m.Commands)
+                    StringBuilder commandsBuilder = new();
+                    foreach (SlashCommandInfo slashCommandInfo in m.SlashCommands)
                     {
-                        string commandSummary = Format.Italics(commandInfo.Summary);
-                        string aliases = string.Join(" | ", commandInfo.Aliases.Select(a => Format.Code($"{commandPrefix}{a}")));
-                        commandsBuilder.AppendLine($"{commandBullet} {aliases}").AppendLine(commandSummary.AppendLineBreak());
+                        string commandName = Format.Code($"/{slashCommandInfo.Name}");
+                        string commandDescription = Format.Italics(slashCommandInfo.Description).AppendLineBreak();
+                        commandsBuilder.AppendLine($"{commandBullet} {commandName}").AppendLine(commandDescription);
                     }
 
                     embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, commandsBuilder.ToString());
@@ -169,58 +165,36 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for help for a particular command using reflection and attribute values.
         /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        private EmbedBuilder GenerateEmbeddedHelpCommand(string command)
+        /// <param name="command">The command to describe.</param>
+        /// <returns>An <see cref="EmbedBuilder"/> ready to be built.</returns>
+        private EmbedBuilder GenerateEmbeddedSlashCommandHelp(string command)
         {
             string helpImageUrl = Configuration.GetSection("images").GetSection("help")["64"];
-            string commandPrefix = Configuration["commandPrefix"];
-            string commandTitle = Format.Code($"{commandPrefix}{command}");
+            string commandTitle = Format.Code($"/{command}");
 
-            List<ModuleInfo> modules = Commands.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
+            List<ModuleInfo> modules = InteractionService.Modules.Where(m => m.HasAttribute<HelpTitleAttribute>())
                                                        .OrderBy(m => m.GetAttribute<HelpOrderAttribute>()?.Order)
                                                        .ToList();
 
-            CommandInfo commandInfo = Commands.Commands.GetCommand(command);
+            SlashCommandInfo slashCommandInfo = InteractionService.SlashCommands.GetSlashCommand(command);
             EmbedBuilder embed = new EmbedBuilder().WithTitle($"Comando {commandTitle}")
                                                    .WithColor(GlobalConfiguration.Colors.Help)
                                                    .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                                    .WithThumbnailUrl(helpImageUrl)
-                                                   .AddField(Format.Bold("Descripción"), Format.Italics(commandInfo.Summary));
+                                                   .AddField(Format.Bold("Descripción"), Format.Italics(slashCommandInfo.Description));
 
-            if (commandInfo.Parameters.Count > 0)
+            if (slashCommandInfo.Parameters.Count > 0)
             {
-                StringBuilder parameterBuilder = new StringBuilder();
-                foreach (ParameterInfo parameter in commandInfo.Parameters)
+                StringBuilder parameterBuilder = new();
+                foreach (SlashCommandParameterInfo parameter in slashCommandInfo.Parameters)
                 {
-                    parameterBuilder.AppendLine($"{Format.Code($"<{parameter.Name}>")}: {Format.Italics(parameter.Summary)}");
+                    parameterBuilder.AppendLine($"{Format.Code($"<{parameter.Name}>")}: {(parameter.IsRequired ? " " : $"{Format.Bold("[Opcional]")} ")}{Format.Italics(parameter.Description)}");
                 }
-                string parameters = parameterBuilder.ToString();
-                embed.AddField(Format.Bold("Parametros"), parameters);
+                embed.AddField(Format.Bold("Parámetros"), parameterBuilder.ToString());
             }
             else
             {
-                embed.AddField(Format.Bold("Parametros"), Format.Italics("Ninguno."));
-            }
-
-            if (commandInfo.Aliases.Count > 1)
-            {
-                IEnumerable<string> otherAliases = commandInfo.Aliases.Where(a => !a.IsEquivalentTo(command));
-                string aliases = string.Join(", ", otherAliases.Select(a => Format.Code($"{commandPrefix}{a}")));
-                embed.AddField(Format.Bold("Otros Alias"), aliases);
-            }
-
-            if (commandInfo.HasAttribute<HelpUsageExampleAttribute>())
-            {
-                HelpUsageExampleAttribute attribute = commandInfo.GetAttribute<HelpUsageExampleAttribute>();
-                IEnumerable<string> examples = attribute.Examples;
-                StringBuilder exampleBuilder = new StringBuilder();
-                foreach (string example in examples)
-                {
-                    string exampleText = attribute.IsPreformatted ? example : Format.Code(example);
-                    exampleBuilder.AppendLine(exampleText);
-                }
-                embed.AddField(Format.Bold("Ejemplos"), exampleBuilder.ToString());
+                embed.AddField(Format.Bold("Parámetros"), Format.Italics("Ninguno."));
             }
 
             return embed;
@@ -232,8 +206,8 @@ namespace DolarBot.Modules.Commands
         /// <returns>A completed task.</returns>
         private async Task SendPagedHelpReplyAsync()
         {
-            List<EmbedBuilder> embeds = GenerateEmbeddedHelp();
-            List<EmbedPage> pages = new List<EmbedPage>();
+            List<EmbedBuilder> embeds = GenerateEmbeddedSlashCommandsHelp();
+            List<EmbedPage> pages = new();
             int pageCount = 0;
             int totalPages = embeds.Select(x => x.Fields.Count).Sum();
 
@@ -265,9 +239,9 @@ namespace DolarBot.Modules.Commands
         /// </summary>
         /// <param name="command">The command to check.</param>
         /// <returns>True if the command exists, otherwise false.</returns>
-        private bool CommandExists(string command)
+        private bool SlashCommandExists(string command)
         {
-            return !string.IsNullOrWhiteSpace(command) && Commands.Commands.Any(c => c.Aliases.Select(a => a.ToUpper().Trim()).Contains(command.ToUpper().Trim()) && !c.Module.Name.IsEquivalentTo(typeof(HelpModule).Name));
+            return !string.IsNullOrWhiteSpace(command) && InteractionService.SlashCommands.Any(c => c.Name.Equals(command, StringComparison.OrdinalIgnoreCase) && !c.Module.Name.IsEquivalentTo(typeof(HelpInteractiveModule).Name));
         }
 
         #endregion

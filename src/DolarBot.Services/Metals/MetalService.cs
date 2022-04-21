@@ -79,7 +79,7 @@ namespace DolarBot.Services.Metals
 
             string thumbnailUrl = GetThumbnailUrl(metalResponse.Type);
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            decimal value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? valor : 0;
+            decimal value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valor) ? valor : 0;
             string valueText = value > 0 ? Format.Bold($"US$ {valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
             string title = $"Cotización {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {GetName(metalResponse.Type).Capitalize()}";
             string description = $"Valor internacional {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {Format.Bold(GetName(metalResponse.Type).ToLower())} expresado en {Format.Bold("dólares")} por {Format.Bold(metalResponse.Unidad.ToLower())}.";

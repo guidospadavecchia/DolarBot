@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -63,33 +64,37 @@ namespace DolarBot.Modules.Handlers
         /// Processes user input and, if valid, executes the command.
         /// </summary>
         /// <param name="arg">The received <see cref="SocketMessage"/>.</param>
-        /// <returns>A task that represents the asynchronous execution operation. The task result contains the result of the command execution.</returns>
+        /// <returns>A task that represents the asynchronous execution operation. The task contains the result of the command execution.</returns>
         public async Task HandleCommandAsync(SocketMessage arg)
         {
-            if (!(arg is SocketUserMessage message) || message.Author.IsBot)
+            if (arg is not SocketUserMessage message || message.Author.IsBot)
             {
                 return;
             }
 
-            SocketCommandContext context = new SocketCommandContext(Client, message);
-            int argPos = default;
-            if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
+            bool isValidIntentDate = DateTime.TryParseExact(Configuration["messageContentPrivilegedIntentDate"], "yyyy-M-d", null, DateTimeStyles.None, out DateTime messageContentPrivilegedIntentDate);
+            if (!isValidIntentDate || DateTime.Now.Date <= messageContentPrivilegedIntentDate.Date)
             {
-                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
-                if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+                SocketCommandContext context = new(Client, message);
+                int argPos = default;
+                if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
                 {
-                    switch (result.Error)
+                    IResult result = await Commands.ExecuteAsync(context, argPos, Services);
+                    if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     {
-                        case CommandError.BadArgCount:
-                            await ProcessBadArgCount(context, argPos);
-                            break;
-                        case CommandError.Exception:
-                        case CommandError.Unsuccessful:
-                        case CommandError.ParseFailed:
-                            ProcessCommandError(result);
-                            break;
-                        default:
-                            break;
+                        switch (result.Error)
+                        {
+                            case CommandError.BadArgCount:
+                                await ProcessBadArgCount(context, argPos);
+                                break;
+                            case CommandError.Exception:
+                            case CommandError.Unsuccessful:
+                            case CommandError.ParseFailed:
+                                ProcessCommandError(result);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -126,7 +131,7 @@ namespace DolarBot.Modules.Handlers
             }
             else
             {
-                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {Format.Bold($"{commandPrefix}{commandName}")}. Verificá los parámetros con {Format.Bold($"{commandPrefix}ayuda")}.");
+                await context.Channel.SendMessageAsync($"Error al ejecutar el comando {Format.Bold($"{commandPrefix}{commandName}")}. Verificá los parámetros con {Format.Bold($"/ayuda")}.");
             }
         }
 

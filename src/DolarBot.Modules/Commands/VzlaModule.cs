@@ -5,6 +5,7 @@ using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
 using DolarBot.Services.Venezuela;
+using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -13,11 +14,11 @@ using System.Threading.Tasks;
 namespace DolarBot.Modules.Commands
 {
     /// <summary>
-    /// Contains cryptocurrency related commands.
+    /// Contains Venezuela related commands.
     /// </summary>
     [HelpOrder(10)]
     [HelpTitle("Cotizaciones de Venezuela")]
-    public class VzlaModule : BaseInteractiveModule
+    public class VzlaModule : BaseModule
     {
         #region Vars
         /// <summary>
@@ -54,6 +55,7 @@ namespace DolarBot.Modules.Commands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
+                        embed.AddCommandDeprecationNotice(Configuration);
                         await ReplyAsync(embed: embed.Build());
                     }
                     else
@@ -83,6 +85,7 @@ namespace DolarBot.Modules.Commands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
+                        embed.AddCommandDeprecationNotice(Configuration);
                         await ReplyAsync(embed: embed.Build());
                     }
                     else

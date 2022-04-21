@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyVersion>2.5.1.0</AssemblyVersion>
-    <FileVersion>2.5.1.0</FileVersion>
-    <LangVersion>9.0</LangVersion>
-    <Version>2.5.1</Version>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
+    <LangVersion>10.0</LangVersion>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,10 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="3.1.0" />
+    <PackageReference Include="Discord.Net" Version="3.5.0" />
     <PackageReference Include="DiscordBotsList.Api" Version="1.5.0" />
-    <PackageReference Include="log4net" Version="2.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Fergun.Interactive" Version="1.5.4" />
+    <PackageReference Include="log4net" Version="2.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
   </ItemGroup>
 

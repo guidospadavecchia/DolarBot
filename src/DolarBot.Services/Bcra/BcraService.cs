@@ -79,7 +79,7 @@ namespace DolarBot.Services.Bcra
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = riesgoPaisResponse.Fecha.ToString(riesgoPaisResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out double valor);
             string value;
             if (isNumber)
             {
@@ -123,7 +123,7 @@ namespace DolarBot.Services.Bcra
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = bcraResponse.Fecha.ToString(bcraResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out double valor);
             string text;
             string value;
             if (isNumber)
@@ -171,7 +171,7 @@ namespace DolarBot.Services.Bcra
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = bcraResponse.Fecha.ToString(bcraResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out double valor);
             string text;
             string value;
             if (isNumber)

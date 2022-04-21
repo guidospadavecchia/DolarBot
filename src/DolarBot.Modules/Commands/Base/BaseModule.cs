@@ -2,6 +2,7 @@
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using DolarBot.Util;
+using DolarBot.Util.Extensions;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -15,7 +16,7 @@ namespace DolarBot.Modules.Commands.Base
     /// <summary>
     /// Base class for interactive modules.
     /// </summary>
-    public class BaseInteractiveModule : InteractiveBase<SocketCommandContext>
+    public class BaseModule : InteractiveBase<SocketCommandContext>
     {
         #region Constants
         protected const string REQUEST_ERROR_MESSAGE = "**Error**: No se pudo obtener la cotización ya que el servicio se encuentra inaccesible. Intente nuevamente en más tarde.";
@@ -37,7 +38,7 @@ namespace DolarBot.Modules.Commands.Base
         /// Initializes the object using the <see cref="IConfiguration"/> object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
-        public BaseInteractiveModule(IConfiguration configuration, ILog logger)
+        public BaseModule(IConfiguration configuration, ILog logger)
         {
             Configuration = configuration;
             Logger = logger;
@@ -61,7 +62,7 @@ namespace DolarBot.Modules.Commands.Base
         /// </summary>
         /// <param name="pages">The embed pages.</param>
         /// <param name="includeFirstLast">Indicates wether to include reactions for first and last page.</param>
-        protected async Task SendPagedReplyAsync(IEnumerable<PaginatedMessage.Page> pages, bool includeFirstLast = false)
+        protected async Task SendPagedReplyAsync(IEnumerable<EmbedPage> pages, bool includeFirstLast = false)
         {
             await PagedReplyAsync(new PaginatedMessage { Pages = pages }, new ReactionList { Forward = pages.Count() > 1, Backward = pages.Count() > 1, First = pages.Count() > 2 && includeFirstLast, Last = pages.Count() > 2 && includeFirstLast, Info = false, Jump = false, Trash = false });
         }
@@ -74,9 +75,10 @@ namespace DolarBot.Modules.Commands.Base
         /// <returns></returns>
         protected async Task SendPagedReplyAsync(IEnumerable<EmbedBuilder> embeds, bool includeFirstLast = false)
         {
-            List<EmbedPage> pages = new List<EmbedPage>();
+            List<EmbedPage> pages = new();
             foreach (EmbedBuilder embed in embeds)
             {
+                embed.AddCommandDeprecationNotice(Configuration);
                 pages.Add(new EmbedPage
                 {
                     Title = embed.Title,

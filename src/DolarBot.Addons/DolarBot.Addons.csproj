@@ -14,15 +14,15 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReleaseNotes>Push to Stable</PackageReleaseNotes>
 		<Description>A fork of Discord.Addons.Interactive, Adding more functionality including, inline Reactions and full paginator customization</Description>
-		<LangVersion>9.0</LangVersion>
+		<LangVersion>10.0</LangVersion>
 		<AssemblyVersion>2.0.3.1</AssemblyVersion>
 		<FileVersion>2.0.3.1</FileVersion>
 
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Discord.Net.Commands" Version="3.1.0" />
-		<PackageReference Include="Discord.Net.WebSocket" Version="3.1.0" />
+		<PackageReference Include="Discord.Net.Commands" Version="3.5.0" />
+		<PackageReference Include="Discord.Net.WebSocket" Version="3.5.0" />
 	</ItemGroup>
 
 </Project>

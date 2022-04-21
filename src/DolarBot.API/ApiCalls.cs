@@ -53,7 +53,7 @@ namespace DolarBot.API
         /// Logs an error from a REST response using log4net <see cref="ILog"/> object.
         /// </summary>
         /// <param name="response"></param>
-        private void LogError(IRestResponse response)
+        private void LogError(RestResponse response)
         {
             if (response.ErrorException != null)
             {
@@ -199,7 +199,7 @@ namespace DolarBot.API
             /// <summary>
             /// An action to execute in case of error.
             /// </summary>
-            private readonly Action<IRestResponse> OnError;
+            private readonly Action<RestResponse> OnError;
             #endregion
 
             #region Enums
@@ -443,27 +443,27 @@ namespace DolarBot.API
             /// <param name="configuration">An <see cref="IConfiguration"/> object to access application settings.</param>
             /// <param name="cache">A cache of in-memory objects.</param>
             /// <param name="onError">An action to execute in case of error.</param>
-            internal DolarBotApi(IConfiguration configuration, ResponseCache cache, Action<IRestResponse> onError)
+            internal DolarBotApi(IConfiguration configuration, ResponseCache cache, Action<RestResponse> onError)
             {
                 Configuration = configuration;
                 Cache = cache;
                 OnError = onError;
 
-                Client = new RestClient(Configuration["apiUrl"]);
-                Client.UseNewtonsoftJson();
-                Client.AddDefaultHeader(API_KEY_NAME, !string.IsNullOrEmpty(Configuration["apiKey"]) ? Configuration["apiKey"] : Environment.GetEnvironmentVariable(API_KEY_NAME));
-
+                RestClientOptions options = new(Configuration["apiUrl"]);
                 if (int.TryParse(Configuration["apiRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
                 {
-                    Client.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
+                    options.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
                 }
+                Client = new RestClient(options);
+                Client.UseNewtonsoftJson();
+                Client.AddDefaultHeader(API_KEY_NAME, !string.IsNullOrEmpty(Configuration["apiKey"]) ? Configuration["apiKey"] : Environment.GetEnvironmentVariable(API_KEY_NAME));
             }
 
             /// <summary>
             /// Gets the <see cref="DolarBotApi"/> current culture.
             /// </summary>
             /// <returns>A <see cref="CultureInfo"/> object that represents the API culture.</returns>
-            public CultureInfo GetApiCulture() => CultureInfo.GetCultureInfo("en-US");
+            public static CultureInfo GetApiCulture() => CultureInfo.GetCultureInfo("en-US");
 
             /// <summary>
             /// Queries the API and returns its current status.
@@ -471,7 +471,7 @@ namespace DolarBot.API
             /// <returns></returns>
             public async Task<HttpStatusCode?> GetApiStatus()
             {
-                RestRequest request = new RestRequest(ROOT_ENDPOINT);
+                RestRequest request = new(ROOT_ENDPOINT);
                 var response = await Client.ExecuteGetAsync(request);
                 return response?.StatusCode;
             }
@@ -490,8 +490,8 @@ namespace DolarBot.API
                 }
                 else
                 {
-                    RestRequest request = new RestRequest(WORLD_CURRENCIES_LIST_ENDPOINT, DataFormat.Json);
-                    IRestResponse<List<WorldCurrencyCodeResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyCodeResponse>>(request);
+                    RestRequest request = new(WORLD_CURRENCIES_LIST_ENDPOINT);
+                    RestResponse<List<WorldCurrencyCodeResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyCodeResponse>>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(WORLD_CURRENCIES_LIST_KEY, response.Data, Cache.GetCurrencyListExpiration());
@@ -520,8 +520,8 @@ namespace DolarBot.API
                 }
                 else
                 {
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<WorldCurrencyResponse> response = await Client.ExecuteGetAsync<WorldCurrencyResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<WorldCurrencyResponse> response = await Client.ExecuteGetAsync<WorldCurrencyResponse>(request);
                     if (response.IsSuccessful)
                     {
                         WorldCurrencyResponse data = response.Data;
@@ -552,8 +552,8 @@ namespace DolarBot.API
                 }
                 else
                 {
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<List<WorldCurrencyResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyResponse>>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<List<WorldCurrencyResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyResponse>>(request);
                     if (response.IsSuccessful)
                     {
                         List<WorldCurrencyResponse> data = response.Data;
@@ -584,8 +584,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = type.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<DollarResponse> response = await Client.ExecuteGetAsync<DollarResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<DollarResponse> response = await Client.ExecuteGetAsync<DollarResponse>(request);
                     if (response.IsSuccessful)
                     {
                         DollarResponse dolarResponse = response.Data;
@@ -617,8 +617,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = type.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<EuroResponse> response = await Client.ExecuteGetAsync<EuroResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<EuroResponse> response = await Client.ExecuteGetAsync<EuroResponse>(request);
                     if (response.IsSuccessful)
                     {
                         EuroResponse euroResponse = response.Data;
@@ -650,8 +650,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = type.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<RealResponse> response = await Client.ExecuteGetAsync<RealResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<RealResponse> response = await Client.ExecuteGetAsync<RealResponse>(request);
                     if (response.IsSuccessful)
                     {
                         RealResponse realResponse = response.Data;
@@ -681,8 +681,8 @@ namespace DolarBot.API
                 }
                 else
                 {
-                    RestRequest request = new RestRequest(RIESGO_PAIS_ENDPOINT, DataFormat.Json);
-                    IRestResponse<CountryRiskResponse> response = await Client.ExecuteGetAsync<CountryRiskResponse>(request);
+                    RestRequest request = new(RIESGO_PAIS_ENDPOINT);
+                    RestResponse<CountryRiskResponse> response = await Client.ExecuteGetAsync<CountryRiskResponse>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);
@@ -710,8 +710,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = bcraValue.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<BcraResponse> response = await Client.ExecuteGetAsync<BcraResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<BcraResponse> response = await Client.ExecuteGetAsync<BcraResponse>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(bcraValue, response.Data);
@@ -739,8 +739,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = metal.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<MetalResponse> response = await Client.ExecuteGetAsync<MetalResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<MetalResponse> response = await Client.ExecuteGetAsync<MetalResponse>(request);
                     if (response.IsSuccessful)
                     {
                         MetalResponse metalResponse = response.Data;
@@ -771,8 +771,8 @@ namespace DolarBot.API
                 }
                 else
                 {
-                    RestRequest request = new RestRequest(CRYPTO_CURRENCIES_LIST_ENDPOINT, DataFormat.Json);
-                    IRestResponse<List<CryptoCodeResponse>> response = await Client.ExecuteGetAsync<List<CryptoCodeResponse>>(request);
+                    RestRequest request = new(CRYPTO_CURRENCIES_LIST_ENDPOINT);
+                    RestResponse<List<CryptoCodeResponse>> response = await Client.ExecuteGetAsync<List<CryptoCodeResponse>>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(CRYPTO_CURRENCIES_LIST_KEY, response.Data, Cache.GetCryptoListExpiration());
@@ -800,8 +800,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = cryptoCurrency.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
                     if (response.IsSuccessful)
                     {
                         CryptoResponse cryptoResponse = response.Data;
@@ -832,8 +832,8 @@ namespace DolarBot.API
                 }
                 else
                 {
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
                     if (response.IsSuccessful)
                     {
                         CryptoResponse cryptoResponse = response.Data;
@@ -862,8 +862,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = type.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<VzlaResponse> response = await Client.ExecuteGetAsync<VzlaResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<VzlaResponse> response = await Client.ExecuteGetAsync<VzlaResponse>(request);
                     if (response.IsSuccessful)
                     {
                         VzlaResponse vzlaResponse = response.Data;
@@ -894,8 +894,8 @@ namespace DolarBot.API
                 else
                 {
                     string endpoint = historicalRatesParam.GetDescription();
-                    RestRequest request = new RestRequest(endpoint, DataFormat.Json);
-                    IRestResponse<HistoricalRatesResponse> response = await Client.ExecuteGetAsync<HistoricalRatesResponse>(request);
+                    RestRequest request = new(endpoint);
+                    RestResponse<HistoricalRatesResponse> response = await Client.ExecuteGetAsync<HistoricalRatesResponse>(request);
                     if (response.IsSuccessful)
                     {
                         Cache.SaveObject(historicalRatesParam, response.Data);
@@ -942,12 +942,12 @@ namespace DolarBot.API
                 Configuration = configuration;
                 ApiKey = Configuration["cuttlyApiKey"];
 
-                Client = new RestClient(Configuration["cuttlyBaseUrl"]);
-                Client.UseNewtonsoftJson();
+                RestClientOptions options = new(Configuration["cuttlyBaseUrl"]);
                 if (int.TryParse(Configuration["cuttlyRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
                 {
-                    Client.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
+                    options.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
                 }
+                Client = new RestClient(options).UseNewtonsoftJson();
             }
 
             /// <summary>
@@ -961,13 +961,12 @@ namespace DolarBot.API
 
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {
-                    RestRequest request = new RestRequest
+                    RestRequest request = new()
                     {
                         RequestFormat = DataFormat.Json,
-                        OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; }
                     };
                     request.AddQueryParameter("key", apiKey).AddQueryParameter("short", url);
-                    IRestResponse<CuttlyResponse> response = await Client.ExecuteGetAsync<CuttlyResponse>(request);
+                    RestResponse<CuttlyResponse> response = await Client.ExecuteGetAsync<CuttlyResponse>(request);
 
                     if (response.IsSuccessful)
                     {

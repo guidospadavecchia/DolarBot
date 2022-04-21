@@ -26,7 +26,7 @@ namespace DolarBot.Services.Info
         #region Constructors
 
         /// <summary>
-        /// Creates a new <see cref="BcraService"/> object with the provided configuration and API object.
+        /// Creates a new <see cref="InfoService"/> object with the provided configuration and API object.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="api">Provides access to the different APIs.</param>
@@ -64,28 +64,32 @@ namespace DolarBot.Services.Info
         /// Creates an <see cref="EmbedBuilder"/> object containing the bot's current status.
         /// </summary>
         /// <param name="apiStatus">The current status.</param>
-        /// <param name="discordLatency">The current latency to Discord gateway.</param>
+        /// <param name="discordLatency">Optional. The current latency to Discord gateway.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateStatusEmbed(string apiStatus, int discordLatency)
+        public EmbedBuilder CreateStatusEmbed(string apiStatus, int? discordLatency = null)
         {
-            Emoji okEmoji = new Emoji(":white_check_mark:");
-            Emoji warningEmoji = new Emoji(":warning:");
-            Emoji errorEmoji = new Emoji(":red_circle:");
+            Emoji okEmoji = new(":white_check_mark:");
+            Emoji warningEmoji = new(":warning:");
+            Emoji errorEmoji = new(":red_circle:");
             Emoji apiStatusEmoji = apiStatus == API_STATUS_OK ? okEmoji : errorEmoji;
-            Emoji discordStatusEmoji = discordLatency < DISCORD_MAX_ACCEPTABLE_LATENCY ? okEmoji : warningEmoji;
 
             string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
-            string discordStatus = discordLatency < DISCORD_MAX_ACCEPTABLE_LATENCY ? DISCORD_LATENCY_OK : DISCORD_LATENCY_HIGH;
 
             EmbedBuilder embed = new EmbedBuilder()
                      .WithTitle("Status")
                      .WithColor(GlobalConfiguration.Colors.Info)
                      .WithThumbnailUrl(infoImageUrl)
                      .WithDescription($"Estado general del bot".AppendLineBreak())
+                     .WithCurrentTimestamp()
                      .AddField("DolarBot", $"{okEmoji} {Format.Bold(API_STATUS_OK)}".AppendLineBreak())
-                     .AddField("DolarBot API", $"{apiStatusEmoji} {Format.Bold(apiStatus)}".AppendLineBreak())
-                     .AddField("Discord Gateway", $"{discordStatusEmoji} {Format.Bold(discordStatus)}".AppendLineBreak())
-                     .WithCurrentTimestamp();
+                     .AddField("DolarBot API", $"{apiStatusEmoji} {Format.Bold(apiStatus)}".AppendLineBreak());
+
+            if (discordLatency != null)
+            {
+                Emoji discordStatusEmoji = discordLatency.Value < DISCORD_MAX_ACCEPTABLE_LATENCY ? okEmoji : warningEmoji;
+                string discordStatus = discordLatency.Value < DISCORD_MAX_ACCEPTABLE_LATENCY ? DISCORD_LATENCY_OK : DISCORD_LATENCY_HIGH;
+                embed.AddField("Discord Gateway", $"{discordStatusEmoji} {Format.Bold(discordStatus)}".AppendLineBreak());
+            }
 
             return embed;
         }

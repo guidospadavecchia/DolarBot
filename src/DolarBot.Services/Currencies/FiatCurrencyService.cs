@@ -94,15 +94,15 @@ namespace DolarBot.Services.Currencies
         public async Task<EmbedBuilder> CreateWorldCurrencyEmbedAsync(WorldCurrencyResponse worldCurrencyResponse, string currencyName)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji currencyEmoji = new Emoji(":moneybag:");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji currencyEmoji = new(":moneybag:");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
             string currencyImageUrl = Configuration.GetSection("images").GetSection("coins")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = worldCurrencyResponse.Fecha.ToString(worldCurrencyResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string value = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valor) ? valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string value = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valor) ? valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
 
             string shareText = $"*{currencyName} ({worldCurrencyResponse.Code})*{Environment.NewLine}{Environment.NewLine}Valor: \t$ *{value}*{Environment.NewLine}Hora: \t{lastUpdated} (UTC {utcOffset})";
@@ -127,13 +127,12 @@ namespace DolarBot.Services.Currencies
         /// <param name="currenciesList">A collection of <see cref="WorldCurrencyCodeResponse"/> objects.</param>
         /// <param name="currencyCommand">The executing currency command.</param>
         /// <param name="username">The executing user name.</param>
+        /// <param name="interactive">Indicates whether the embed message allows interactivity.</param>
         /// <returns>A list of embeds ready to be built.</returns>
-        public List<EmbedBuilder> CreateWorldCurrencyListEmbedAsync(List<WorldCurrencyCodeResponse> currenciesList, string currencyCommand, string username)
+        public List<EmbedBuilder> CreateWorldCurrencyListEmbedAsync(List<WorldCurrencyCodeResponse> currenciesList, string currencyCommand, string username, bool interactive = false)
         {
-            string commandPrefix = Configuration["commandPrefix"];
             int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
-
-            Emoji coinEmoji = new Emoji(":coin:");
+            Emoji coinEmoji = new(":coin:");
             string coinsImageUrl = Configuration.GetSection("images").GetSection("coins")["64"];
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
@@ -141,7 +140,7 @@ namespace DolarBot.Services.Currencies
             int totalPages = (int)Math.Ceiling(Convert.ToDecimal(currenciesList.Count) / CURRENCIES_PER_PAGE);
             List<IEnumerable<WorldCurrencyCodeResponse>> currenciesListPages = currenciesList.ChunkBy(CURRENCIES_PER_PAGE);
 
-            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            List<EmbedBuilder> embeds = new();
             foreach (IEnumerable<WorldCurrencyCodeResponse> currenciesPage in currenciesListPages)
             {
                 string currencyList = string.Join(Environment.NewLine, currenciesPage.Select(x => $"{coinEmoji} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
@@ -149,11 +148,18 @@ namespace DolarBot.Services.Currencies
                                      .WithColor(GlobalConfiguration.Colors.Currency)
                                      .WithThumbnailUrl(coinsImageUrl)
                                      .WithTitle("Monedas del mundo disponibles")
-                                     .WithDescription($"Códigos de monedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.")
+                                     .WithDescription($"Códigos de monedas disponibles para utilizar como parámetro del comando {Format.Code($"/{currencyCommand}")}.")
                                      .WithFooter($"Página {++pageCount} de {totalPages}")
-                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList)
-                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
-                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                                     .AddField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList);
+                if (interactive)
+                {
+                    embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {Format.Bold("código de 3 dígitos")} de la moneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.")
+                         .AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Si ya sabés el código de la moneda, podés indicárselo al comando directamente, por ejemplo:")} {Format.Code($"/{currencyCommand} {currenciesList.First().Code}")}.");
+                }
+                else
+                {
+                    embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics("Para ver una cotización, indica el código de la moneda. Por ejemplo:")} {Format.Code($"/{currencyCommand} {currenciesList.First().Code}")}.");
+                }
                 embeds.Add(embed);
             }
 
@@ -169,10 +175,10 @@ namespace DolarBot.Services.Currencies
         public List<EmbedBuilder> CreateHistoricalValuesEmbedsAsync(List<WorldCurrencyResponse> historicalCurrencyValues, string currencyName, DateTime? startDate, DateTime? endDate)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji upEmoji = new Emoji(emojis["arrowUpRed"]);
-            Emoji downEmoji = new Emoji(emojis["arrowDownGreen"]);
-            Emoji neutralEmoji = new Emoji(emojis["neutral"]);
-            Emoji calendarEmoji = new Emoji(":calendar_spiral:");
+            Emoji upEmoji = new(emojis["arrowUpRed"]);
+            Emoji downEmoji = new(emojis["arrowDownGreen"]);
+            Emoji neutralEmoji = new(emojis["neutral"]);
+            Emoji calendarEmoji = new(":calendar_spiral:");
             string chartImageUrl = Configuration.GetSection("images").GetSection("chart")["64"];
 
             int pageCount = 0;
@@ -189,22 +195,22 @@ namespace DolarBot.Services.Currencies
             }
             bool isSingleDate = startDate.Value.Date == endDate.Value.Date;
 
-            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            List<EmbedBuilder> embeds = new();
             for (int i = 0; i < historicalCurrencyValuesPages.Count; i++)
             {
                 IEnumerable<WorldCurrencyResponse> page = historicalCurrencyValuesPages.ElementAt(i);
 
-                StringBuilder sbField = new StringBuilder();
+                StringBuilder sbField = new();
                 for (int j = 0; j < page.Count(); j++)
                 {
                     WorldCurrencyResponse currencyValue = page.ElementAt(j);
-                    bool rateIsNumeric = decimal.TryParse(currencyValue.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal currencyRate);
+                    bool rateIsNumeric = decimal.TryParse(currencyValue.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal currencyRate);
 
                     Emoji fieldEmoji = isSingleDate ? calendarEmoji : neutralEmoji;
                     if (i > 0 || j > 0)
                     {
                         WorldCurrencyResponse previousCurrencyValue = j > 0 ? page.ElementAt(j - 1) : historicalCurrencyValuesPages.ElementAt(i - 1).Last();
-                        bool previousValueIsNumeric = decimal.TryParse(previousCurrencyValue.Valor, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal previousRate);
+                        bool previousValueIsNumeric = decimal.TryParse(previousCurrencyValue.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal previousRate);
                         if (rateIsNumeric && previousValueIsNumeric)
                         {
                             if (currencyRate >= previousRate)

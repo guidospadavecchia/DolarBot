@@ -21,7 +21,7 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(4)]
     [HelpTitle("Cotizaciones del Mundo")]
-    public class FiatCurrencyModule : BaseInteractiveModule
+    public class FiatCurrencyModule : BaseModule
     {
         #region Vars
         /// <summary>
@@ -57,6 +57,7 @@ namespace DolarBot.Modules.Commands
             {
                 WorldCurrencyResponse currencyResponse = await FiatCurrencyService.GetCurrencyValue(currencyCode);
                 EmbedBuilder embed = await FiatCurrencyService.CreateWorldCurrencyEmbedAsync(currencyResponse, worldCurrencyCode.Name);
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             else
@@ -101,16 +102,18 @@ namespace DolarBot.Modules.Commands
         /// <summary>
         /// Replies with a message indicating one of the date parameters was not correcly specified.
         /// </summary>
-        /// <param name="userInput">The user input.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
         private async Task SendInvalidDateRangeParametersAsync(DateTime? startDate, DateTime? endDate)
         {
-            await ReplyAsync($"La fecha desde ({Format.Code((startDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}) debe ser menor o igual a la fecha hasta ({Format.Code((endDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}).");
+            await ReplyAsync($"La fecha desde ({Format.Code((startDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}) debe ser {Format.Bold("menor o igual")} a la fecha hasta ({Format.Code((endDate?.Date ?? DateTime.Now.Date).ToString("dd/MM/yyyy"))}) y el rango debe ser {Format.Bold("menor")} a {Format.Code("1 año")}.");
         }
 
         /// <summary>
         /// Replies with a message indicating one of the date parameters was not correcly specified.
         /// </summary>
-        /// <param name="userInput">The user input.</param>
+        /// <param name="startDate">The start date.</param>
+        /// <param name="endDate">The end date.</param>
         private async Task SendNoDataForRangeAsync(DateTime? startDate, DateTime? endDate)
         {
             await ReplyAsync($"No hay datos históricos para el rango de fechas {Format.Code((startDate?.Date ?? DateTime.Now).ToString("dd/MM/yyyy"))} - {Format.Code((endDate?.Date ?? DateTime.Now).ToString("dd/MM/yyyy"))}.");
@@ -146,7 +149,7 @@ namespace DolarBot.Modules.Commands
                     int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
                     string currencyCommand = GetType().GetMethod(nameof(GetCurrencies)).GetCustomAttributes(true).OfType<CommandAttribute>().First().Text;
 
-                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username);
+                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username, true);
                     await SendPagedReplyAsync(embeds, true);
                     typingState.Dispose();
 
@@ -206,7 +209,10 @@ namespace DolarBot.Modules.Commands
                             {
                                 if (string.IsNullOrWhiteSpace(fechaHasta) || FiatCurrencyService.ParseDate(fechaHasta, out endDate))
                                 {
-                                    if ((startDate?.Date ?? DateTime.Now) <= (endDate?.Date ?? DateTime.Now))
+                                    DateTime dateFrom = startDate?.Date ?? DateTime.Now;
+                                    DateTime dateTo = endDate?.Date ?? DateTime.Now;
+                                    TimeSpan oneYear = TimeSpan.FromDays(365);
+                                    if (dateFrom <= dateTo && (dateTo.Subtract(dateFrom) < oneYear))
                                     {
                                         List<WorldCurrencyResponse> historicalCurrencyValues = await FiatCurrencyService.GetHistoricalCurrencyValues(currencyCode, startDate, endDate);
                                         if (historicalCurrencyValues != null && historicalCurrencyValues.Count > 0)

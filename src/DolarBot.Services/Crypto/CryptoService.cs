@@ -266,19 +266,19 @@ namespace DolarBot.Services.Crypto
         public async Task<EmbedBuilder> CreateCryptoEmbedAsync(CryptoResponse cryptoResponse, string cryptoCurrencyName = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji cryptoEmoji = new Emoji(emojis["cryptoCoin"]);
-            Emoji argentinaEmoji = new Emoji(":flag_ar:");
-            Emoji usaEmoji = new Emoji(":flag_us:");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji cryptoEmoji = new(emojis["cryptoCoin"]);
+            Emoji argentinaEmoji = new(":flag_ar:");
+            Emoji usaEmoji = new(":flag_us:");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string thumbnailUrl = Configuration.GetSection("images").GetSection("crypto")[cryptoResponse.Currency?.ToString().ToLower() ?? "default"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string cryptoCode = cryptoResponse.Code.Length > 10 ? $"{cryptoResponse.Code.Substring(0, 7)}..." : cryptoResponse.Code;
             string lastUpdated = cryptoResponse.Fecha.ToString(cryptoResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal ars) ? ars.ToString($"N{(ars < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString($"N{(arsTaxed < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string usdPrice = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal usd) ? usd.ToString($"N{(usd < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal ars) ? ars.ToString($"N{(ars < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString($"N{(arsTaxed < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string usdPrice = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal usd) ? usd.ToString($"N{(usd < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
             string shareText = $"*{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})*{Environment.NewLine}{Environment.NewLine}Dólares: \t\tUS$ *{usdPrice}*{Environment.NewLine}Pesos: \t\t$ *{arsPrice}*{Environment.NewLine}Pesos c/Imp: \t$ *{arsPriceWithTaxes}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GetColor(cryptoResponse.Currency))
@@ -308,11 +308,10 @@ namespace DolarBot.Services.Crypto
         /// <returns>A list of embeds ready to be built.</returns>
         public List<EmbedBuilder> CreateCryptoListEmbedAsync(List<CryptoCodeResponse> currenciesList, string currencyCommand, bool isSubSearch, string username, string title = null, string description = null)
         {
-            string commandPrefix = Configuration["commandPrefix"];
             int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
 
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji cryptoEmoji = new Emoji(emojis["cryptoCoin"]);
+            Emoji cryptoEmoji = new(emojis["cryptoCoin"]);
             string coinsImageUrl = Configuration.GetSection("images").GetSection("crypto")["default"];
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
 
@@ -320,7 +319,7 @@ namespace DolarBot.Services.Crypto
             int totalPages = (int)Math.Ceiling(Convert.ToDecimal(currenciesList.Count) / CURRENCIES_PER_PAGE);
             List<IEnumerable<CryptoCodeResponse>> currenciesListPages = currenciesList.ChunkBy(CURRENCIES_PER_PAGE);
 
-            List<EmbedBuilder> embeds = new List<EmbedBuilder>();
+            List<EmbedBuilder> embeds = new();
             foreach (IEnumerable<CryptoCodeResponse> currenciesPage in currenciesListPages)
             {
                 List<IEnumerable<CryptoCodeResponse>> chunks = currenciesPage.ChunkBy(CURRENCIES_PER_PAGE / INLINE_FIELDS_PER_PAGE);
@@ -328,7 +327,7 @@ namespace DolarBot.Services.Crypto
                                      .WithColor(GlobalConfiguration.Colors.Crypto)
                                      .WithThumbnailUrl(coinsImageUrl)
                                      .WithTitle(title ?? "Criptomonedas disponibles")
-                                     .WithDescription(description ?? $"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"{commandPrefix}{currencyCommand}")}.")
+                                     .WithDescription(description ?? $"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"/{currencyCommand}")}.")
                                      .WithFooter($"Página {++pageCount} de {totalPages}");
                 foreach (IEnumerable<CryptoCodeResponse> chunk in chunks)
                 {
@@ -339,7 +338,48 @@ namespace DolarBot.Services.Crypto
                 embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold(username)}, para ver una cotización, respondé a este mensaje antes de las {Format.Bold(TimeZoneInfo.ConvertTime(DateTime.Now.AddSeconds(replyTimeout), localTimeZone).ToString("HH:mm:ss"))} con el {(!isSubSearch ? $"{Format.Bold("código")} ó " : string.Empty)}{Format.Bold("identificador")} de la criptomoneda.{Environment.NewLine}Por ejemplo: {Format.Code(currenciesList.First().Code)}.");
                 if (!isSubSearch)
                 {
-                    embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics($"Si ya sabés el identificador de la criptomoneda, podés indicárselo al comando directamente.{Environment.NewLine}Por ejemplo:")} {Format.Code($"{commandPrefix}{currencyCommand} {currenciesList.First().Code}")}.");
+                    embed = embed.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{Format.Bold("Tip")}: {Format.Italics($"Si ya sabés el identificador de la criptomoneda, podés indicárselo al comando directamente.{Environment.NewLine}Por ejemplo:")} {Format.Code($"/{currencyCommand} {currenciesList.First().Code}")}.");
+                }
+                embeds.Add(embed);
+            }
+
+            return embeds;
+        }
+
+        /// <summary>
+        /// Creates a collection of <see cref="EmbedBuilder"/> objects representing a list of cryptocurrency codes.
+        /// </summary>
+        /// <param name="currenciesList">A collection of <see cref="CryptoCodeResponse"/> objects.</param>
+        /// <param name="currencyCommand">The executing currency command.</param>
+        /// <returns>A list of embeds ready to be built.</returns>
+        public List<EmbedBuilder> CreateCryptoListEmbedAsync(List<CryptoCodeResponse> currenciesList, string currencyCommand)
+        {
+            string commandPrefix = Configuration["commandPrefix"];
+            int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
+
+            var emojis = Configuration.GetSection("customEmojis");
+            Emoji cryptoEmoji = new(emojis["cryptoCoin"]);
+            string coinsImageUrl = Configuration.GetSection("images").GetSection("crypto")["default"];
+            TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
+
+            int pageCount = 0;
+            int totalPages = (int)Math.Ceiling(Convert.ToDecimal(currenciesList.Count) / CURRENCIES_PER_PAGE);
+            List<IEnumerable<CryptoCodeResponse>> currenciesListPages = currenciesList.ChunkBy(CURRENCIES_PER_PAGE);
+
+            List<EmbedBuilder> embeds = new();
+            foreach (IEnumerable<CryptoCodeResponse> currenciesPage in currenciesListPages)
+            {
+                List<IEnumerable<CryptoCodeResponse>> chunks = currenciesPage.ChunkBy(CURRENCIES_PER_PAGE / INLINE_FIELDS_PER_PAGE);
+                EmbedBuilder embed = new EmbedBuilder()
+                                     .WithColor(GlobalConfiguration.Colors.Crypto)
+                                     .WithThumbnailUrl(coinsImageUrl)
+                                     .WithTitle("Criptomonedas disponibles")
+                                     .WithDescription($"Identificadores de criptomonedas disponibles para utilizar como parámetro del comando {Format.Code($"/{currencyCommand}")}.")
+                                     .WithFooter($"Página {++pageCount} de {totalPages}");
+                foreach (IEnumerable<CryptoCodeResponse> chunk in chunks)
+                {
+                    string currencyList = string.Join(Environment.NewLine, chunk.Select(x => $"{cryptoEmoji} {Format.Bold($"[{x.Symbol}]")} {Format.Code(x.Code)}: {Format.Italics(x.Name)}."));
+                    embed = embed.AddInlineField(GlobalConfiguration.Constants.BLANK_SPACE, currencyList);
                 }
                 embeds.Add(embed);
             }
@@ -352,7 +392,7 @@ namespace DolarBot.Services.Crypto
         /// </summary>
         /// <param name="cryptoCurrency">The cryptocurrency.</param>
         /// <returns>The corresponding color.</returns>
-        private Color GetColor(CryptoCurrencies? cryptoCurrency)
+        private static Color GetColor(CryptoCurrencies? cryptoCurrency)
         {
             return cryptoCurrency switch
             {

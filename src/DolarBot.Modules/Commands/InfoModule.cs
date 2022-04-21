@@ -22,11 +22,11 @@ namespace DolarBot.Modules.Commands
     /// </summary>
     [HelpOrder(99)]
     [HelpTitle("Información")]
-    public class InfoModule : BaseInteractiveModule
+    public class InfoModule : BaseModule
     {
         #region Vars
         /// <summary>
-        /// Provides methods to retrieve information about euro rates.
+        /// Provides methods to retrieve general information about the bot and the server.
         /// </summary>
         private readonly InfoService InfoService;
         #endregion
@@ -52,7 +52,7 @@ namespace DolarBot.Modules.Commands
         {
             try
             {
-                Emoji timeEmoji = new Emoji("\u23F0");
+                Emoji timeEmoji = new("\u23F0");
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
                 TimeZoneInfo localTimeZoneInfo = GlobalConfiguration.GetLocalTimeZoneInfo();
                 string localTimestamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, localTimeZoneInfo).ToString("yyyy/MM/dd - HH:mm:ss");
@@ -65,7 +65,8 @@ namespace DolarBot.Modules.Commands
                                      .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                      .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
                                      .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
-
+                
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
@@ -88,7 +89,8 @@ namespace DolarBot.Modules.Commands
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"El ID del servidor es {sid}");
-
+                
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
@@ -105,13 +107,11 @@ namespace DolarBot.Modules.Commands
             try
             {
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
-                string commandPrefix = Configuration["commandPrefix"];
-
                 EmbedBuilder embed = new EmbedBuilder()
                                      .WithTitle("Procesando...")
                                      .WithColor(GlobalConfiguration.Colors.Info);
 
-                Stopwatch sw = new Stopwatch();
+                Stopwatch sw = new();
                 sw.Start();
                 var message = await ReplyAsync(embed: embed.Build());
                 sw.Stop();
@@ -120,15 +120,16 @@ namespace DolarBot.Modules.Commands
                 string latency = $"{sw.ElapsedMilliseconds} ms";
                 await message.ModifyAsync(x =>
                 {
-                    Emoji pingEmoji = new Emoji("\uD83D\uDCE1");
-                    Emoji gatewayEmoji = new Emoji("\uD83D\uDEAA");
+                    Emoji pingEmoji = new("\uD83D\uDCE1");
+                    Emoji gatewayEmoji = new("\uD83D\uDEAA");
 
-                    embed.WithTitle($"Resultado del {Format.Code($"{commandPrefix}ping")}")
+                    embed.WithTitle($"Resultado del {Format.Code("ping")}")
                          .WithThumbnailUrl(infoImageUrl)
                          .AddInlineField("Tiempo de respuesta", $"{pingEmoji} {responseTime}")
                          .AddInlineField()
                          .AddInlineField("Latencia del gateway", $"{gatewayEmoji} {latency}");
 
+                    embed.AddCommandDeprecationNotice(Configuration);
                     x.Embed = embed.Build();
                 });
             }
@@ -148,6 +149,8 @@ namespace DolarBot.Modules.Commands
             {
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
                 string inviteLink = Configuration["inviteLink"];
+                var emojis = Configuration.GetSection("customEmojis");
+                Emoji dolarbotEmoji = new(emojis["dolarbot"]);
 
                 if (string.IsNullOrWhiteSpace(inviteLink))
                 {
@@ -155,11 +158,12 @@ namespace DolarBot.Modules.Commands
                 }
 
                 EmbedBuilder embed = new EmbedBuilder()
-                                     .WithTitle("DolarBot")
+                                     .WithTitle($"{dolarbotEmoji} DolarBot")
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
-                                     .WithDescription($"Invita al bot haciendo {Format.Url("click acá", inviteLink)}");
+                                     .WithDescription($"Invita al bot haciendo {Format.Url("click aquí", inviteLink)}");
 
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
@@ -178,13 +182,17 @@ namespace DolarBot.Modules.Commands
             {
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
                 string voteLink = Configuration["voteUrl"];
+                var emojis = Configuration.GetSection("customEmojis");
+                Emoji dolarbotEmoji = new(emojis["dolarbot"]);
+
 
                 EmbedBuilder embed = new EmbedBuilder()
-                                     .WithTitle("Votar")
+                                     .WithTitle($"{dolarbotEmoji} Votar")
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"Podes votar por {Format.Bold("DolarBot")} haciendo {Format.Url("click acá", voteLink)}. Gracias por tu apoyo!");
 
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
@@ -201,12 +209,12 @@ namespace DolarBot.Modules.Commands
             try
             {
                 var emojis = Configuration.GetSection("customEmojis");
-                Emoji blueHeartEmoji = new Emoji("\uD83D\uDC99");
-                Emoji versionEmoji = new Emoji(emojis["dolarbot"]);
-                Emoji supportServerEmoji = new Emoji("\uD83D\uDCAC");
-                Emoji checkEmoji = new Emoji("\u2705");
-                Emoji voteEmoji = new Emoji(emojis["arrowUpRed"]);
-                Emoji hourglassEmoji = new Emoji("\u23F3");
+                Emoji blueHeartEmoji = new("\uD83D\uDC99");
+                Emoji versionEmoji = new(emojis["dolarbot"]);
+                Emoji supportServerEmoji = new("\uD83D\uDCAC");
+                Emoji checkEmoji = new("\u2705");
+                Emoji voteEmoji = new(emojis["arrowUpRed"]);
+                Emoji hourglassEmoji = new("\u23F3");
 
                 Version version = Assembly.GetEntryAssembly().GetName().Version;
                 string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
@@ -226,12 +234,13 @@ namespace DolarBot.Modules.Commands
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"{versionEmoji} Versión {versionDescription}".AppendLineBreak())
                                      .AddField("Status", $"{checkEmoji} {Format.Bold("Online")} en {Format.Bold(serverCount.ToString())} {(serverCount > 1 ? "servidores" : "servidor")}".AppendLineBreak())
-                                     .AddField("Uptime", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
+                                     .AddField("Uptime (Desde último reinicio)", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
                                      .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor oficial de DolarBot", supportServerUrl)}".AppendLineBreak())
                                      .AddField("Web", InfoService.GetWebsiteEmbedDescription().AppendLineBreak())
                                      .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())
                                      .WithFooter($"Hecho con {blueHeartEmoji} en {RuntimeInformation.FrameworkDescription}");
 
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)
@@ -249,6 +258,7 @@ namespace DolarBot.Modules.Commands
             {
                 string statusText = await InfoService.GetApiStatus();
                 EmbedBuilder embed = InfoService.CreateStatusEmbed(statusText, Context.Client.Latency);
+                embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
             catch (Exception ex)

@@ -74,8 +74,8 @@ namespace DolarBot.Services.Venezuela
             string thumbnailUrl = Configuration.GetSection("images").GetSection("venezuela")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
-            decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
-            decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, Api.DolarBot.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
+            decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
+            decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
             string bancosValueText = bancosValue > 0 ? Format.Bold($"B$ {valorBancos.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
             string paraleloValueText = paraleloValue > 0 ? Format.Bold($"B$ {valorParalelo.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
             

@@ -17,8 +17,7 @@
 [![License](https://img.shields.io/github/license/guidospadavecchia/DolarBot?color=orange&style=flat-square)](https://github.com/guidospadavecchia/DolarBot/blob/master/LICENSE)  
 
 ## Descripción  
-**DolarBot** te permite ver todas las cotizaciones del **Dólar**, **Euro**, **Real**, metales preciosos, criptomonedas, indicadores económicos como riesgo país, reservas del BCRA y mucho más, en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `$`. A su vez, la mayoría de los comandos tienen un atajo que permite invocarlos más rápidamente.  
-La cantidad de comandos que puede ejecutar cada usuario está limitada a **1 comando cada 3 segundos**, ayudando a evitar sobrecargas innecesarias. Si ves que **DolarBot** no responde a tus comandos en un tiempo superior, es probable que haya algún **problema temporal** ajeno al mismo.
+**DolarBot** te permite ver todas las cotizaciones del **Dólar**, **Euro**, **Real**, metales preciosos, criptomonedas, indicadores económicos como riesgo país, reservas del BCRA y mucho más, en un mismo lugar, y desde la comodidad de tu servidor de Discord. El prefijo para invocar cualquier comando con el bot es `/`. Para ver todos los comandos disponibles, ejecutá `/ayuda`.
 
 ## Discord
 Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot). Las versiones ofrecidas en este repositorio existen únicamente para aquellos que deseen hostear su propia instancia.
@@ -27,98 +26,70 @@ Podés invitar al bot a tu servidor haciendo [click acá](https://discord.com/ap
 A continuación se listan los comandos disponibles:
 
 ### Ayuda
-- \[`$ayuda` | `$a`]: Muestra los comandos disponibles.  
-- \[`$ayudadm` | `$adm`]: Envía la ayuda por mensaje privado.  
-- \[`$ayuda` | `$a`] `<comando>`: Muestra información sobre un comando particular.  
-- \[`$ayudadm` | `$adm`] `<comando>`: Envía la ayuda de un comando particular por mensaje privado.  
+- \[`/ayuda`]: Muestra los comandos disponibles.  
+- \[`/ayuda`] `<comando>`: Muestra información sobre un comando particular.  
 
 ### Cotizaciones del dólar
-- \[`$dolar` | `$d`]: Muestra todas las cotizaciones del dólar disponibles.  
-- \[`$dolar` | `$d`] `<banco>`: Muestra la cotización del dólar oficial para un banco puntual (Ver `$bancos dolar`).  
-- \[`$dolar` | `$d`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos dolar`).
-- \[`$dolaroficial` | `$do`]: Muestra la cotización del dólar oficial.  
-- \[`$dolarahorro` | `$da`]: Muestra la cotización del dólar ahorro (dólar oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$dolarblue` | `$db`]: Muestra la cotización del dólar blue.  
-- \[`$dolarpromedio` | `$dp`]: Muestra el promedio de las cotizaciones bancarias del dólar oficial.  
-- \[`$dolarbolsa` | `$dbo`]: Muestra la cotización del dólar bolsa (MEP).  
-- \[`$contadoconliqui` | `$ccl`]: Muestra la cotización del dólar contado con liquidación.  
+- \[`/dolar`]: Muestra todas las cotizaciones del dólar.  
+- \[`/dolar`] `<tipo>`: Muestra la cotización del dólar según el tipo especificado.  
+- \[`/dolar-bancos`]: Muestra todas las cotizaciones bancarias del dólar.  
+- \[`/dolar-bancos`] `<banco>`: Muestra la cotización del dólar del banco especificado.  
 
 ### Cotizaciones del Euro
-- \[`$euro` | `$e`]: Muestra todas las cotizaciones del Euro oficial para los bancos disponibles.  
-- \[`$euro` | `$e`] `<banco>`: Muestra la cotización del Euro oficial para un banco puntual (Ver `$bancos euro`).  
-- \[`$euro` | `$e`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos euro`).  
-- \[`$eurooficial` | `$eo`]: Muestra la cotización del Euro oficial.  
-- \[`$euroahorro` | `$ea`]: Muestra la cotización del Euro ahorro (Euro oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$euroblue` | `$eb`]: Muestra la cotización del Euro blue. 
+- \[`/euro`]: Muestra todas las cotizaciones del Euro.  
+- \[`/euro`] `<tipo>`: Muestra la cotización del Euro según el tipo especificado.  
+- \[`/euro-bancos`]: Muestra todas las cotizaciones bancarias del Euro.  
+- \[`/euro-bancos`] `<banco>`: Muestra la cotización del Euro del banco especificado. 
 
 ### Cotizaciones del Real
-- \[`$real` | `$r`]: Muestra todas las cotizaciones del Real oficial para los bancos disponibles.  
-- \[`$real` | `$r`] `<banco>`: Muestra la cotización del Real oficial para un banco puntual (Ver `$bancos real`).  
-- \[`$real` | `$r`] `bancos`: Muestra la cotización de todos los bancos (Ver `$bancos real`).  
-- \[`$realoficial` | `$ro`]: Muestra la cotización del Real oficial.  
-- \[`$realahorro` | `$ra`]: Muestra la cotización del Real ahorro (Real oficial más impuesto P.A.I.S. y retención de ganancias).  
-- \[`$realblue` | `$rb`]: Muestra la cotización del Real blue. 
+- \[`/real`]: Muestra todas las cotizaciones del Real.  
+- \[`/real`] `<tipo>`: Muestra la cotización del Real según el tipo especificado.  
+- \[`/real-bancos`]: Muestra todas las cotizaciones bancarias del Real.  
+- \[`/real-bancos`] `<banco>`: Muestra la cotización del Real del banco especificado. 
 
 ### Monedas del mundo
-- \[`$moneda` | `$m`]: Muestra la lista de todos los códigos de monedas disponibles.  
-- \[`$moneda <codigo>` | `$m <codigo>`]: Muestra la cotización actual de una moneda determinada (ver `$moneda`).   
-- \[`$historico <codigo>` | `$h <codigo>`]: Muestra valores históricos entre fechas para una moneda determinada (ver `$moneda`).  
+- \[`/cotizacion`]: Muestra la lista de todas las monedas del mundo disponibles.  
+- \[`/cotizacion`] `<codigo>`: Muestra la cotización actual de una moneda según su código.  
+- \[`/historico`] `<moneda>` `<desde>` `<hasta>`: Muestra valores históricos entre fechas para una moneda determinada (ver `/cotizacion`).  
 
 ### Metales
-- \[`$oro`]: Muestra la cotización internacional del Oro.  
-- \[`$plata`]: Muestra la cotización internacional de la Plata.  
-- \[`$cobre`]: Muestra la cotización internacional del Cobre.  
+- \[`/oro`]: Muestra la cotización internacional del Oro.  
+- \[`/plata`]: Muestra la cotización internacional de la Plata.  
+- \[`/cobre`]: Muestra la cotización internacional del Cobre.  
 
 ### Criptomonedas
-- \[`$crypto` | `$ct`]: Muestra la lista de todos los códigos de criptomonedas disponibles.  
-- \[`$crypto <codigo>` | `$ct <codigo>`]: Muestra la cotización actual de una criptomoneda determinada (ver `$crypto`).  
-- \[`$binance` | `$bnb`]: Muestra la cotización del **Binance Coin (BNB)** en pesos y dólares.  
-- \[`$bitcoin` | `$btc`]: Muestra la cotización del **Bitcoin (BTC)** en pesos y dólares.  
-- \[`$bitcoincash` | `$bch`]: Muestra la cotización del **Bitcoin Cash (BCH)** en pesos y dólares.  
-- \[`$cardano` | `$ada`]: Muestra la cotización del **Cardano (ADA)** en pesos y dólares.  
-- \[`$chainlink` | `$link`]: Muestra la cotización del **Chainlink (LINK)** en pesos y dólares.  
-- \[`$dai`]: Muestra la cotización del **DAI (DAI)** en pesos y dólares.  
-- \[`$dogecoin` | `$doge`]: Muestra la cotización del **Dogecoin (DOGE)** en pesos y dólares.  
-- \[`$ethereum` | `$eth`]: Muestra la cotización del **Ethereum (ETH)** en pesos y dólares.  
-- \[`$dash`]: Muestra la cotización del **Dash (DASH)** en pesos y dólares.  
-- \[`$litecoin` | `$ltc`]: Muestra la cotización del **Litecoin (LTC)** en pesos y dólares.  
-- \[`$monero` | `$xmr`]: Muestra la cotización del **Monero (XMR)** en pesos y dólares.  
-- \[`$polkadot` | `$dot`]: Muestra la cotización del **Polkadot (DOT)** en pesos y dólares.  
-- \[`$ripple` | `$xrp`]: Muestra la cotización del **Ripple (XRP)** en pesos y dólares.  
-- \[`$stellar` | `$xlm`]: Muestra la cotización del **Stellar (XLM)** en pesos y dólares.  
-- \[`$tether` | `$usdt`]: Muestra la cotización del **Tether (USDT)** en pesos y dólares.  
-- \[`$theta`]: Muestra la cotización del **Theta (THETA)** en pesos y dólares.  
-- \[`$uniswap` | `$uni`]: Muestra la cotización del **Uniswap (UNI)** en pesos y dólares.  
+- \[`/crypto`]: Muestra la lista de todos los códigos de criptomonedas disponibles.  
+- \[`/crypto`] `<codigo>`: Muestra la cotización actual de una criptomoneda determinada según su código.  
+- \[`/crypto`] `<nombre>`: Muestra la cotización actual de una criptomoneda determinada según su nombre.  
 
 ### Indicadores
-- \[`$riesgopais` | `$rp`]: Muestra el valor del riesgo país.  
-- \[`$reservas` | `$rs`]: Muestra la cantidad total de reservas en dólares del BCRA a la fecha.  
-- \[`$circulante` | `$c`]: Muestra la cantidad total de pesos en circulación a la fecha.  
+- \[`/riesgopais`]: Muestra el valor del riesgo país.  
+- \[`/reservas`]: Muestra la cantidad total de reservas en dólares del BCRA a la fecha.  
+- \[`/circulante`]: Muestra la cantidad total de pesos en circulación a la fecha.  
 
 ### Cotizaciones Venezuela
-- \[`$bolivardolar` | `$bd`]: Muestra las distintas cotizaciones del dólar en Venezuela, expresadas en bolívares.  
-- \[`$bolivareuro` | `$be`]: Muestra las distintas cotizaciones del Euro en Venezuela, expresadas en bolívares.  
+- \[`/bolivar-dolar`]: Muestra las distintas cotizaciones del dólar en Venezuela, expresadas en bolívares.  
+- \[`/bolivar-euro`]: Muestra las distintas cotizaciones del Euro en Venezuela, expresadas en bolívares.  
 
 ### Evolución
-- \[`$evolucion` | `$ev`] `<cotizacion>`: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles. Para ver todos los parámetros disponibles para este comando, ejecutar `$evolucion`.
+- \[`/evolucion`] `<cotizacion>`: Muestra la evolución mensual anualizada de las distintas cotizaciones disponibles.
 
 ### Información
-- \[`$hora` | `$date`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  
-- \[`$sid`]: Muestra el ID del servidor de Discord actual.  
-- \[`$ping`]: Muestra la latencia del bot de Discord.  
-- \[`$invite` | `$invitar`]: Devuelve el link de invitación del bot en Discord.  
-- \[`$bot`]: Muestra información acerca del bot.  
-- \[`$status`]: Muestra el estado actual del bot y sus servicios.  
-- \[`$votar` | `$vote`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
+- \[`/hora`]: Muestra la fecha y hora del bot y del servidor donde se aloja.  
+- \[`/server-id`]: Muestra el ID del servidor de Discord actual.  
+- \[`/ping`]: Muestra la latencia del bot de Discord.  
+- \[`/invitar`]: Devuelve el link de invitación del bot en Discord.  
+- \[`/votar`]: Muestra el link para votar por **DolarBot** en **top.gg**.  
+- \[`/bot`]: Muestra información acerca del bot.  
+- \[`/status`]: Muestra el estado actual del bot y sus servicios.  
 
 ### Otros
-- \[`$bancos`]: Muestra la lista de bancos disponibles para cada una de las monedas principales (Dólar, Euro y Real).  
-- \[`$frase` | `$f`]: Muestra una frase célebre acerca de la economía argentina.  
+- \[`/bancos`]: Muestra la lista de bancos disponibles para cada una de las monedas principales (Dólar, Euro y Real).  
+- \[`/frase`]: Muestra una frase célebre acerca de la economía argentina.  
 
 ## Librerías
-- [Discord.NET](https://github.com/discord-net/Discord.Net)
-- [Discord.Addons](https://github.com/Joe4evr/Discord.Addons)
-- [Discord.Addons.Interactive](https://github.com/PassiveModding/Discord.Addons.Interactive)
+- [Discord.Net](https://github.com/discord-net/Discord.Net)
+- [Fergun.Interactive](https://github.com/d4n3436/Fergun.Interactive)
 - [DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)
 
 ## APIS

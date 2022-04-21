@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -71,25 +72,29 @@ namespace DolarBot.Modules.Handlers
                 return;
             }
 
-            SocketCommandContext context = new(Client, message);
-            int argPos = default;
-            if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
+            bool isValidIntentDate = DateTime.TryParseExact(Configuration["messageContentPrivilegedIntentDate"], "yyyy-M-d", null, DateTimeStyles.None, out DateTime messageContentPrivilegedIntentDate);
+            if (!isValidIntentDate || DateTime.Now.Date <= messageContentPrivilegedIntentDate.Date)
             {
-                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
-                if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+                SocketCommandContext context = new(Client, message);
+                int argPos = default;
+                if (!context.IsPrivate && message.HasStringPrefix(Configuration["commandPrefix"], ref argPos))
                 {
-                    switch (result.Error)
+                    IResult result = await Commands.ExecuteAsync(context, argPos, Services);
+                    if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     {
-                        case CommandError.BadArgCount:
-                            await ProcessBadArgCount(context, argPos);
-                            break;
-                        case CommandError.Exception:
-                        case CommandError.Unsuccessful:
-                        case CommandError.ParseFailed:
-                            ProcessCommandError(result);
-                            break;
-                        default:
-                            break;
+                        switch (result.Error)
+                        {
+                            case CommandError.BadArgCount:
+                                await ProcessBadArgCount(context, argPos);
+                                break;
+                            case CommandError.Exception:
+                            case CommandError.Unsuccessful:
+                            case CommandError.ParseFailed:
+                                ProcessCommandError(result);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }

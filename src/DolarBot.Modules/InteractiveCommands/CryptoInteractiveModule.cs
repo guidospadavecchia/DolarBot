@@ -129,7 +129,7 @@ namespace DolarBot.Modules.InteractiveCommands
                     else
                     {
                         List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
-                        string cryptoCurrencyCode = symbol != null ? Format.Sanitize(symbol).ToUpper().Trim() : Format.Sanitize(name).ToUpper().Trim();
+                        string cryptoCurrencyCode = symbol != null ? Format.Sanitize(symbol).ToUpper().Trim() : name != null ? Format.Sanitize(name).ToUpper().Trim() : null;
                         await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
                     }
                 }

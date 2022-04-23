@@ -101,15 +101,15 @@ namespace DolarBot.Services.Info
         public StringBuilder GetWebsiteEmbedDescription()
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji websiteEmoji = new Emoji(emojis["web"]);
-            Emoji githubEmoji = new Emoji(emojis["github"]);
-            Emoji playStoreEmoji = new Emoji(emojis["playStore"]);
+            Emoji websiteEmoji = new(emojis["web"]);
+            Emoji githubEmoji = new(emojis["github"]);
+            Emoji playStoreEmoji = new(emojis["playStore"]);
 
             string websiteUrl = Configuration["websiteUrl"];
             string githubUrl = Configuration["githubUrl"];
             string playStoreUrl = Configuration["playStoreLink"];
 
-            StringBuilder websiteDescription = new StringBuilder();
+            StringBuilder websiteDescription = new();
             if (!string.IsNullOrWhiteSpace(websiteUrl))
             {
                 websiteDescription.AppendLine($"{websiteEmoji} {Format.Url("Sitio web", websiteUrl)}");

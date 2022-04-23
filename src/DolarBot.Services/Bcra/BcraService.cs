@@ -1,6 +1,8 @@
 ﻿using Discord;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -8,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using BcraValues = DolarBot.API.ApiCalls.DolarBotApi.BcraValues;
 
 namespace DolarBot.Services.Bcra
 {
@@ -47,7 +48,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="BcraResponse"/> object.</returns>
         public async Task<BcraResponse> GetReserves()
         {
-            return await Api.DolarBot.GetBcraValue(BcraValues.Reservas);
+            return await Api.DolarBot.GetBcraValue(BcraIndicatorsEndpoints.Reservas);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace DolarBot.Services.Bcra
         /// <returns>A <see cref="BcraResponse"/> object.</returns>
         public async Task<BcraResponse> GetCirculatingMoney()
         {
-            return await Api.DolarBot.GetBcraValue(BcraValues.Circulante);
+            return await Api.DolarBot.GetBcraValue(BcraIndicatorsEndpoints.Circulante);
         }
 
         #endregion
@@ -71,15 +72,15 @@ namespace DolarBot.Services.Bcra
         public async Task<EmbedBuilder> CreateCountryRiskEmbedAsync(CountryRiskResponse riesgoPaisResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji chartEmoji = new Emoji("\uD83D\uDCC8");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji chartEmoji = new("\uD83D\uDCC8");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
             string riskImageUrl = Configuration.GetSection("images").GetSection("risk")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = riesgoPaisResponse.Fecha.ToString(riesgoPaisResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(riesgoPaisResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out double valor);
             string value;
             if (isNumber)
             {
@@ -115,15 +116,15 @@ namespace DolarBot.Services.Bcra
         public async Task<EmbedBuilder> CreateReservesEmbedAsync(BcraResponse bcraResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji moneyBagEmoji = new Emoji(":moneybag:");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji moneyBagEmoji = new(":moneybag:");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
             string reservesImageUrl = Configuration.GetSection("images").GetSection("reserves")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = bcraResponse.Fecha.ToString(bcraResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out double valor);
             string text;
             string value;
             if (isNumber)
@@ -163,15 +164,15 @@ namespace DolarBot.Services.Bcra
         public async Task<EmbedBuilder> CreateCirculatingMoneyEmbedAsync(BcraResponse bcraResponse)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji circulatingMoneyEmoji = new Emoji(":money_with_wings:");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji circulatingMoneyEmoji = new(":money_with_wings:");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
             string reservesImageUrl = Configuration.GetSection("images").GetSection("money")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = bcraResponse.Fecha.ToString(bcraResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out double valor);
+            bool isNumber = double.TryParse(bcraResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out double valor);
             string text;
             string value;
             if (isNumber)

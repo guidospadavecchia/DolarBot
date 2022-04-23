@@ -1,7 +1,7 @@
-﻿using DolarBot.API.Models.Base;
+﻿using DolarBot.API.Enums;
+using DolarBot.API.Models.Base;
 using Newtonsoft.Json;
 using System;
-using DollarTypes = DolarBot.API.ApiCalls.DolarBotApi.DollarTypes;
 
 namespace DolarBot.API.Models
 {
@@ -9,6 +9,6 @@ namespace DolarBot.API.Models
     public class DollarResponse : CurrencyResponse
     {
         [JsonIgnore]
-        public DollarTypes Type { get; set; }
+        public DollarEndpoints Type { get; set; }
     }
 }

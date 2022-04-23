@@ -36,7 +36,7 @@ namespace DolarBot.Modules.Commands
         #region Methods
 
         /// <inheritdoc />
-        protected override DolarService CreateService(IConfiguration configuration, ApiCalls api) => new DolarService(configuration, api);
+        protected override DolarService CreateService(IConfiguration configuration, ApiCalls api) => new(configuration, api);
 
         /// <inheritdoc />
         protected override Currencies GetCurrentCurrency() => Currencies.Dolar;

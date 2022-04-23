@@ -1,6 +1,8 @@
 ﻿using Discord;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -10,7 +12,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarBotApi.HistoricalRatesParams;
 
 namespace DolarBot.Services.HistoricalRates
 {
@@ -39,7 +40,7 @@ namespace DolarBot.Services.HistoricalRates
         /// </summary>
         /// <param name="historicalRateParam">The type of historical rates to retrieve.</param>
         /// <returns>A single <see cref="HistoricalRatesResponse"/> object.</returns>
-        public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParams historicalRateParam)
+        public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParamEndpoints historicalRateParam)
         {
             return await Api.DolarBot.GetHistoricalRates(historicalRateParam);
         }
@@ -54,12 +55,12 @@ namespace DolarBot.Services.HistoricalRates
         /// <param name="historicalRatesResponse">The historical rates response to show.</param>
         /// <param name="historicalRatesParam">The parameter type for historical rates.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public EmbedBuilder CreateHistoricalRatesEmbed(HistoricalRatesResponse historicalRatesResponse, HistoricalRatesParams historicalRatesParam)
+        public EmbedBuilder CreateHistoricalRatesEmbed(HistoricalRatesResponse historicalRatesResponse, HistoricalRatesParamEndpoints historicalRatesParam)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji upEmoji = new Emoji(emojis["arrowUpRed"]);
-            Emoji downEmoji = new Emoji(emojis["arrowDownGreen"]);
-            Emoji neutralEmoji = new Emoji(emojis["neutral"]);
+            Emoji upEmoji = new(emojis["arrowUpRed"]);
+            Emoji downEmoji = new(emojis["arrowDownGreen"]);
+            Emoji neutralEmoji = new(emojis["neutral"]);
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
@@ -70,20 +71,20 @@ namespace DolarBot.Services.HistoricalRates
             Color embedColor = GetColor(historicalRatesParam);
             string lastUpdated = historicalRatesResponse.Fecha.ToString(historicalRatesResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
 
-            StringBuilder sbField = new StringBuilder();
+            StringBuilder sbField = new();
             var monthlyRates = historicalRatesResponse.Meses.OrderBy(x => Convert.ToInt32(x.Anio)).ThenBy(x => Convert.ToInt32(x.Mes));
             for (int i = 0; i < monthlyRates.Count(); i++)
             {
                 HistoricalMonthlyRate month = monthlyRates.ElementAt(i);
                 string monthName = GlobalConfiguration.GetLocalCultureInfo().DateTimeFormat.GetMonthName(Convert.ToInt32(month.Mes)).Capitalize();
-                bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal monthRate);
+                bool monthRateIsNumeric = decimal.TryParse(month.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal monthRate);
                 string monthRateText = monthRateIsNumeric ? monthRate.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
                 Emoji fieldEmoji = neutralEmoji;
                 if (i > 0)
                 {
                     HistoricalMonthlyRate previousMonth = monthlyRates.ElementAt(i - 1);
-                    bool previousMonthRateIsNumeric = decimal.TryParse(previousMonth.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal previousMonthRate);
+                    bool previousMonthRateIsNumeric = decimal.TryParse(previousMonth.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal previousMonthRate);
                     if (monthRateIsNumeric && previousMonthRateIsNumeric)
                     {
                         if (monthRate >= previousMonthRate)
@@ -123,17 +124,17 @@ namespace DolarBot.Services.HistoricalRates
         /// </summary>
         /// <param name="historicalRatesParam">The parameter type.</param>
         /// <returns>The embed's title.</returns>
-        private string GetTitle(HistoricalRatesParams historicalRatesParam)
+        private static string GetTitle(HistoricalRatesParamEndpoints historicalRatesParam)
         {
             return historicalRatesParam switch
             {
-                HistoricalRatesParams.Dolar => $"Evolución mensual del dólar oficial",
-                HistoricalRatesParams.DolarAhorro => $"Evolución mensual del dólar ahorro",
-                HistoricalRatesParams.DolarBlue => $"Evolución mensual del dólar blue",
-                HistoricalRatesParams.Euro => $"Evolución mensual del Euro",
-                HistoricalRatesParams.EuroAhorro => $"Evolución mensual del Euro ahorro",
-                HistoricalRatesParams.Real => $"Evolución mensual del Real",
-                HistoricalRatesParams.RealAhorro => $"Evolución mensual del Real ahorro",
+                HistoricalRatesParamEndpoints.Dolar => $"Evolución mensual del dólar oficial",
+                HistoricalRatesParamEndpoints.DolarAhorro => $"Evolución mensual del dólar ahorro",
+                HistoricalRatesParamEndpoints.DolarBlue => $"Evolución mensual del dólar blue",
+                HistoricalRatesParamEndpoints.Euro => $"Evolución mensual del Euro",
+                HistoricalRatesParamEndpoints.EuroAhorro => $"Evolución mensual del Euro ahorro",
+                HistoricalRatesParamEndpoints.Real => $"Evolución mensual del Real",
+                HistoricalRatesParamEndpoints.RealAhorro => $"Evolución mensual del Real ahorro",
                 _ => throw new NotImplementedException()
             };
         }
@@ -143,17 +144,17 @@ namespace DolarBot.Services.HistoricalRates
         /// </summary>
         /// <param name="historicalRatesParam">The parameter type.</param>
         /// <returns>The embed's description.</returns>
-        private string GetDescription(HistoricalRatesParams historicalRatesParam)
+        private static string GetDescription(HistoricalRatesParamEndpoints historicalRatesParam)
         {
             return historicalRatesParam switch
             {
-                HistoricalRatesParams.Dolar => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar oficial")}, expresadas en {Format.Bold("pesos argentinos")}.",
-                HistoricalRatesParams.DolarAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar oficial")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
-                HistoricalRatesParams.DolarBlue => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar blue")}, expresadas en {Format.Bold("pesos argentinos")}.",
-                HistoricalRatesParams.Euro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Euro")}, expresadas en {Format.Bold("pesos argentinos")}.",
-                HistoricalRatesParams.EuroAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Euro")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
-                HistoricalRatesParams.Real => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Real")}, expresadas en {Format.Bold("pesos argentinos")}.",
-                HistoricalRatesParams.RealAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Real")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.Dolar => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar oficial")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.DolarAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar oficial")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.DolarBlue => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("dólar blue")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.Euro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Euro")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.EuroAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Euro")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.Real => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Real")}, expresadas en {Format.Bold("pesos argentinos")}.",
+                HistoricalRatesParamEndpoints.RealAhorro => $"Evolución anual de las cotizaciones promedio por mes del {Format.Bold("Real")} con impuestos, expresadas en {Format.Bold("pesos argentinos")}.",
                 _ => throw new NotImplementedException()
             };
         }
@@ -163,20 +164,20 @@ namespace DolarBot.Services.HistoricalRates
         /// </summary>
         /// <param name="historicalRatesParam">The parameter type.</param>
         /// <returns>A <see cref="Color"/> object.</returns>
-        private Color GetColor(HistoricalRatesParams historicalRatesParam)
+        private static Color GetColor(HistoricalRatesParamEndpoints historicalRatesParam)
         {
             return historicalRatesParam switch
             {
-                HistoricalRatesParams.Dolar => GlobalConfiguration.Colors.Main,
-                HistoricalRatesParams.DolarAhorro => GlobalConfiguration.Colors.Main,
-                HistoricalRatesParams.DolarBlue => GlobalConfiguration.Colors.Main,
-                HistoricalRatesParams.Euro => GlobalConfiguration.Colors.Euro,
-                HistoricalRatesParams.EuroAhorro => GlobalConfiguration.Colors.Euro,
-                HistoricalRatesParams.Real => GlobalConfiguration.Colors.Real,
-                HistoricalRatesParams.RealAhorro => GlobalConfiguration.Colors.Real,
+                HistoricalRatesParamEndpoints.Dolar => GlobalConfiguration.Colors.Main,
+                HistoricalRatesParamEndpoints.DolarAhorro => GlobalConfiguration.Colors.Main,
+                HistoricalRatesParamEndpoints.DolarBlue => GlobalConfiguration.Colors.Main,
+                HistoricalRatesParamEndpoints.Euro => GlobalConfiguration.Colors.Euro,
+                HistoricalRatesParamEndpoints.EuroAhorro => GlobalConfiguration.Colors.Euro,
+                HistoricalRatesParamEndpoints.Real => GlobalConfiguration.Colors.Real,
+                HistoricalRatesParamEndpoints.RealAhorro => GlobalConfiguration.Colors.Real,
                 _ => throw new NotImplementedException()
             };
-        } 
+        }
         #endregion
 
         #endregion

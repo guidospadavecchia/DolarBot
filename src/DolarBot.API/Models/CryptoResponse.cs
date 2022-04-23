@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using DolarBot.API.Enums;
+using Newtonsoft.Json;
 using System;
-using CryptoCurrencies = DolarBot.API.ApiCalls.DolarBotApi.CryptoCurrencies;
 
 namespace DolarBot.API.Models
 {

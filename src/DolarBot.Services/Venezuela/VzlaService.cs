@@ -1,6 +1,8 @@
 ﻿using Discord;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -9,7 +11,6 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
-using VenezuelaTypes = DolarBot.API.ApiCalls.DolarBotApi.VenezuelaTypes;
 
 namespace DolarBot.Services.Venezuela
 {
@@ -39,7 +40,7 @@ namespace DolarBot.Services.Venezuela
         /// <returns>A <see cref="VzlaResponse"/> object.</returns>
         public async Task<VzlaResponse> GetDollarRates()
         {
-            return await Api.DolarBot.GetVzlaRates(VenezuelaTypes.Dollar);
+            return await Api.DolarBot.GetVzlaRates(VenezuelaEndpoints.Dollar);
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace DolarBot.Services.Venezuela
         /// <returns>A <see cref="VzlaResponse"/> object.</returns>
         public async Task<VzlaResponse> GetEuroRates()
         {
-            return await Api.DolarBot.GetVzlaRates(VenezuelaTypes.Euro);
+            return await Api.DolarBot.GetVzlaRates(VenezuelaEndpoints.Euro);
         }
 
         #endregion
@@ -64,9 +65,9 @@ namespace DolarBot.Services.Venezuela
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji currencyEmoji = GetEmoji(vzlaResponse.Type);
-            Emoji bankEmoji = new Emoji(":bank:");
-            Emoji moneyBagEmoji = new Emoji(":moneybag:");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji bankEmoji = new(":bank:");
+            Emoji moneyBagEmoji = new(":moneybag:");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -74,8 +75,8 @@ namespace DolarBot.Services.Venezuela
             string thumbnailUrl = Configuration.GetSection("images").GetSection("venezuela")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
-            decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
-            decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
+            decimal bancosValue = decimal.TryParse(vzlaResponse?.Bancos, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal valorBancos) ? valorBancos : 0;
+            decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
             string bancosValueText = bancosValue > 0 ? Format.Bold($"B$ {valorBancos.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
             string paraleloValueText = paraleloValue > 0 ? Format.Bold($"B$ {valorParalelo.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
             
@@ -112,12 +113,12 @@ namespace DolarBot.Services.Venezuela
         /// </summary>
         /// <param name="type">The type of conversion currency.</param>
         /// <returns>The corresponding name.</returns>
-        private string GetName(VenezuelaTypes type)
+        private static string GetName(VenezuelaEndpoints type)
         {
             return type switch
             {
-                VenezuelaTypes.Dollar => "Dólar",
-                VenezuelaTypes.Euro => "Euro",
+                VenezuelaEndpoints.Dollar => "Dólar",
+                VenezuelaEndpoints.Euro => "Euro",
                 _ => throw new NotImplementedException()
             };
         }
@@ -127,13 +128,12 @@ namespace DolarBot.Services.Venezuela
         /// </summary>
         /// <param name="type">The type of conversion currency.</param>
         /// <returns></returns>
-        private Emoji GetEmoji(VenezuelaTypes type)
+        private static Emoji GetEmoji(VenezuelaEndpoints type)
         {
-            var emojis = Configuration.GetSection("customEmojis");
             return type switch
             {
-                VenezuelaTypes.Dollar => new Emoji("\uD83D\uDCB5"),
-                VenezuelaTypes.Euro => new Emoji(":euro:"),
+                VenezuelaEndpoints.Dollar => new Emoji("\uD83D\uDCB5"),
+                VenezuelaEndpoints.Euro => new Emoji(":euro:"),
                 _ => throw new NotImplementedException()
             };
         }

@@ -19,7 +19,7 @@ namespace DolarBot.Services.Quotes
         /// <summary>
         /// Random generator.
         /// </summary>
-        private static readonly Random random = new Random();
+        private static readonly Random random = new();
 
         /// <summary>
         /// A collection of famous quotes.

@@ -1,6 +1,8 @@
 ﻿using Discord;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -8,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using Metal = DolarBot.API.ApiCalls.DolarBotApi.Metals;
 
 namespace DolarBot.Services.Metals
 {
@@ -38,7 +39,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetGoldPrice()
         {
-            return await Api.DolarBot.GetMetalRate(Metal.Gold);
+            return await Api.DolarBot.GetMetalRate(MetalEndpoints.Gold);
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetSilverPrice()
         {
-            return await Api.DolarBot.GetMetalRate(Metal.Silver);
+            return await Api.DolarBot.GetMetalRate(MetalEndpoints.Silver);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace DolarBot.Services.Metals
         /// <returns>A <see cref="MetalResponse"/> object.</returns>
         public async Task<MetalResponse> GetCopperPrice()
         {
-            return await Api.DolarBot.GetMetalRate(Metal.Copper);
+            return await Api.DolarBot.GetMetalRate(MetalEndpoints.Copper);
         }
 
         #endregion
@@ -72,17 +73,17 @@ namespace DolarBot.Services.Metals
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji metalEmoji = GetEmoji(metalResponse.Type);
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
             string thumbnailUrl = GetThumbnailUrl(metalResponse.Type);
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
-            decimal value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valor) ? valor : 0;
+            decimal value = decimal.TryParse(metalResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal valor) ? valor : 0;
             string valueText = value > 0 ? Format.Bold($"US$ {valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}") : "No informado";
-            string title = $"Cotización {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {GetName(metalResponse.Type).Capitalize()}";
-            string description = $"Valor internacional {(metalResponse.Type != Metal.Silver ? "del" : "de la")} {Format.Bold(GetName(metalResponse.Type).ToLower())} expresado en {Format.Bold("dólares")} por {Format.Bold(metalResponse.Unidad.ToLower())}.";
+            string title = $"Cotización {(metalResponse.Type != MetalEndpoints.Silver ? "del" : "de la")} {GetName(metalResponse.Type).Capitalize()}";
+            string description = $"Valor internacional {(metalResponse.Type != MetalEndpoints.Silver ? "del" : "de la")} {Format.Bold(GetName(metalResponse.Type).ToLower())} expresado en {Format.Bold("dólares")} por {Format.Bold(metalResponse.Unidad.ToLower())}.";
             string lastUpdated = metalResponse.Fecha.ToString(metalResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
             string shareText = $"*{title}*{Environment.NewLine}{Environment.NewLine}US$ *{value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())} / {metalResponse.Unidad.ToLower()}*{Environment.NewLine}Hora: {lastUpdated} (UTC {utcOffset})";
 
@@ -108,14 +109,14 @@ namespace DolarBot.Services.Metals
         /// </summary>
         /// <param name="metal">The type of precious metal.</param>
         /// <returns>The corresponding thumbnail URL.</returns>
-        private string GetThumbnailUrl(Metal metal)
+        private string GetThumbnailUrl(MetalEndpoints metal)
         {
             var images = Configuration.GetSection("images");
             return metal switch
             {
-                Metal.Gold => images.GetSection("gold")["64"],
-                Metal.Silver => images.GetSection("silver")["64"],
-                Metal.Copper => images.GetSection("copper")["64"],
+                MetalEndpoints.Gold => images.GetSection("gold")["64"],
+                MetalEndpoints.Silver => images.GetSection("silver")["64"],
+                MetalEndpoints.Copper => images.GetSection("copper")["64"],
                 _ => throw new NotImplementedException()
             };
         }
@@ -125,14 +126,14 @@ namespace DolarBot.Services.Metals
         /// </summary>
         /// <param name="metal">The type of precious metal.</param>
         /// <returns>The corresponding <see cref="Emoji"/> object.</returns>
-        private Emoji GetEmoji(Metal metal)
+        private Emoji GetEmoji(MetalEndpoints metal)
         {
             var emojis = Configuration.GetSection("customEmojis");
             return metal switch
             {
-                Metal.Gold => new Emoji(emojis["goldCoin"]),
-                Metal.Silver => new Emoji(emojis["silverCoin"]),
-                Metal.Copper => new Emoji(emojis["copperCoin"]),
+                MetalEndpoints.Gold => new Emoji(emojis["goldCoin"]),
+                MetalEndpoints.Silver => new Emoji(emojis["silverCoin"]),
+                MetalEndpoints.Copper => new Emoji(emojis["copperCoin"]),
                 _ => throw new NotImplementedException()
             };
         }
@@ -142,13 +143,13 @@ namespace DolarBot.Services.Metals
         /// </summary>
         /// <param name="metal">The type of precious metal.</param>
         /// <returns>The corresponding name.</returns>
-        private string GetName(Metal metal)
+        private static string GetName(MetalEndpoints metal)
         {
             return metal switch
             {
-                Metal.Gold => "Oro",
-                Metal.Silver => "Plata",
-                Metal.Copper => "Cobre",
+                MetalEndpoints.Gold => "Oro",
+                MetalEndpoints.Silver => "Plata",
+                MetalEndpoints.Copper => "Cobre",
                 _ => throw new NotImplementedException()
             };
         }
@@ -158,13 +159,13 @@ namespace DolarBot.Services.Metals
         /// </summary>
         /// <param name="metal">The type of precious metal.</param>
         /// <returns>The corresponding color.</returns>
-        private Color GetColor(Metal metal)
+        private static Color GetColor(MetalEndpoints metal)
         {
             return metal switch
             {
-                Metal.Gold => GlobalConfiguration.Colors.Gold,
-                Metal.Silver => GlobalConfiguration.Colors.Silver,
-                Metal.Copper => GlobalConfiguration.Colors.Copper,
+                MetalEndpoints.Gold => GlobalConfiguration.Colors.Gold,
+                MetalEndpoints.Silver => GlobalConfiguration.Colors.Silver,
+                MetalEndpoints.Copper => GlobalConfiguration.Colors.Copper,
                 _ => throw new NotImplementedException()
             };
         }

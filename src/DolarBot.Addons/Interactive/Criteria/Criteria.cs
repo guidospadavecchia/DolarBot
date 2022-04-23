@@ -11,7 +11,7 @@ namespace Discord.Addons.Interactive
         /// <summary>
         /// The criteria.
         /// </summary>
-        private readonly List<ICriterion<T>> criteria = new List<ICriterion<T>>();
+        private readonly List<ICriterion<T>> criteria = new();
 
         /// <summary>
         /// adds a criterion

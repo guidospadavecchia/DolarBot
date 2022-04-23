@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using DolarBot.API.Enums;
+using Newtonsoft.Json;
 using System;
-using static DolarBot.API.ApiCalls.DolarBotApi;
 
 namespace DolarBot.API.Models
 {
@@ -13,6 +13,6 @@ namespace DolarBot.API.Models
         public string Cucuta { get; set; }
 
         [JsonIgnore]
-        public VenezuelaTypes Type;
+        public VenezuelaEndpoints Type;
     }
 }

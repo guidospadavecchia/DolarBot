@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
@@ -11,7 +12,6 @@ using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
-using static DolarBot.API.ApiCalls.DolarBotApi;
 
 namespace DolarBot.Modules.InteractiveCommands
 {
@@ -53,7 +53,7 @@ namespace DolarBot.Modules.InteractiveCommands
             {
                 try
                 {
-                    HistoricalRatesParams historicalRatesParam = Enum.Parse<HistoricalRatesParams>(historicalRatesChoice.ToString());
+                    HistoricalRatesParamEndpoints historicalRatesParam = Enum.Parse<HistoricalRatesParamEndpoints>(historicalRatesChoice.ToString());
                     HistoricalRatesResponse result = await HistoricalRatesService.GetHistoricalRates(historicalRatesParam);
                     if (result != null && result.Meses != null && result.Meses.Count > 0)
                     {

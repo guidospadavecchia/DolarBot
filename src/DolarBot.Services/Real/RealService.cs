@@ -1,6 +1,8 @@
 ﻿using Discord;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Base;
 using DolarBot.Util;
@@ -12,7 +14,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RealTypes = DolarBot.API.ApiCalls.DolarBotApi.RealTypes;
 
 namespace DolarBot.Services.Real
 {
@@ -60,16 +61,16 @@ namespace DolarBot.Services.Real
         /// </summary>
         /// <param name="bank">The value to convert.</param>
         /// <returns>The converted value as <see cref="RealTypes"/>.</returns>
-        private RealTypes ConvertToRealType(Banks bank)
+        private static RealEndpoints ConvertToRealType(Banks bank)
         {
             return bank switch
             {
-                Banks.Nacion => RealTypes.Nacion,
-                Banks.BBVA => RealTypes.BBVA,
-                Banks.Chaco => RealTypes.Chaco,
-                Banks.Piano => RealTypes.Piano,
-                Banks.Ciudad => RealTypes.Ciudad,
-                Banks.Supervielle => RealTypes.Supervielle,
+                Banks.Nacion => RealEndpoints.Nacion,
+                Banks.BBVA => RealEndpoints.BBVA,
+                Banks.Chaco => RealEndpoints.Chaco,
+                Banks.Piano => RealEndpoints.Piano,
+                Banks.Ciudad => RealEndpoints.Ciudad,
+                Banks.Supervielle => RealEndpoints.Supervielle,
                 _ => throw new ArgumentException("Unsupported Real type")
             };
         }
@@ -79,7 +80,7 @@ namespace DolarBot.Services.Real
         /// <inheritdoc />
         public override async Task<RealResponse> GetByBank(Banks bank)
         {
-            RealTypes realType = ConvertToRealType(bank);
+            RealEndpoints realType = ConvertToRealType(bank);
             return await Api.DolarBot.GetRealRate(realType);
         }
 
@@ -90,7 +91,7 @@ namespace DolarBot.Services.Real
             Task<RealResponse>[] tasks = new Task<RealResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {
-                RealTypes realType = ConvertToRealType(banks[i]);
+                RealEndpoints realType = ConvertToRealType(banks[i]);
                 tasks[i] = Api.DolarBot.GetRealRate(realType);
             }
 
@@ -109,7 +110,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealOficial()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Oficial);
+            return await Api.DolarBot.GetRealRate(RealEndpoints.Oficial);
         }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealAhorro()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Ahorro);
+            return await Api.DolarBot.GetRealRate(RealEndpoints.Ahorro);
         }
 
         /// <summary>
@@ -127,7 +128,7 @@ namespace DolarBot.Services.Real
         /// <returns>A single <see cref="RealResponse"/>.</returns>
         public async Task<RealResponse> GetRealBlue()
         {
-            return await Api.DolarBot.GetRealRate(RealTypes.Blue);
+            return await Api.DolarBot.GetRealRate(RealEndpoints.Blue);
         }
 
         #endregion
@@ -145,11 +146,11 @@ namespace DolarBot.Services.Real
         public override EmbedBuilder CreateEmbed(RealResponse[] realResponses, string description, string thumbnailUrl)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji realEmoji = new Emoji(emojis["real"]);
-            Emoji clockEmoji = new Emoji("\u23F0");
-            Emoji buyEmoji = new Emoji(emojis["buyYellow"]);
-            Emoji sellEmoji = new Emoji(emojis["sellYellow"]);
-            Emoji sellWithTaxesEmoji = new Emoji(emojis["sellWithTaxesYellow"]);
+            Emoji realEmoji = new(emojis["real"]);
+            Emoji clockEmoji = new("\u23F0");
+            Emoji buyEmoji = new(emojis["buyYellow"]);
+            Emoji sellEmoji = new(emojis["sellYellow"]);
+            Emoji sellWithTaxesEmoji = new(emojis["sellWithTaxesYellow"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -166,9 +167,9 @@ namespace DolarBot.Services.Real
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response.Type);
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
 
                 if (buyPrice != "?" || sellPrice != "?" || (sellWithTaxesPrice != null && sellWithTaxesPrice != "?"))
                 {
@@ -194,8 +195,8 @@ namespace DolarBot.Services.Real
         public override async Task<EmbedBuilder> CreateEmbedAsync(RealResponse realResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji realEmoji = new Emoji(emojis["real"]);
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji realEmoji = new(emojis["real"]);
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -204,8 +205,8 @@ namespace DolarBot.Services.Real
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(realResponse.Type);
             string lastUpdated = realResponse.Fecha.ToString(realResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             string buyInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}");
             string sellInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}");
@@ -220,7 +221,7 @@ namespace DolarBot.Services.Real
                                                    .AddInlineField("Venta", sellInlineField);
             if (realResponse.VentaAhorro != null)
             {
-                string sellPriceWithTaxes = decimal.TryParse(realResponse?.VentaAhorro, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPriceWithTaxes = decimal.TryParse(realResponse?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellWithTaxesInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPriceWithTaxes}");
                 embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
                 shareText += $"{Environment.NewLine}Venta c/imp: \t$ *{sellPriceWithTaxes}*";
@@ -238,13 +239,13 @@ namespace DolarBot.Services.Real
         /// </summary>
         /// <param name="realType">The real type.</param>
         /// <returns>The corresponding title.</returns>
-        private string GetTitle(RealTypes realType)
+        private static string GetTitle(RealEndpoints realType)
         {
             return realType switch
             {
-                RealTypes.Oficial => REAL_OFICIAL_TITLE,
-                RealTypes.Ahorro => REAL_AHORRO_TITLE,
-                RealTypes.Blue => REAL_BLUE_TITLE,
+                RealEndpoints.Oficial => REAL_OFICIAL_TITLE,
+                RealEndpoints.Ahorro => REAL_AHORRO_TITLE,
+                RealEndpoints.Blue => REAL_BLUE_TITLE,
                 _ => Enum.TryParse(realType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{realType}'."),
             };
         }

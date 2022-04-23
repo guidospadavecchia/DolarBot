@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Attributes;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto;
@@ -15,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static DolarBot.API.ApiCalls.DolarBotApi;
 
 namespace DolarBot.Modules.InteractiveCommands
 {

@@ -1,6 +1,8 @@
 ﻿using Discord;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Base;
 using DolarBot.Util;
@@ -12,7 +14,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EuroTypes = DolarBot.API.ApiCalls.DolarBotApi.EuroTypes;
 
 namespace DolarBot.Services.Euro
 {
@@ -66,24 +67,24 @@ namespace DolarBot.Services.Euro
         /// </summary>
         /// <param name="bank">The value to convert.</param>
         /// <returns>The converted value as <see cref="EuroTypes"/>.</returns>
-        private EuroTypes ConvertToEuroType(Banks bank)
+        private static EuroEndpoints ConvertToEuroType(Banks bank)
         {
             return bank switch
             {
-                Banks.Nacion => EuroTypes.Nacion,
-                Banks.Galicia => EuroTypes.Galicia,
-                Banks.BBVA => EuroTypes.BBVA,
-                Banks.Hipotecario => EuroTypes.Hipotecario,
-                Banks.Chaco => EuroTypes.Chaco,
-                Banks.Pampa => EuroTypes.Pampa,
-                Banks.Piano => EuroTypes.Piano,
-                Banks.Santander => EuroTypes.Santander,
-                Banks.Ciudad => EuroTypes.Ciudad,
-                Banks.Supervielle => EuroTypes.Supervielle,
-                Banks.Patagonia => EuroTypes.Patagonia,
-                Banks.Comafi => EuroTypes.Comafi,
-                Banks.Reba => EuroTypes.Reba,
-                Banks.Roela => EuroTypes.Roela,
+                Banks.Nacion => EuroEndpoints.Nacion,
+                Banks.Galicia => EuroEndpoints.Galicia,
+                Banks.BBVA => EuroEndpoints.BBVA,
+                Banks.Hipotecario => EuroEndpoints.Hipotecario,
+                Banks.Chaco => EuroEndpoints.Chaco,
+                Banks.Pampa => EuroEndpoints.Pampa,
+                Banks.Piano => EuroEndpoints.Piano,
+                Banks.Santander => EuroEndpoints.Santander,
+                Banks.Ciudad => EuroEndpoints.Ciudad,
+                Banks.Supervielle => EuroEndpoints.Supervielle,
+                Banks.Patagonia => EuroEndpoints.Patagonia,
+                Banks.Comafi => EuroEndpoints.Comafi,
+                Banks.Reba => EuroEndpoints.Reba,
+                Banks.Roela => EuroEndpoints.Roela,
                 _ => throw new ArgumentException("Unsupported Euro type")
             };
         }
@@ -93,7 +94,7 @@ namespace DolarBot.Services.Euro
         /// <inheritdoc />
         public override async Task<EuroResponse> GetByBank(Banks bank)
         {
-            EuroTypes euroType = ConvertToEuroType(bank);
+            EuroEndpoints euroType = ConvertToEuroType(bank);
             return await Api.DolarBot.GetEuroRate(euroType);
         }
 
@@ -110,7 +111,7 @@ namespace DolarBot.Services.Euro
             Task<EuroResponse>[] tasks = new Task<EuroResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {
-                EuroTypes euroType = ConvertToEuroType(banks[i]);
+                EuroEndpoints euroType = ConvertToEuroType(banks[i]);
                 tasks[i] = Api.DolarBot.GetEuroRate(euroType);
             }
 
@@ -123,7 +124,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroOficial()
         {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Oficial);
+            return await Api.DolarBot.GetEuroRate(EuroEndpoints.Oficial);
         }
 
         /// <summary>
@@ -132,7 +133,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroAhorro()
         {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Ahorro);
+            return await Api.DolarBot.GetEuroRate(EuroEndpoints.Ahorro);
         }
 
         /// <summary>
@@ -141,7 +142,7 @@ namespace DolarBot.Services.Euro
         /// <returns>A single <see cref="EuroResponse"/>.</returns>
         public async Task<EuroResponse> GetEuroBlue()
         {
-            return await Api.DolarBot.GetEuroRate(EuroTypes.Blue);
+            return await Api.DolarBot.GetEuroRate(EuroEndpoints.Blue);
         }
 
         #endregion
@@ -158,11 +159,11 @@ namespace DolarBot.Services.Euro
         /// <inheritdoc />
         public override EmbedBuilder CreateEmbed(EuroResponse[] euroResponses, string description, string thumbnailUrl)
         {
-            Emoji euroEmoji = new Emoji(":euro:");
-            Emoji clockEmoji = new Emoji("\u23F0");
-            Emoji buyEmoji = new Emoji(":regional_indicator_c:");
-            Emoji sellEmoji = new Emoji(":regional_indicator_v:");
-            Emoji sellWithTaxesEmoji = new Emoji(":regional_indicator_a:");
+            Emoji euroEmoji = new(":euro:");
+            Emoji clockEmoji = new("\u23F0");
+            Emoji buyEmoji = new(":regional_indicator_c:");
+            Emoji sellEmoji = new(":regional_indicator_v:");
+            Emoji sellWithTaxesEmoji = new(":regional_indicator_a:");
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -179,9 +180,9 @@ namespace DolarBot.Services.Euro
                 string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response.Type);
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
+                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
 
                 if (buyPrice != "?" || sellPrice != "?" || (sellWithTaxesPrice != null && sellWithTaxesPrice != "?"))
                 {
@@ -207,8 +208,8 @@ namespace DolarBot.Services.Euro
         public override async Task<EmbedBuilder> CreateEmbedAsync(EuroResponse euroResponse, string description, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji euroEmoji = new Emoji(":euro:");
-            Emoji whatsappEmoji = new Emoji(emojis["whatsapp"]);
+            Emoji euroEmoji = new(":euro:");
+            Emoji whatsappEmoji = new(emojis["whatsapp"]);
 
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
@@ -217,8 +218,8 @@ namespace DolarBot.Services.Euro
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(euroResponse.Type);
             string lastUpdated = euroResponse.Fecha.ToString(euroResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string buyPrice = decimal.TryParse(euroResponse?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = decimal.TryParse(euroResponse?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
             string buyInlineField = Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}");
             string sellInlineField = Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}");
@@ -233,7 +234,7 @@ namespace DolarBot.Services.Euro
                                                    .AddInlineField("Venta", sellInlineField);
             if (euroResponse.VentaAhorro != null)
             {
-                string sellPriceWithTaxes = decimal.TryParse(euroResponse?.VentaAhorro, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellPriceWithTaxes = decimal.TryParse(euroResponse?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellWithTaxesInlineField = Format.Bold($"{euroEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPriceWithTaxes}");
                 embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
                 shareText += $"{Environment.NewLine}Venta c/imp: \t$ *{sellPriceWithTaxes}*";
@@ -252,13 +253,13 @@ namespace DolarBot.Services.Euro
         /// </summary>
         /// <param name="euroType">The euro type.</param>
         /// <returns>The corresponding title.</returns>
-        private string GetTitle(EuroTypes euroType)
+        private static string GetTitle(EuroEndpoints euroType)
         {
             return euroType switch
             {
-                EuroTypes.Oficial => EURO_OFICIAL_TITLE,
-                EuroTypes.Ahorro => EURO_AHORRO_TITLE,
-                EuroTypes.Blue => EURO_BLUE_TITLE,                
+                EuroEndpoints.Oficial => EURO_OFICIAL_TITLE,
+                EuroEndpoints.Ahorro => EURO_AHORRO_TITLE,
+                EuroEndpoints.Blue => EURO_BLUE_TITLE,
                 _ => Enum.TryParse(euroType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{euroType}'."),
             };
         }

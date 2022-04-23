@@ -1,6 +1,7 @@
 ﻿using Discord;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Base;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -102,7 +103,7 @@ namespace DolarBot.Services.Currencies
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = worldCurrencyResponse.Fecha.ToString(worldCurrencyResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string value = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal valor) ? valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string value = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal valor) ? valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
 
             string shareText = $"*{currencyName} ({worldCurrencyResponse.Code})*{Environment.NewLine}{Environment.NewLine}Valor: \t$ *{value}*{Environment.NewLine}Hora: \t{lastUpdated} (UTC {utcOffset})";
@@ -204,13 +205,13 @@ namespace DolarBot.Services.Currencies
                 for (int j = 0; j < page.Count(); j++)
                 {
                     WorldCurrencyResponse currencyValue = page.ElementAt(j);
-                    bool rateIsNumeric = decimal.TryParse(currencyValue.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal currencyRate);
+                    bool rateIsNumeric = decimal.TryParse(currencyValue.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal currencyRate);
 
                     Emoji fieldEmoji = isSingleDate ? calendarEmoji : neutralEmoji;
                     if (i > 0 || j > 0)
                     {
                         WorldCurrencyResponse previousCurrencyValue = j > 0 ? page.ElementAt(j - 1) : historicalCurrencyValuesPages.ElementAt(i - 1).Last();
-                        bool previousValueIsNumeric = decimal.TryParse(previousCurrencyValue.Valor, NumberStyles.Any, ApiCalls.DolarBotApi.GetApiCulture(), out decimal previousRate);
+                        bool previousValueIsNumeric = decimal.TryParse(previousCurrencyValue.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal previousRate);
                         if (rateIsNumeric && previousValueIsNumeric)
                         {
                             if (currencyRate >= previousRate)

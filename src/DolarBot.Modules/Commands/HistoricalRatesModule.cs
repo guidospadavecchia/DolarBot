@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using HistoricalRatesParams = DolarBot.API.ApiCalls.DolarBotApi.HistoricalRatesParams;
+using DolarBot.API.Enums;
 
 namespace DolarBot.Modules.Commands
 {
@@ -60,7 +60,7 @@ namespace DolarBot.Modules.Commands
                     else
                     {
                         string userInput = Format.Sanitize(cotizacion).RemoveFormat(true);
-                        if (!userInput.IsNumeric() && Enum.TryParse(userInput, true, out HistoricalRatesParams historicalRateParam))
+                        if (!userInput.IsNumeric() && Enum.TryParse(userInput, true, out HistoricalRatesParamEndpoints historicalRateParam))
                         {
                             HistoricalRatesResponse result = await HistoricalRatesService.GetHistoricalRates(historicalRateParam);
                             if (result != null && result.Meses != null && result.Meses.Count > 0)
@@ -93,7 +93,7 @@ namespace DolarBot.Modules.Commands
         /// <returns>An error message.</returns>
         private static string GetEvolucionInvalidParamsMessage()
         {
-            string parameters = string.Join(", ", Enum.GetNames(typeof(HistoricalRatesParams)).Select(x => Format.Code(x.ToLower())));
+            string parameters = string.Join(", ", Enum.GetNames(typeof(HistoricalRatesParamEndpoints)).Select(x => Format.Code(x.ToLower())));
             return $"Debe especificar un parámetro válido para este comando. Las opciones disponibles son: {parameters}. Para más información, ejecute {Format.Code($"/ayuda evolucion")}.";
         }
     }

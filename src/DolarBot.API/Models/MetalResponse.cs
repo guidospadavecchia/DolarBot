@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using DolarBot.API.Enums;
+using Newtonsoft.Json;
 using System;
-using Metals = DolarBot.API.ApiCalls.DolarBotApi.Metals;
 
 namespace DolarBot.API.Models
 {
@@ -11,7 +11,7 @@ namespace DolarBot.API.Models
         public string Valor { get; set; }
         public string Unidad { get; set; }
         public string Moneda { get; set; }
-        [JsonIgnore] 
-        public Metals Type { get; set; }
+        [JsonIgnore]
+        public MetalEndpoints Type { get; set; }
     }
 }

@@ -69,7 +69,7 @@ namespace DolarBot
             string token = GlobalConfiguration.GetToken(Configuration);
 
             PrintCurrentVersion();
-            await RegisterEventsAsync(client, commandsService, interactionService, fergunInteractiveService, services);
+            await RegisterEventsAsync(client, api, commandsService, interactionService, fergunInteractiveService, services);
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
             await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
@@ -155,10 +155,9 @@ namespace DolarBot
         /// <param name="fergunInteractiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="services">A collection of services to use throughout the application.</param>
         /// <returns>A task with the result of the asynchronous operation.</returns>
-        private async Task RegisterEventsAsync(DiscordSocketClient client, CommandService commandsService, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, IServiceProvider services)
+        private async Task RegisterEventsAsync(DiscordSocketClient client, ApiCalls api, CommandService commandsService, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, IServiceProvider services)
         {
-
-            ClientHandler clientHandler = new(client, interactionService, Configuration, logger: logger, isDebug: Debugger.IsAttached);
+            ClientHandler clientHandler = new(client, api, interactionService, Configuration, logger: logger);
             CommandHandler commandHandler = new(client, commandsService, services, Configuration, logger);
             InteractionHandler interactionHandler = new(client, interactionService, fergunInteractiveService, services, logger);
 

@@ -1,13 +1,11 @@
 ﻿using Discord.Interactions;
 using Discord.WebSocket;
-using DiscordBotsList.Api;
-using DiscordBotsList.Api.Objects;
-using DolarBot.Modules.InteractiveCommands;
-using DolarBot.Util;
+using DolarBot.API;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +22,10 @@ namespace DolarBot.Modules.Handlers
         /// The current Discord client instance.
         /// </summary>
         private readonly DiscordSocketClient Client;
+        /// <summary>
+        /// The current Discord client instance.
+        /// </summary>
+        private readonly ApiCalls Api;
         /// <summary>
         /// Service which provides access to the available commands.
         /// </summary>
@@ -48,15 +50,17 @@ namespace DolarBot.Modules.Handlers
         /// Client handler constructor.
         /// </summary>
         /// <param name="client">The current <see cref="DiscordSocketClient"/>.</param>
+        /// <param name="api">The API interface instance.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/> object to access application settings.</param>
         /// <param name="logger">The log4net <see cref="ILog"/> instance.</param>
-        public ClientHandler(DiscordSocketClient client, InteractionService interactionService, IConfiguration configuration, ILog logger = null, bool isDebug = false)
+        public ClientHandler(DiscordSocketClient client, ApiCalls api, InteractionService interactionService, IConfiguration configuration, ILog logger = null)
         {
             Client = client;
+            Api = api;
             InteractionService = interactionService;
             Configuration = configuration;
             Logger = logger;
-            IsDebug = isDebug;
+            IsDebug = Debugger.IsAttached;
         }
         #endregion
 
@@ -69,7 +73,7 @@ namespace DolarBot.Modules.Handlers
         {
             try
             {
-                bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl;
+                bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl && !IsDebug;
                 Task updateStatsDbl = shouldUpdateDbl ? UpdateStatsDbl() : Task.CompletedTask;
                 Task updateServerLog = UpdateServerLogAsync(false);
 
@@ -157,18 +161,10 @@ namespace DolarBot.Modules.Handlers
             {
                 return Task.Run(async () =>
                 {
-                    string dblToken = GlobalConfiguration.GetDblToken(Configuration);
-                    bool isConfigured = ulong.TryParse(Configuration["botDiscordId"], out ulong botDiscordId) && !string.IsNullOrWhiteSpace(dblToken);
-                    if (isConfigured)
+                    bool posted = await Api.Topgg.PostServerCountAsync(Client.Guilds.Count);
+                    if (!posted)
                     {
-                        AuthDiscordBotListApi dblApi = new(botDiscordId, dblToken);
-                        IDblSelfBot self = await dblApi.GetMeAsync();
-
-                        var updateStatsTask = self.UpdateStatsAsync(Client.Guilds.Count);
-                    }
-                    else
-                    {
-                        Logger.Warn("Cannot update DBL stats: Not configured.");
+                        Logger.Warn("Could not update DBL stats. Check log for errors.");
                     }
                 });
             }

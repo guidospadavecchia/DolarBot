@@ -1,5 +1,4 @@
-﻿using DolarBot.API.Attributes;
-using DolarBot.API.Cache;
+﻿using DolarBot.API.Cache;
 using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.Util.Extensions;

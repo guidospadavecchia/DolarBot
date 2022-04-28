@@ -22,6 +22,6 @@
         public bool Backward { get; set; }
         public bool Jump { get; set; }
         public bool Trash { get; set; }
-        public bool Info { get; set; } 
+        public bool Info { get; set; }
     }
 }

@@ -1,10 +1,9 @@
 ﻿// ReSharper disable StyleCop.SA1600
 namespace Discord.Addons.Interactive
 {
+    using Discord.Commands;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-
-    using Discord.Commands;
 
     public class Criteria<T> : ICriterion<T>
     {

@@ -79,7 +79,7 @@ namespace DolarBot.Services.Venezuela
             decimal paraleloValue = decimal.TryParse(vzlaResponse?.Paralelo, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal valorParalelo) ? valorParalelo : 0;
             string bancosValueText = bancosValue > 0 ? Format.Bold($"B$ {valorBancos.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
             string paraleloValueText = paraleloValue > 0 ? Format.Bold($"B$ {valorParalelo.ToString("N2", GlobalConfiguration.GetLocalCultureInfo())}") : "No informado";
-            
+
             string title = $"{GetName(vzlaResponse.Type).Capitalize()} Venezuela";
             string description = new StringBuilder()
                                  .AppendLine($"Cotizaciones disponibles del {Format.Bold(GetName(vzlaResponse.Type))} expresadas en {Format.Bold("bolívares venezolanos")}.")

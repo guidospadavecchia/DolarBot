@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using DolarBot.API;
+using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DolarBot.API.Enums;
 
 namespace DolarBot.Modules.Commands
 {

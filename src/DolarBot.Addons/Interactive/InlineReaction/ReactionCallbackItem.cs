@@ -1,10 +1,9 @@
 ﻿namespace Discord.Addons.Interactive
 {
-    using System;
-    using System.Threading.Tasks;
-
     using Discord.Commands;
     using Discord.WebSocket;
+    using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The reaction callback item.

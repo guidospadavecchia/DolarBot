@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Discord;
+using System;
 using System.Text;
-using Discord;
 
 namespace DolarBot.Util.Extensions
 {

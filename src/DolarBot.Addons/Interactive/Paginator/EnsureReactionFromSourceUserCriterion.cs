@@ -1,10 +1,9 @@
 ﻿// ReSharper disable StyleCop.SA1600
 namespace Discord.Addons.Interactive
 {
-    using System.Threading.Tasks;
-
     using Discord.Commands;
     using Discord.WebSocket;
+    using System.Threading.Tasks;
 
     public class EnsureReactionFromSourceUserCriterion : ICriterion<SocketReaction>
     {

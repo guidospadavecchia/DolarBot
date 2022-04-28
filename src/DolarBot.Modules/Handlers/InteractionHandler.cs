@@ -3,7 +3,6 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Fergun.Interactive;
 using log4net;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
@@ -138,7 +137,7 @@ namespace DolarBot.Modules.Handlers
                     case InteractionCommandError.Exception:
                     case InteractionCommandError.Unsuccessful:
                     case InteractionCommandError.UnknownCommand:
-                        if(context.Interaction.Type != InteractionType.ModalSubmit)
+                        if (context.Interaction.Type != InteractionType.ModalSubmit)
                         {
                             ProcessCommandError(result);
                         }

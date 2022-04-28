@@ -1,11 +1,10 @@
 ﻿namespace Discord.Addons.Interactive
 {
+    using Discord.Commands;
+    using Discord.WebSocket;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-
-    using Discord.Commands;
-    using Discord.WebSocket;
 
     /// <summary>
     /// The interactive service.
@@ -49,7 +48,7 @@
             this.defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(15);
         }
 
-        
+
         /// <summary>
         /// Gets the client
         /// </summary>
@@ -88,7 +87,7 @@
 
             return NextMessageAsync(context, criterion, timeout);
         }
-        
+
         /// <summary>
         /// waits for the next message in the channel
         /// </summary>
@@ -113,7 +112,7 @@
             Task Func(SocketMessage m) => HandlerAsync(m, context, eventTrigger, criterion);
 
             context.Client.MessageReceived += Func;
-            
+
             var trigger = eventTrigger.Task;
             var delay = Task.Delay(timeout.Value);
             var task = await Task.WhenAny(trigger, delay).ConfigureAwait(false);
@@ -247,7 +246,7 @@
         /// Clears all reaction callbacks
         /// </summary>
         public void ClearReactionCallbacks() => callbacks.Clear();
-        
+
         /// <summary>
         /// Unsubscribes from a reactionHandler event
         /// </summary>

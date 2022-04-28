@@ -52,7 +52,7 @@ namespace DolarBot
             ConfigureAppSettings();
             ConfigureLogger();
             QuoteService.TryLoadQuotes();
-            
+
             ApiCalls api = new(Configuration, logger);
             DiscordSocketClient client = new(new DiscordSocketConfig()
             {
@@ -64,7 +64,7 @@ namespace DolarBot
             FergunInteractiveService fergunInteractiveService = new(client);
 
             using ServiceProvider services = ConfigureServices(client, commandsService, interactionService, fergunInteractiveService, api);
-            
+
             string commandPrefix = Configuration["commandPrefix"];
             string token = GlobalConfiguration.GetToken(Configuration);
 

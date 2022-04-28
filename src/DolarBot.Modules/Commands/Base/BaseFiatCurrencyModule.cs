@@ -66,7 +66,7 @@ namespace DolarBot.Modules.Commands.Base
                 TypeResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
                 EmbedBuilder embed = Service.CreateEmbed(successfulResponses);
                 embed.AddCommandDeprecationNotice(Configuration);
-                
+
                 if (responses.Length != successfulResponses.Length)
                 {
                     await ReplyAsync($"{Format.Bold("Atención")}: No se pudieron obtener algunas cotizaciones. Sólo se mostrarán aquellas que no presentan errores.");

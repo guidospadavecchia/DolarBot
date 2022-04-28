@@ -1,10 +1,9 @@
 ﻿namespace Discord.Addons.Interactive
 {
-    using System;
-    using System.Threading.Tasks;
-
     using Discord.Commands;
     using Discord.WebSocket;
+    using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The interactive base.
@@ -28,7 +27,7 @@
 
         public Task<SocketMessage> NextMessageAsync(ICriterion<SocketMessage> criterion, TimeSpan? timeout = null)
             => Interactive.NextMessageAsync(Context, criterion, timeout);
-        public Task<SocketMessage> NextMessageAsync(bool fromSourceUser = true, bool inSourceChannel = true, TimeSpan? timeout = null) 
+        public Task<SocketMessage> NextMessageAsync(bool fromSourceUser = true, bool inSourceChannel = true, TimeSpan? timeout = null)
             => Interactive.NextMessageAsync(Context, fromSourceUser, inSourceChannel, timeout);
 
         public Task<IUserMessage> ReplyAndDeleteAsync(string content, bool isTTS = false, Embed embed = null, TimeSpan? timeout = null, RequestOptions options = null)

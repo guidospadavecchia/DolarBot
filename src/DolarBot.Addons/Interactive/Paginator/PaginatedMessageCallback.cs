@@ -1,13 +1,12 @@
 ﻿// ReSharper disable StyleCop.SA1503
 namespace Discord.Addons.Interactive
 {
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-
     using Discord.Commands;
     using Discord.Rest;
     using Discord.WebSocket;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The paginated message callback.

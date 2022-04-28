@@ -150,6 +150,6 @@ namespace DolarBot.Modules.Commands
             {
                 await SendErrorReply(ex);
             }
-        }        
+        }
     }
 }

@@ -65,7 +65,7 @@ namespace DolarBot.Modules.Commands
                                      .WithDescription(GlobalConfiguration.Constants.BLANK_SPACE)
                                      .AddField($"Fecha y hora del servidor", $"{timeEmoji} {serverTimestamp} ({Format.Italics(TimeZoneInfo.Local.StandardName)})".AppendLineBreak())
                                      .AddField($"Fecha y hora del bot", $"{timeEmoji} {localTimestamp} ({Format.Italics(localTimeZoneInfo.StandardName)})");
-                
+
                 embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
@@ -89,7 +89,7 @@ namespace DolarBot.Modules.Commands
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"El ID del servidor es {sid}");
-                
+
                 embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }
@@ -229,7 +229,7 @@ namespace DolarBot.Modules.Commands
                 TimeSpan uptime = GlobalConfiguration.GetUptime();
 
                 EmbedBuilder embed = new EmbedBuilder()
-                                     .WithTitle("DolarBot")                                     
+                                     .WithTitle("DolarBot")
                                      .WithColor(GlobalConfiguration.Colors.Info)
                                      .WithThumbnailUrl(infoImageUrl)
                                      .WithDescription($"{versionEmoji} Versión {versionDescription}".AppendLineBreak())

@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Autocompletion.Help;
 using DolarBot.Modules.InteractiveCommands.Base;

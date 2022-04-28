@@ -2,13 +2,12 @@
 // ReSharper disable StyleCop.SA1516
 namespace Discord.Addons.Interactive
 {
+    using Discord.Commands;
+    using Discord.WebSocket;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using Discord.Commands;
-    using Discord.WebSocket;
 
     public class ReactionCallbackData
     {

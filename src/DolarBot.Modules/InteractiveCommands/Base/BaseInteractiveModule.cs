@@ -138,7 +138,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// <param name="message">The message to be sent.</param>
         protected async Task SendDeferredMessageAsync(string message)
         {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = message );
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = message);
         }
 
         /// <summary>

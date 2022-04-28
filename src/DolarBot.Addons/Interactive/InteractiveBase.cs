@@ -3,6 +3,7 @@
     using Discord.Addons.Interactive.Criteria;
     using Discord.Addons.Interactive.InlineReaction;
     using Discord.Addons.Interactive.Paginator;
+    using Discord.Addons.Interactive.Results;
     using Discord.Commands;
     using Discord.WebSocket;
     using System;

@@ -138,6 +138,11 @@ namespace DolarBot.Modules.Handlers
                     case InteractionCommandError.Exception:
                     case InteractionCommandError.Unsuccessful:
                     case InteractionCommandError.UnknownCommand:
+                        if(context.Interaction.Type != InteractionType.ModalSubmit)
+                        {
+                            ProcessCommandError(result);
+                        }
+                        break;
                     case InteractionCommandError.UnmetPrecondition:
                         ProcessCommandError(result);
                         break;

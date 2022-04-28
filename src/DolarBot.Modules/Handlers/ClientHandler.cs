@@ -74,7 +74,7 @@ namespace DolarBot.Modules.Handlers
             try
             {
                 bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl && !IsDebug;
-                Task updateStatsDbl = shouldUpdateDbl ? UpdateStatsDbl() : Task.CompletedTask;
+                Task updateStatsDbl = shouldUpdateDbl ? UpdateStatsDblAsync() : Task.CompletedTask;
                 Task updateServerLog = UpdateServerLogAsync(false);
 
                 bool testGuildConfigured = ulong.TryParse(Configuration["testServerId"], out ulong testServerId);
@@ -99,7 +99,7 @@ namespace DolarBot.Modules.Handlers
             bool shouldUpdateDbl = bool.TryParse(Configuration["useDbl"], out bool useDbl) && useDbl;
             if (shouldUpdateDbl)
             {
-                Task updateStatsTask = UpdateStatsDbl();
+                Task updateStatsTask = UpdateStatsDblAsync();
                 tasks.Add(updateStatsTask);
             }
 
@@ -117,14 +117,14 @@ namespace DolarBot.Modules.Handlers
         /// Updates the server log file with the current server list.
         /// </summary>
         /// <param name="overwrite">Indicates whether to overwrite the file if exists, or do nothing.</param>
-        private async Task UpdateServerLogAsync(bool overwrite = true)
+        private Task UpdateServerLogAsync(bool overwrite = true)
         {
             try
             {
                 string serverListFile = Configuration["serverListLog"];
                 if (!string.IsNullOrEmpty(serverListFile))
                 {
-                    await Task.Run(() =>
+                    return Task.Run(() =>
                     {
                         bool fileExists = File.Exists(serverListFile);
                         if (!fileExists || (fileExists && overwrite))
@@ -136,18 +136,19 @@ namespace DolarBot.Modules.Handlers
                                 Directory.CreateDirectory(directory);
                             }
                             var servers = Client.Guilds.Select(x => $"[{x.Id}] {x.Name}");
-                            File.WriteAllLines(serverListFile, servers);
+                            File.WriteAllLinesAsync(serverListFile, servers);
                         }
                     });
                 }
                 else
                 {
-                    Logger.Warn("Cannot write to Server list log: Not configured.");
+                    return Task.CompletedTask;
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error("Error updating server log", ex);
+                return Task.FromException(ex);
             }
         }
 
@@ -155,7 +156,7 @@ namespace DolarBot.Modules.Handlers
         /// Sends a request to DBL (top.gg) to update the bot stats.
         /// </summary>
         /// <returns>A completed task.</returns>
-        private Task UpdateStatsDbl()
+        private Task UpdateStatsDblAsync()
         {
             try
             {

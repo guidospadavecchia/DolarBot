@@ -227,12 +227,14 @@ namespace DolarBot.Util.Extensions
             var emojis = configuration.GetSection("customEmojis");
             IEmote firstEmoji = Emote.Parse(emojis["firstPage"]);
             IEmote forwardEmoji = Emote.Parse(emojis["nextPage"]);
+            IEmote jumpEmoji = Emote.Parse(emojis["jumpPage"]);
             IEmote backwardEmoji = Emote.Parse(emojis["previousPage"]);
             IEmote lastEmoji = Emote.Parse(emojis["lastPage"]);
 
             Dictionary<IEmote, PaginatorAction> actions = new();
             actions.Add(firstEmoji, PaginatorAction.SkipToStart);
             actions.Add(backwardEmoji, PaginatorAction.Backward);
+            actions.Add(jumpEmoji, PaginatorAction.Jump);
             actions.Add(forwardEmoji, PaginatorAction.Forward);
             actions.Add(lastEmoji, PaginatorAction.SkipToEnd);
 

@@ -102,7 +102,15 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             }
 
             int paginatorTimeout = Convert.ToInt32(Configuration["paginatorTimeout"]);
-            StaticPaginator paginator = new StaticPaginatorBuilder().WithPages(pages).WithDefaultButtons(Configuration).Build();
+            StaticPaginator paginator = new StaticPaginatorBuilder()
+                                            .WithPages(pages)
+                                            .WithDefaultButtons(Configuration)
+                                            .WithJumpInputPrompt("Navegación de páginas")
+                                            .WithJumpInputTextLabel($"Navegar a la página (1-{pages.Count}):")
+                                            .WithExpiredJumpInputMessage("La interacción expiró. Por favor, ejecutá el comando nuevamente para volver a interactuar.")
+                                            .WithInvalidJumpInputMessage($"La página a ingresar debe ser un número entre {Format.Bold("1")} y {Format.Bold(pages.Count.ToString())}.")
+                                            .WithJumpInputInUseMessage("La función para saltar de página se encuentra actualmente en uso por otro usuario")
+                                            .Build();
             await InteractiveService.SendPaginatorAsync(paginator, Context.Interaction as SocketInteraction, responseType: InteractionResponseType.DeferredChannelMessageWithSource, resetTimeoutOnInput: true, timeout: TimeSpan.FromSeconds(paginatorTimeout));
         }
 

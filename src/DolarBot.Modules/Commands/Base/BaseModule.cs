@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
+using Discord.Addons.Interactive.Paginator;
 using Discord.Commands;
 using DolarBot.Util;
 using DolarBot.Util.Extensions;
@@ -9,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
+using EmbedPage = Discord.Addons.Interactive.Paginator.PaginatedMessage.Page;
 
 namespace DolarBot.Modules.Commands.Base
 {

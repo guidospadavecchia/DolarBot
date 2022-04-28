@@ -1,5 +1,6 @@
-﻿namespace Discord.Addons.Interactive
+﻿namespace Discord.Addons.Interactive.InlineReaction
 {
+    using Discord;
     using Discord.Commands;
     using Discord.WebSocket;
     using System;

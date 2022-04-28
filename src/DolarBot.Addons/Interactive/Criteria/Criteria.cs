@@ -1,5 +1,5 @@
 ﻿// ReSharper disable StyleCop.SA1600
-namespace Discord.Addons.Interactive
+namespace Discord.Addons.Interactive.Criteria
 {
     using Discord.Commands;
     using System.Collections.Generic;

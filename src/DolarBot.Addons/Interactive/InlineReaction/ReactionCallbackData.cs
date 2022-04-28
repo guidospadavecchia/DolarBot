@@ -1,7 +1,8 @@
 ﻿// ReSharper disable StyleCop.SA1600
 // ReSharper disable StyleCop.SA1516
-namespace Discord.Addons.Interactive
+namespace Discord.Addons.Interactive.InlineReaction
 {
+    using Discord;
     using Discord.Commands;
     using Discord.WebSocket;
     using System;

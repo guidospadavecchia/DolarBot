@@ -1,4 +1,4 @@
-﻿namespace Discord.Addons.Interactive
+﻿namespace Discord.Addons.Interactive.Paginator
 {
     using System;
     using System.Collections.Generic;

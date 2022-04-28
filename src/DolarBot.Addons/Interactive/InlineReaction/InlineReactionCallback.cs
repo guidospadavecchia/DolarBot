@@ -1,5 +1,9 @@
-﻿namespace Discord.Addons.Interactive
+﻿namespace Discord.Addons.Interactive.InlineReaction
 {
+    using Discord;
+    using Discord.Addons.Interactive;
+    using Discord.Addons.Interactive.Callbacks;
+    using Discord.Addons.Interactive.Criteria;
     using Discord.Commands;
     using Discord.WebSocket;
     using System;

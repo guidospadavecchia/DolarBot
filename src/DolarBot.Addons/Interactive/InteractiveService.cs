@@ -1,5 +1,9 @@
 ﻿namespace Discord.Addons.Interactive
 {
+    using Discord.Addons.Interactive.Callbacks;
+    using Discord.Addons.Interactive.Criteria;
+    using Discord.Addons.Interactive.InlineReaction;
+    using Discord.Addons.Interactive.Paginator;
     using Discord.Commands;
     using Discord.WebSocket;
     using System;

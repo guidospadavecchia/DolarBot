@@ -1,6 +1,10 @@
 ﻿// ReSharper disable StyleCop.SA1503
-namespace Discord.Addons.Interactive
+namespace Discord.Addons.Interactive.Paginator
 {
+    using Discord;
+    using Discord.Addons.Interactive;
+    using Discord.Addons.Interactive.Callbacks;
+    using Discord.Addons.Interactive.Criteria;
     using Discord.Commands;
     using Discord.Rest;
     using Discord.WebSocket;
@@ -120,7 +124,7 @@ namespace Discord.Addons.Interactive
 
                 if (reactionList.Jump)
                 {
-                    if (options.JumpDisplayOptions == JumpDisplayOptions.Always || (options.JumpDisplayOptions == JumpDisplayOptions.WithManageMessages && manageMessages))
+                    if (options.JumpDisplayOptions == JumpDisplayOptions.Always || options.JumpDisplayOptions == JumpDisplayOptions.WithManageMessages && manageMessages)
                     {
                         await message.AddReactionAsync(options.Jump);
                     }

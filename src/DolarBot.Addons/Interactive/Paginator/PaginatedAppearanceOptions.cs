@@ -1,7 +1,8 @@
 ﻿// ReSharper disable StyleCop.SA1600
 // ReSharper disable StyleCop.SA1401
-namespace Discord.Addons.Interactive
+namespace Discord.Addons.Interactive.Paginator
 {
+    using Discord;
     using System;
 
     public enum JumpDisplayOptions

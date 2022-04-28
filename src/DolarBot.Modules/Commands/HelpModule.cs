@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EmbedPage = Discord.Addons.Interactive.PaginatedMessage.Page;
+using EmbedPage = Discord.Addons.Interactive.Paginator.PaginatedMessage.Page;
 using ModuleInfo = Discord.Interactions.ModuleInfo;
 using RunMode = Discord.Commands.RunMode;
 using SummaryAttribute = Discord.Commands.SummaryAttribute;

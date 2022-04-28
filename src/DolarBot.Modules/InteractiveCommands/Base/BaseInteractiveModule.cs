@@ -101,8 +101,9 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 pages.Add(pageBuilder);
             }
 
+            int paginatorTimeout = Convert.ToInt32(Configuration["paginatorTimeout"]);
             StaticPaginator paginator = new StaticPaginatorBuilder().WithPages(pages).WithDefaultButtons(Configuration).Build();
-            await InteractiveService.SendPaginatorAsync(paginator, Context.Interaction as SocketInteraction, responseType: InteractionResponseType.DeferredChannelMessageWithSource, resetTimeoutOnInput: true);
+            await InteractiveService.SendPaginatorAsync(paginator, Context.Interaction as SocketInteraction, responseType: InteractionResponseType.DeferredChannelMessageWithSource, resetTimeoutOnInput: true, timeout: TimeSpan.FromSeconds(paginatorTimeout));
         }
 
         /// <summary>

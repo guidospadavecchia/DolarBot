@@ -136,14 +136,14 @@ namespace DolarBot.Services.Real
         #region Embed
 
         /// <inheritdoc />
-        public override EmbedBuilder CreateEmbed(RealResponse[] realResponses)
+        public override EmbedBuilder CreateEmbed(RealResponse[] realResponses, decimal amount = 1)
         {
             string realImageUrl = Configuration.GetSection("images").GetSection("real")["64"];
-            return CreateEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl);
+            return CreateEmbed(realResponses, $"Cotizaciones disponibles del {Format.Bold("Real")} expresadas en {Format.Bold("pesos argentinos")}.", realImageUrl, amount);
         }
 
         /// <inheritdoc />
-        public override EmbedBuilder CreateEmbed(RealResponse[] realResponses, string description, string thumbnailUrl)
+        public override EmbedBuilder CreateEmbed(RealResponse[] realResponses, string description, string thumbnailUrl, decimal amount = 1)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new(emojis["real"]);
@@ -151,28 +151,35 @@ namespace DolarBot.Services.Real
             Emoji buyEmoji = new(emojis["buyYellow"]);
             Emoji sellEmoji = new(emojis["sellYellow"]);
             Emoji sellWithTaxesEmoji = new(emojis["sellWithTaxesYellow"]);
+            Emoji amountEmoji = Emoji.Parse(":moneybag:");
 
+            string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
+            string amountField = Format.Bold($"{amountEmoji} {blankSpace} {amount} BRL").AppendLineBreak();
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle("Cotizaciones del Real")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($" C = Compra | V = Venta | A = Venta con impuestos | {clockEmoji} = Last updated (UTC {utcOffset})");
+                                                   .WithFooter($" C = Compra | V = Venta | A = Venta con impuestos | {clockEmoji} = Last updated (UTC {utcOffset})")
+                                                   .AddField("Monto", amountField);
 
             for (int i = 0; i < realResponses.Length; i++)
             {
                 RealResponse response = realResponses[i];
-                string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
                 string title = GetTitle(response.Type);
                 string lastUpdated = response.Fecha.ToString("dd/MM - HH:mm");
-                string buyPrice = decimal.TryParse(response?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellPrice = decimal.TryParse(response?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellWithTaxesPrice = response?.VentaAhorro != null ? (decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
 
-                if (buyPrice != "?" || sellPrice != "?" || (sellWithTaxesPrice != null && sellWithTaxesPrice != "?"))
+                decimal? buyPriceValue = decimal.TryParse(response?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal buyValue) ? buyValue * amount : null;
+                decimal? sellPriceValue = decimal.TryParse(response?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal sellValue) ? sellValue * amount : null;
+                decimal? sellPriceWithTaxesValue = decimal.TryParse(response?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal sellWithTaxesValue) ? sellWithTaxesValue * amount : null;
+
+                if (buyPriceValue.HasValue || sellPriceValue.HasValue)
                 {
+                    string buyPrice = buyPriceValue.HasValue ? buyPriceValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                    string sellPrice = sellPriceValue.HasValue ? sellPriceValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                    string sellWithTaxesPrice = response?.VentaAhorro != null ? (sellPriceWithTaxesValue.HasValue ? sellPriceWithTaxesValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?") : null;
                     StringBuilder sbField = new StringBuilder()
                                             .AppendLine($"{realEmoji} {blankSpace} {buyEmoji} {Format.Bold($"$ {buyPrice}")}")
                                             .AppendLine($"{realEmoji} {blankSpace} {sellEmoji} {Format.Bold($"$ {sellPrice}")}");
@@ -192,12 +199,14 @@ namespace DolarBot.Services.Real
         }
 
         /// <inheritdoc />
-        public override async Task<EmbedBuilder> CreateEmbedAsync(RealResponse realResponse, string description, string title = null, string thumbnailUrl = null)
+        public override async Task<EmbedBuilder> CreateEmbedAsync(RealResponse realResponse, string description, decimal amount = 1, string title = null, string thumbnailUrl = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji realEmoji = new(emojis["real"]);
             Emoji whatsappEmoji = new(emojis["whatsapp"]);
+            Emoji amountEmoji = Emoji.Parse(":moneybag:");
 
+            string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
 
@@ -205,24 +214,30 @@ namespace DolarBot.Services.Real
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string embedTitle = title ?? GetTitle(realResponse.Type);
             string lastUpdated = realResponse.Fecha.ToString(realResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string buyPrice = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal compra) ? compra.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string sellPrice = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal venta) ? venta.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
-            string buyInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {buyPrice}");
-            string sellInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPrice}");
-            string shareText = $"*{(realResponse.VentaAhorro != null ? $"Real - {embedTitle}" : embedTitle)}*{Environment.NewLine}{Environment.NewLine}Compra: \t\t$ *{buyPrice}*{Environment.NewLine}Venta: \t\t$ *{sellPrice}*";
+            decimal? buyPriceValue = decimal.TryParse(realResponse?.Compra, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal buyValue) ? buyValue * amount : null;
+            decimal? sellPriceValue = decimal.TryParse(realResponse?.Venta, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal sellValue) ? sellValue * amount : null;
+            string buyPrice = buyPriceValue.HasValue ? buyPriceValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string sellPrice = sellPriceValue.HasValue ? sellPriceValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+
+            string amountField = Format.Bold($"{amountEmoji} {blankSpace} {amount} BRL").AppendLineBreak();
+            string buyInlineField = Format.Bold($"{realEmoji} {blankSpace} $ {buyPrice}");
+            string sellInlineField = Format.Bold($"{realEmoji} {blankSpace} $ {sellPrice}");
+            string shareText = $"*{(realResponse.VentaAhorro != null ? $"Real - {embedTitle}" : embedTitle)}*{Environment.NewLine}{Environment.NewLine}*{amount} BRL*{Environment.NewLine}Compra: \t\t$ *{buyPrice}*{Environment.NewLine}Venta: \t\t$ *{sellPrice}*";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Real)
                                                    .WithTitle(embedTitle)
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(realImageUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
+                                                   .AddField("Monto", amountField)
                                                    .AddInlineField("Compra", buyInlineField)
                                                    .AddInlineField("Venta", sellInlineField);
             if (realResponse.VentaAhorro != null)
             {
-                string sellPriceWithTaxes = decimal.TryParse(realResponse?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ventaAhorro) ? ventaAhorro.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-                string sellWithTaxesInlineField = Format.Bold($"{realEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} $ {sellPriceWithTaxes}");
+                decimal? sellPriceWithTaxesValue = decimal.TryParse(realResponse?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal sellWithTaxesValue) ? sellWithTaxesValue * amount : null;
+                string sellPriceWithTaxes = sellPriceWithTaxesValue.HasValue ? sellPriceWithTaxesValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+                string sellWithTaxesInlineField = Format.Bold($"{realEmoji} {blankSpace} $ {sellPriceWithTaxes}");
                 embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
                 shareText += $"{Environment.NewLine}Venta c/imp: \t$ *{sellPriceWithTaxes}*";
             }

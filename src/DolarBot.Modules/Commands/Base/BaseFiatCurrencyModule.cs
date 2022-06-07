@@ -115,7 +115,7 @@ namespace DolarBot.Modules.Commands.Base
             TypeResponse result = await Service.GetByBank(bank);
             if (result != null)
             {
-                EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, null, thumbnailUrl);
+                EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, thumbnailUrl: thumbnailUrl);
                 embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }

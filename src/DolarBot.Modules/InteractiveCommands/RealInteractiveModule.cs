@@ -2,9 +2,14 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Modules.InteractiveCommands.Choices;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Buttons;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Enums;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Currencies;
 using DolarBot.Services.Real;
@@ -13,6 +18,7 @@ using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.InteractiveCommands
@@ -24,6 +30,11 @@ namespace DolarBot.Modules.InteractiveCommands
     [HelpTitle("Cotizaciones del Real")]
     public class RealInteractiveModule : BaseFiatCurrencyInteractiveModule<RealService, RealResponse>
     {
+        #region Constants
+        private const string ALL_STANDARD_RATES = "all-standard";
+        private const string ALL_BANK_RATES = "all-banks";
+        #endregion
+
         #region Constructor
         /// <summary>
         /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
@@ -43,6 +54,102 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <inheritdoc />
         protected override Currencies GetCurrentCurrency() => Currencies.Real;
 
+        /// <summary>
+        /// Returns the description for the specified <paramref name="choice"/>.
+        /// </summary>
+        /// <param name="choice">The bank choice.</param>
+        /// <returns>The choice description.</returns>
+        private static string GetBankChoiceDescription(RealBankChoices choice) => $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(choice.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
+
+        /// <summary>
+        /// Returns the description for all the bank rates.
+        /// </summary>
+        /// <returns>The bank rates description.</returns>
+        private static string GetAllBanksDescription() => $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("Real oficial")} expresadas en {Format.Bold("pesos argentinos")}.";
+
+        /// <summary>
+        /// Retrieves the response and description from the specified <paramref name="realChoice"/>.
+        /// </summary>
+        /// <param name="realChoice">The user choice.</param>
+        /// <returns>An asynchronous task containing the response.</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private async Task<(RealResponse, string)> GetStandardRate(RealChoices realChoice)
+        {
+            string description;
+            RealResponse response;
+            switch (realChoice)
+            {
+                case RealChoices.Oficial:
+                    description = $"Cotización del {Format.Bold("Real oficial")} expresada en {Format.Bold("pesos argentinos")}.";
+                    response = await Service.GetRealOficial();
+                    break;
+                case RealChoices.Ahorro:
+                    description = $"Cotización del {Format.Bold("Real ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
+                    response = await Service.GetRealAhorro();
+                    break;
+                case RealChoices.Blue:
+                    description = $"Cotización del {Format.Bold("Real blue")} expresada en {Format.Bold("pesos argentinos")}.";
+                    response = await Service.GetRealBlue();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return (response, description);
+        }
+
+        #endregion
+
+        #region Components
+
+        [ComponentInteraction($"{FiatCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorButtonClick(string choice)
+        {
+            await RespondWithModalAsync<FiatCalculatorModal>($"{FiatCalculatorModal.Id}:{choice}");
+        }
+
+        [ModalInteraction($"{FiatCalculatorModal.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorModalInput(string choice, FiatCalculatorModal calculatorModal)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                bool isNumeric = decimal.TryParse(calculatorModal.Value.Replace(",", "."), NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal amount);
+                if (!isNumeric || amount <= 0)
+                {
+                    amount = 1;
+                }
+                if (choice.StartsWith("bank:"))
+                {
+                    string bankChoice = choice.Split(":")[1];
+                    if (bankChoice == ALL_BANK_RATES)
+                    {
+                        string description = GetAllBanksDescription();
+                        await SendAllBankRates(description, amount);
+                    }
+                    else
+                    {
+                        RealBankChoices realBankChoice = Enum.Parse<RealBankChoices>(bankChoice);
+                        Banks bank = Enum.Parse<Banks>(realBankChoice.ToString());
+                        string description = GetBankChoiceDescription(realBankChoice);
+                        await SendBankRate(bank, description, amount);
+                    }
+                }
+                else
+                {
+                    if (choice == ALL_STANDARD_RATES)
+                    {
+                        await SendAllStandardRates(amount);
+                    }
+                    else
+                    {
+                        RealChoices realChoice = Enum.Parse<RealChoices>(choice);
+                        var result = await GetStandardRate(realChoice);
+                        await SendStandardRate(result.Item1, result.Item2, amount);
+                    }
+                }
+            });
+        }
+
         #endregion
 
         [SlashCommand("real", "Muestra las cotizaciones del real.", false, RunMode.Async)]
@@ -56,12 +163,12 @@ namespace DolarBot.Modules.InteractiveCommands
                 {
                     if (realChoice == null)
                     {
-                        await SendAllStandardRates();
+                        await SendAllStandardRates(components: new CalculatorComponentBuilder(ALL_STANDARD_RATES, CalculatorTypes.Fiat, Configuration).Build());
                     }
                     else
                     {
                         var result = await GetStandardRate(realChoice.Value);
-                        await SendStandardRate(result.Item1, result.Item2);
+                        await SendStandardRate(result.Item1, result.Item2, components: new CalculatorComponentBuilder(realChoice.ToString(), CalculatorTypes.Fiat, Configuration).Build());
                     }
                 }
                 catch (Exception ex)
@@ -82,14 +189,14 @@ namespace DolarBot.Modules.InteractiveCommands
                 {
                     if (bankChoice != null)
                     {
-                        string description = $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(bankChoice.Value.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
+                        string description = GetBankChoiceDescription(bankChoice.Value);
                         Banks bank = Enum.Parse<Banks>(bankChoice.ToString());
-                        await SendBankRate(bank, description);
+                        await SendBankRate(bank, description, components: new CalculatorComponentBuilder($"bank:{bankChoice}", CalculatorTypes.Fiat, Configuration).Build());
                     }
                     else
                     {
-                        string description = $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("Real oficial")} expresadas en {Format.Bold("pesos argentinos")}.";
-                        await SendAllBankRates(description);
+                        string description = GetAllBanksDescription();
+                        await SendAllBankRates(description, components: new CalculatorComponentBuilder($"bank:{ALL_BANK_RATES}", CalculatorTypes.Fiat, Configuration).Build());
                     }
                 }
                 catch (Exception ex)
@@ -97,37 +204,6 @@ namespace DolarBot.Modules.InteractiveCommands
                     await SendDeferredErrorResponseAsync(ex);
                 }
             });
-        }
-
-        /// <summary>
-        /// Retrieves the response and description from the specified <paramref name="euroChoice"/>.
-        /// </summary>
-        /// <param name="euroChoice">The user choice.</param>
-        /// <returns>An asynchronous task containing the response.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        private async Task<(RealResponse, string)> GetStandardRate(RealChoices euroChoice)
-        {
-            string description;
-            RealResponse response;
-            switch (euroChoice)
-            {
-                case RealChoices.Oficial:
-                    description = $"Cotización del {Format.Bold("Real oficial")} expresada en {Format.Bold("pesos argentinos")}.";
-                    response = await Service.GetRealOficial();
-                    break;
-                case RealChoices.Ahorro:
-                    description = $"Cotización del {Format.Bold("Real ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
-                    response = await Service.GetRealAhorro();
-                    break;
-                case RealChoices.Blue:
-                    description = $"Cotización del {Format.Bold("Real blue")} expresada en {Format.Bold("pesos argentinos")}.";
-                    response = await Service.GetRealBlue();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            return (response, description);
         }
     }
 }

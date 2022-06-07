@@ -4,9 +4,14 @@ using DolarBot.API;
 using DolarBot.API.Attributes;
 using DolarBot.API.Enums;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto;
 using DolarBot.Modules.InteractiveCommands.Base;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Buttons;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Enums;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals;
 using DolarBot.Services.Crypto;
 using DolarBot.Util.Extensions;
 using Fergun.Interactive;
@@ -14,6 +19,7 @@ using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -65,48 +71,70 @@ namespace DolarBot.Modules.InteractiveCommands
         /// </summary>
         /// <param name="cryptoCurrenciesList">The collection of valid currency codes.</param>
         /// <param name="code">The code to be searched.</param>
-        private async Task SendCryptoResponseAsync(List<CryptoCodeResponse> cryptoCurrenciesList, string code = null)
+        /// <param name="quantity">Crypto currency quantity.</param>
+        private async Task SendCryptoResponseAsync(List<CryptoCodeResponse> cryptoCurrenciesList, string code, decimal quantity = 1)
         {
-            if (code == null)
+            CryptoCodeResponse cryptoCurrencyCode = cryptoCurrenciesList.FirstOrDefault(x => x.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
+            if (cryptoCurrencyCode != null)
             {
-                await SendDeferredCryptoCurrencyListAsync(cryptoCurrenciesList);
-            }
-            else
-            {
-                CryptoCodeResponse cryptoCurrencyCode = cryptoCurrenciesList.FirstOrDefault(x => x.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
-                if (cryptoCurrencyCode != null)
+                CryptoResponse cryptoResponse;
+                string cryptoCurrencyName = null;
+                List<CryptoCurrencies> cryptocurrencies = Enum.GetValues(typeof(CryptoCurrencies)).Cast<CryptoCurrencies>().ToList();
+                bool isEnumerated = cryptocurrencies.Any(x => x.GetAttribute<CryptoCodeAttribute>()?.Code.Equals(cryptoCurrencyCode.Code, StringComparison.OrdinalIgnoreCase) ?? false);
+                if (isEnumerated)
                 {
-                    List<CryptoCurrencies> cryptocurrencies = Enum.GetValues(typeof(CryptoCurrencies)).Cast<CryptoCurrencies>().ToList();
-                    bool isEnumerated = cryptocurrencies.Any(x => x.GetAttribute<CryptoCodeAttribute>()?.Code.Equals(cryptoCurrencyCode.Code, StringComparison.OrdinalIgnoreCase) ?? false);
-                    if (isEnumerated)
-                    {
-                        CryptoCurrencies cryptoCurrency = cryptocurrencies.First(x => x.GetAttribute<CryptoCodeAttribute>().Code.Equals(cryptoCurrencyCode.Code, StringComparison.OrdinalIgnoreCase));
-                        CryptoResponse cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrency);
-                        if (cryptoResponse != null)
-                        {
-                            EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse);
-                            await SendDeferredEmbedAsync(embed.Build());
-                        }
-                        else
-                        {
-                            await SendDeferredApiErrorResponseAsync();
-                        }
-                    }
-                    else
-                    {
-                        CryptoResponse cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrencyCode.Code);
-                        EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse, cryptoCurrencyCode.Name);
-                        await SendDeferredEmbedAsync(embed.Build());
-                    }
+                    CryptoCurrencies cryptoCurrency = cryptocurrencies.First(x => x.GetAttribute<CryptoCodeAttribute>().Code.Equals(cryptoCurrencyCode.Code, StringComparison.OrdinalIgnoreCase));
+                    cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrency);
                 }
                 else
                 {
-                    await SendDeferredMessageAsync($"No hay resultados para la búsqueda. Asegurate de utilizar los resultados autocompletados.");
+                    cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrencyCode.Code);
+                    cryptoCurrencyName = cryptoCurrencyCode.Name;
                 }
+
+                if (cryptoResponse != null)
+                {
+                    EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse, cryptoCurrencyName, quantity);
+                    await SendDeferredEmbedAsync(embed.Build(), new CalculatorComponentBuilder(cryptoCurrencyCode.Code, CalculatorTypes.Crypto, Configuration).Build());
+                }
+                else
+                {
+                    await SendDeferredApiErrorResponseAsync();
+                }
+            }
+            else
+            {
+                await SendDeferredMessageAsync($"No hay resultados para la búsqueda. Asegurate de utilizar los resultados autocompletados.");
             }
         }
 
         #endregion
+
+        #region Components
+
+        [ComponentInteraction($"{CryptoCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorButtonClick(string cryptoCode)
+        {
+            await RespondWithModalAsync<CryptoCalculatorModal>($"{CryptoCalculatorModal.Id}:{cryptoCode}");
+        }
+
+        [ModalInteraction($"{CryptoCalculatorModal.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorModalInput(string cryptoCode, CryptoCalculatorModal calculatorModal)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                bool isNumeric = decimal.TryParse(calculatorModal.Value.Replace(",", "."), NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal quantity);
+                if (!isNumeric || quantity <= 0)
+                {
+                    quantity = 1;
+                }
+                List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
+                await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCode, quantity);
+            });
+        }
+
+        #endregion
+
 
         [SlashCommand("crypto", "Muestra el valor de una cotización o lista todos los códigos de criptomonedas disponibles.", false, RunMode.Async)]
         public async Task GetCryptoCurrenciesAsync(
@@ -130,7 +158,14 @@ namespace DolarBot.Modules.InteractiveCommands
                     {
                         List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
                         string cryptoCurrencyCode = symbol != null ? Format.Sanitize(symbol).ToUpper().Trim() : name != null ? Format.Sanitize(name).ToUpper().Trim() : null;
-                        await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
+                        if (cryptoCurrencyCode != null)
+                        {
+                            await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
+                        }
+                        else
+                        {
+                            await SendDeferredCryptoCurrencyListAsync(cryptoCurrenciesList);
+                        }
                     }
                 }
                 catch (Exception ex)

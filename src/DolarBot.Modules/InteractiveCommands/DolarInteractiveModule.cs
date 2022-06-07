@@ -2,9 +2,14 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
 using DolarBot.Modules.InteractiveCommands.Choices;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Buttons;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Enums;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals;
 using DolarBot.Services.Banking;
 using DolarBot.Services.Currencies;
 using DolarBot.Services.Dolar;
@@ -13,6 +18,7 @@ using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.InteractiveCommands
@@ -24,6 +30,11 @@ namespace DolarBot.Modules.InteractiveCommands
     [HelpTitle("Cotizaciones del Dólar")]
     public class DolarInteractiveModule : BaseFiatCurrencyInteractiveModule<DolarService, DollarResponse>
     {
+        #region Constants
+        private const string ALL_STANDARD_RATES = "all-standard";
+        private const string ALL_BANK_RATES = "all-banks";
+        #endregion
+
         #region Constructor
         /// <summary>
         /// Creates the module using the <see cref="IConfiguration"/> and <see cref="ApiCalls"/> objects.
@@ -43,61 +54,18 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <inheritdoc />
         protected override Currencies GetCurrentCurrency() => Currencies.Dolar;
 
-        #endregion
+        /// <summary>
+        /// Returns the description for the specified <paramref name="choice"/>.
+        /// </summary>
+        /// <param name="choice">The bank choice.</param>
+        /// <returns>The choice description.</returns>
+        private static string GetBankChoiceDescription(DollarBankChoices choice) => $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(choice.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
 
-        [SlashCommand("dolar", "Muestra las cotizaciones del dólar.", false, RunMode.Async)]
-        public async Task GetDolarPriceAsync(
-        [Summary("tipo", "Indica el tipo de cotización a mostrar.")]
-            DollarChoices? dollarChoice = null)
-        {
-            await DeferAsync().ContinueWith(async (task) =>
-            {
-                try
-                {
-                    if (dollarChoice == null)
-                    {
-                        await SendAllStandardRates();
-                    }
-                    else
-                    {
-                        var result = await GetStandardRate(dollarChoice.Value);
-                        await SendStandardRate(result.Item1, result.Item2);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await SendDeferredErrorResponseAsync(ex);
-                }
-            });
-        }
-
-        [SlashCommand("dolar-bancos", "Muestra las cotizaciones bancarias del dólar.", false, RunMode.Async)]
-        public async Task GetBankDollarPriceAsync(
-            [Summary("banco", "Indica el banco a mostrar. Si no se especifica, se mostrarán todas las cotizaciones bancarias.")]
-            DollarBankChoices? bankChoice = null)
-        {
-            await DeferAsync().ContinueWith(async (task) =>
-            {
-                try
-                {
-                    if (bankChoice != null)
-                    {
-                        string description = $"Cotización del {Format.Bold("dólar oficial")} del {Format.Bold(bankChoice.Value.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
-                        Banks bank = Enum.Parse<Banks>(bankChoice.ToString());
-                        await SendBankRate(bank, description);
-                    }
-                    else
-                    {
-                        string description = $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("dólar oficial")} expresadas en {Format.Bold("pesos argentinos")}.";
-                        await SendAllBankRates(description);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await SendDeferredErrorResponseAsync(ex);
-                }
-            });
-        }
+        /// <summary>
+        /// Returns the description for all the bank rates.
+        /// </summary>
+        /// <returns>The bank rates description.</returns>
+        private static string GetAllBanksDescription() => $"Cotizaciones de {Format.Bold("bancos")} del {Format.Bold("dólar oficial")} expresadas en {Format.Bold("pesos argentinos")}.";
 
         /// <summary>
         /// Retrieves the response and description from the specified <paramref name="dollarChoice"/>.
@@ -140,6 +108,114 @@ namespace DolarBot.Modules.InteractiveCommands
             }
 
             return (response, description);
+        }
+
+        #endregion
+
+        #region Components
+
+        [ComponentInteraction($"{FiatCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorButtonClick(string choice)
+        {
+            await RespondWithModalAsync<FiatCalculatorModal>($"{FiatCalculatorModal.Id}:{choice}");
+        }
+
+        [ModalInteraction($"{FiatCalculatorModal.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorModalInput(string choice, FiatCalculatorModal calculatorModal)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                bool isNumeric = decimal.TryParse(calculatorModal.Value.Replace(",", "."), NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal amount);
+                if (!isNumeric || amount <= 0)
+                {
+                    amount = 1;
+                }
+                if (choice.StartsWith("bank:"))
+                {
+                    string bankChoice = choice.Split(":")[1];
+                    if (bankChoice == ALL_BANK_RATES)
+                    {
+                        string description = GetAllBanksDescription();
+                        await SendAllBankRates(description, amount);
+                    }
+                    else
+                    {
+                        DollarBankChoices dollarBankChoice = Enum.Parse<DollarBankChoices>(bankChoice);
+                        Banks bank = Enum.Parse<Banks>(dollarBankChoice.ToString());
+                        string description = GetBankChoiceDescription(dollarBankChoice);
+                        await SendBankRate(bank, description, amount);
+                    }
+                }
+                else
+                {
+                    if (choice == ALL_STANDARD_RATES)
+                    {
+                        await SendAllStandardRates(amount);
+                    }
+                    else
+                    {
+                        DollarChoices dollarChoice = Enum.Parse<DollarChoices>(choice);
+                        var result = await GetStandardRate(dollarChoice);
+                        await SendStandardRate(result.Item1, result.Item2, amount);
+                    }
+                }
+            });
+        }
+
+        #endregion
+
+        [SlashCommand("dolar", "Muestra las cotizaciones del dólar.", false, RunMode.Async)]
+        public async Task GetDolarPriceAsync(
+        [Summary("tipo", "Indica el tipo de cotización a mostrar.")]
+            DollarChoices? dollarChoice = null)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                try
+                {
+                    if (dollarChoice == null)
+                    {
+                        await SendAllStandardRates(components: new CalculatorComponentBuilder(ALL_STANDARD_RATES, CalculatorTypes.Fiat, Configuration).Build());
+                    }
+                    else
+                    {
+                        var result = await GetStandardRate(dollarChoice.Value);
+                        await SendStandardRate(result.Item1, result.Item2, components: new CalculatorComponentBuilder(dollarChoice.ToString(), CalculatorTypes.Fiat, Configuration).Build());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponseAsync(ex);
+                }
+            });
+        }
+
+        [SlashCommand("dolar-bancos", "Muestra las cotizaciones bancarias del dólar.", false, RunMode.Async)]
+        public async Task GetBankDollarPriceAsync(
+            [Summary("banco", "Indica el banco a mostrar. Si no se especifica, se mostrarán todas las cotizaciones bancarias.")]
+            DollarBankChoices? bankChoice = null)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                try
+                {
+                    if (bankChoice != null)
+                    {
+                        string description = GetBankChoiceDescription(bankChoice.Value);
+                        Banks bank = Enum.Parse<Banks>(bankChoice.ToString());
+                        await SendBankRate(bank, description, components: new CalculatorComponentBuilder($"bank:{bankChoice}", CalculatorTypes.Fiat, Configuration).Build());
+                    }
+                    else
+                    {
+                        string description = GetAllBanksDescription();
+                        await SendAllBankRates(description, components: new CalculatorComponentBuilder($"bank:{ALL_BANK_RATES}", CalculatorTypes.Fiat, Configuration).Build());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponseAsync(ex);
+                }
+            });
         }
     }
 }

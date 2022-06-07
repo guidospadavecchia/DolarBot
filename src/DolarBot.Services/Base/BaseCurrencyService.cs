@@ -56,7 +56,7 @@ namespace DolarBot.Services.Base
         /// </summary>
         /// <param name="responses">The currency responses to show.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public abstract EmbedBuilder CreateEmbed(T[] responses);
+        public abstract EmbedBuilder CreateEmbed(T[] responses, decimal amount = 1);
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for multiple currency responses specifying a custom description and thumbnail URL.
@@ -65,17 +65,18 @@ namespace DolarBot.Services.Base
         /// <param name="description">The embed's description.</param>
         /// <param name="thumbnailUrl">The URL of the embed's thumbnail image.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public abstract EmbedBuilder CreateEmbed(T[] responses, string description, string thumbnailUrl);
+        public abstract EmbedBuilder CreateEmbed(T[] responses, string description, string thumbnailUrl, decimal amount = 1);
 
         /// <summary>
         /// Creates an <see cref="EmbedBuilder"/> object for a single currency response specifying a custom description, title and thumbnail URL.
         /// </summary>
         /// <param name="response">The currency response to show.</param>
         /// <param name="description">The embed's description.</param>
+        /// <param name="amount">The amount to rate against.</param>
         /// <param name="title">Optional. The embed's title.</param>
         /// <param name="thumbnailUrl">Optional. The embed's thumbnail URL.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public abstract Task<EmbedBuilder> CreateEmbedAsync(T response, string description, string title = null, string thumbnailUrl = null);
+        public abstract Task<EmbedBuilder> CreateEmbedAsync(T response, string description, decimal amount = 1, string title = null, string thumbnailUrl = null);
 
         #endregion
 

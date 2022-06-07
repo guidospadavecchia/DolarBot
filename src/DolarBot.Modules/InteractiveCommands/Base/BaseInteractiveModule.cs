@@ -118,9 +118,14 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Modifies the original deferred response by sending an embed message.
         /// </summary>
         /// <param name="embed">The embed to be sent.</param>
-        protected async Task SendDeferredEmbedAsync(Embed embed)
+        /// <param name="components">Optional components.</param>
+        protected async Task SendDeferredEmbedAsync(Embed embed, Optional<MessageComponent> components = default)
         {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embed = embed);
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) =>
+            {
+                messageProperties.Embed = embed;
+                messageProperties.Components = components;
+            });
         }
 
         /// <summary>
@@ -136,9 +141,13 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Modifies the original deferred response by sending a message.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
-        protected async Task SendDeferredMessageAsync(string message)
+        protected async Task SendDeferredMessageAsync(string message, Optional<MessageComponent> components = default)
         {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = message);
+            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) =>
+            {
+                messageProperties.Content = message;
+                messageProperties.Components = components;
+            });
         }
 
         /// <summary>

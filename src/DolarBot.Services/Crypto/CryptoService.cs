@@ -50,7 +50,7 @@ namespace DolarBot.Services.Crypto
         /// <param name="cryptoCurrenciesList">The cryptocurrency list.</param>
         /// <param name="searchText">The text to search.</param>
         /// <returns></returns>
-        public List<CryptoCodeResponse> FilterByText(List<CryptoCodeResponse> cryptoCurrenciesList, string searchText)
+        public static List<CryptoCodeResponse> FilterByText(List<CryptoCodeResponse> cryptoCurrenciesList, string searchText)
         {
             CryptoCodeResponse cryptoCodeResponse = cryptoCurrenciesList.FirstOrDefault(x => x.Code.Equals(searchText, StringComparison.OrdinalIgnoreCase));
             if (cryptoCodeResponse != null)
@@ -263,8 +263,10 @@ namespace DolarBot.Services.Crypto
         /// Creates an <see cref="EmbedBuilder"/> object for a single crypto response.
         /// </summary>
         /// <param name="cryptoResponse">The crypto response object.</param>
+        /// <param name="cryptoCurrencyName">A custom cryptocurrency name.</param>
+        /// <param name="quantity">The cryptocurrency quantity.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateCryptoEmbedAsync(CryptoResponse cryptoResponse, string cryptoCurrencyName = null)
+        public async Task<EmbedBuilder> CreateCryptoEmbedAsync(CryptoResponse cryptoResponse, string cryptoCurrencyName = null, decimal quantity = 1)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji cryptoEmoji = new(emojis["cryptoCoin"]);
@@ -277,19 +279,23 @@ namespace DolarBot.Services.Crypto
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string cryptoCode = cryptoResponse.Code.Length > 10 ? $"{cryptoResponse.Code[..7]}..." : cryptoResponse.Code;
             string lastUpdated = cryptoResponse.Fecha.ToString(cryptoResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string arsPrice = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ars) ? ars.ToString($"N{(ars < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string arsPriceWithTaxes = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal arsTaxed) ? arsTaxed.ToString($"N{(arsTaxed < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string usdPrice = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal usd) ? usd.ToString($"N{(usd < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
-            string shareText = $"*{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})*{Environment.NewLine}{Environment.NewLine}Dólares: \t\tUS$ *{usdPrice}*{Environment.NewLine}Pesos: \t\t$ *{arsPrice}*{Environment.NewLine}Pesos c/Imp: \t$ *{arsPriceWithTaxes}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
+            
+            decimal? arsPriceValue = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ars) ? ars * quantity : null;
+            decimal? arsPriceWithTaxesValue = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal arsTaxed) ? arsTaxed * quantity : null;
+            decimal? usdPriceValue = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal usd) ? usd * quantity : null;
+            string arsPrice = arsPriceValue.HasValue ? arsPriceValue.Value.ToString($"N{(arsPriceValue.Value < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string arsPriceWithTaxes = arsPriceWithTaxesValue.HasValue ? arsPriceWithTaxesValue.Value.ToString($"N{(arsPriceWithTaxesValue.Value < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string usdPrice = usdPriceValue.HasValue ? usdPriceValue.Value.ToString($"N{(usdPriceValue.Value < 1 ? 8 : 2)}", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string shareText = $"*{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})*{Environment.NewLine}{Environment.NewLine}*{quantity} {cryptoCode}*{Environment.NewLine}Dólares: \t\tUS$ *{usdPrice}*{Environment.NewLine}Pesos: \t\t$ *{arsPrice}*{Environment.NewLine}Pesos c/Imp: \t$ *{arsPriceWithTaxes}*{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(GetColor(cryptoResponse.Currency))
                                                    .WithTitle($"{cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize()} ({cryptoCode})")
                                                    .WithDescription($"Cotización de {Format.Bold(cryptoCurrencyName ?? cryptoResponse.Currency.ToString().Capitalize())} ({Format.Bold(cryptoResponse.Code)}) expresada en {Format.Bold("pesos argentinos")} y {Format.Bold("dólares estadounidenses")}.".AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
-                                                   .AddField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"1 {cryptoCode}")} = {Format.Bold($"US$ {usdPrice}")}".AppendLineBreak())
-                                                   .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"1 {cryptoCode}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"1 {cryptoCode}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
+                                                   .AddField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"US$ {usdPrice}")}".AppendLineBreak())
+                                                   .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
+                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
             embed = AddPlayStoreLink(embed);

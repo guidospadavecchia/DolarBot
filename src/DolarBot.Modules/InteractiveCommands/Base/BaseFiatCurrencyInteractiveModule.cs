@@ -70,18 +70,20 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// <summary>
         /// Replies with an embed message containing all available standard rates for this currency.
         /// </summary>
-        protected async Task SendAllStandardRates()
+        /// <param name="amount">The amount to calculate against.</param>
+        /// <param name="components">Optional components.</param>
+        protected async Task SendAllStandardRates(decimal amount = 1, Optional<MessageComponent> components = default)
         {
             TypeResponse[] responses = await Service.GetAllStandardRates();
             if (responses.Any(r => r != null))
             {
                 TypeResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                EmbedBuilder embed = Service.CreateEmbed(successfulResponses);
+                EmbedBuilder embed = Service.CreateEmbed(successfulResponses, amount);
                 if (responses.Length != successfulResponses.Length)
                 {
                     await SendPartialResponseWarning();
                 }
-                await SendDeferredEmbedAsync(embed.Build());
+                await SendDeferredEmbedAsync(embed.Build(), components);
             }
             else
             {
@@ -93,19 +95,21 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Replies with an embed message containing all available bank rates for this currency.
         /// </summary>
         /// <param name="description">The message to show as a description.</param>
-        protected async Task SendAllBankRates(string description)
+        /// <param name="amount">The amount to calculate against.</param>
+        /// <param name="components">Optional components.</param>
+        protected async Task SendAllBankRates(string description, decimal amount = 1, Optional<MessageComponent> components = default)
         {
             TypeResponse[] responses = await Service.GetAllBankRates();
             if (responses.Any(r => r != null))
             {
                 string thumbnailUrl = Configuration.GetSection("images").GetSection("bank")["64"];
                 TypeResponse[] successfulResponses = responses.Where(r => r != null).ToArray();
-                EmbedBuilder embed = Service.CreateEmbed(successfulResponses, description, thumbnailUrl);
+                EmbedBuilder embed = Service.CreateEmbed(successfulResponses, description, thumbnailUrl, amount);
                 if (responses.Length != successfulResponses.Length)
                 {
                     await SendPartialResponseWarning();
                 }
-                await SendDeferredEmbedAsync(embed.Build());
+                await SendDeferredEmbedAsync(embed.Build(), components);
             }
             else
             {
@@ -117,14 +121,17 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Replies with an embed message containing a specific bank rate for this currency.
         /// </summary>
         /// <param name="bank">The bank which rate must be replied.</param>
-        protected async Task SendBankRate(Banks bank, string description)
+        /// <param name="description">The embed message description.</param>
+        /// <param name="amount">The amount to calculate against.</param>
+        /// <param name="components">Optional components.</param>
+        protected async Task SendBankRate(Banks bank, string description, decimal amount = 1, Optional<MessageComponent> components = default)
         {
             string thumbnailUrl = Service.GetBankThumbnailUrl(bank);
             TypeResponse result = await Service.GetByBank(bank);
             if (result != null)
             {
-                EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, null, thumbnailUrl);
-                await SendDeferredEmbedAsync(embed.Build());
+                EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, amount, thumbnailUrl: thumbnailUrl);
+                await SendDeferredEmbedAsync(embed.Build(), components);
             }
             else
             {
@@ -137,12 +144,14 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// </summary>
         /// <param name="response">The currency response containing the data.</param>
         /// <param name="description">The embed message description.</param>
-        protected async Task SendStandardRate(TypeResponse response, string description)
+        /// <param name="amount">The amount to calculate against.</param>
+        /// <param name="components">Optional components.</param>
+        protected async Task SendStandardRate(TypeResponse response, string description, decimal amount = 1, Optional<MessageComponent> components = default)
         {
             if (response != null)
             {
-                EmbedBuilder embed = await Service.CreateEmbedAsync(response, description);
-                await SendDeferredEmbedAsync(embed.Build());
+                EmbedBuilder embed = await Service.CreateEmbedAsync(response, description, amount);
+                await SendDeferredEmbedAsync(embed.Build(), components);
             }
             else
             {

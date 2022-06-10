@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
 {
-    public class CryptoSymbolAutocompleteHandler : InteractiveAutocompleteHandler
+    public class CryptoAutocompleteHandler : InteractiveAutocompleteHandler
     {
         /// <summary>
         /// The crypto service.
@@ -20,11 +20,11 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
         private CryptoService CryptoService { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="CryptoSymbolAutocompleteHandler"/>.
+        /// Creates a new <see cref="CryptoAutocompleteHandler"/>.
         /// </summary>
         /// <param name="configuration">Provides access to application settings.</param>
         /// <param name="apiCalls">Provides access to the different APIs.</param>
-        public CryptoSymbolAutocompleteHandler(IConfiguration configuration, ApiCalls apiCalls) : base(configuration, apiCalls)
+        public CryptoAutocompleteHandler(IConfiguration configuration, ApiCalls apiCalls) : base(configuration, apiCalls)
         {
             Configuration = configuration;
             ApiCalls = apiCalls;
@@ -37,11 +37,13 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
             List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                currencyCodes = currencyCodes.Where(x => x.Symbol.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-                if (!currencyCodes.Any())
+                List<CryptoCodeResponse> currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (!currencyCodesBySymbol.Any())
                 {
-                    currencyCodes = currencyCodes.Where(x => x.Symbol.StartsWith(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                    currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
+                List <CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                currencyCodes = currencyCodesBySymbol.Union(currencyCodesByName).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
             }
             else
             {

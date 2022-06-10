@@ -138,34 +138,24 @@ namespace DolarBot.Modules.InteractiveCommands
 
         [SlashCommand("crypto", "Muestra el valor de una cotización o lista todos los códigos de criptomonedas disponibles.", false, RunMode.Async)]
         public async Task GetCryptoCurrenciesAsync(
-            [Summary("código", "Código de la criptomoneda.")]
-            [Autocomplete(typeof(CryptoSymbolAutocompleteHandler))]
-            string symbol = null,
-            [Summary("nombre", "Nombre de la criptomoneda.")]
-            [Autocomplete(typeof(CryptoNameAutocompleteHandler))]
-            string name = null
+            [Summary("criptomoneda", "Código o nombre de la criptomoneda.")]
+            [Autocomplete(typeof(CryptoAutocompleteHandler))]
+            string value
         )
         {
             await DeferAsync().ContinueWith(async (task) =>
             {
                 try
                 {
-                    if (!string.IsNullOrWhiteSpace(symbol) && !string.IsNullOrWhiteSpace(name))
+                    List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
+                    string cryptoCurrencyCode = value != null ? Format.Sanitize(value).ToUpper().Trim() : null;
+                    if (cryptoCurrencyCode != null)
                     {
-                        await SendDeferredMessageAsync($"{Format.Bold("Atención")}: Debe especificar el {Format.Bold("código")} o el {Format.Bold("nombre")} de la criptomoneda, pero no ambos.");
+                        await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
                     }
                     else
                     {
-                        List<CryptoCodeResponse> cryptoCurrenciesList = await CryptoService.GetCryptoCodeList();
-                        string cryptoCurrencyCode = symbol != null ? Format.Sanitize(symbol).ToUpper().Trim() : name != null ? Format.Sanitize(name).ToUpper().Trim() : null;
-                        if (cryptoCurrencyCode != null)
-                        {
-                            await SendCryptoResponseAsync(cryptoCurrenciesList, cryptoCurrencyCode);
-                        }
-                        else
-                        {
-                            await SendDeferredCryptoCurrencyListAsync(cryptoCurrenciesList);
-                        }
+                        await SendDeferredCryptoCurrencyListAsync(cryptoCurrenciesList);
                     }
                 }
                 catch (Exception ex)

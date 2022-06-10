@@ -91,22 +91,27 @@ namespace DolarBot.Services.Currencies
         /// </summary>
         /// <param name="worldCurrencyResponse">The world currency response.</param>
         /// <param name="currencyName">The currency name.</param>
+        /// <param name="amount">The amount to rate against.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateWorldCurrencyEmbedAsync(WorldCurrencyResponse worldCurrencyResponse, string currencyName)
+        public async Task<EmbedBuilder> CreateWorldCurrencyEmbedAsync(WorldCurrencyResponse worldCurrencyResponse, string currencyName, decimal amount = 1)
         {
             var emojis = Configuration.GetSection("customEmojis");
-            Emoji currencyEmoji = new(":moneybag:");
+            Emoji currencyEmoji = Emoji.Parse(":flag_ar:");
             Emoji whatsappEmoji = new(emojis["whatsapp"]);
+            Emoji amountEmoji = Emoji.Parse(":moneybag:");
             string currencyImageUrl = Configuration.GetSection("images").GetSection("coins")["64"];
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
 
+            string blankSpace = GlobalConfiguration.Constants.BLANK_SPACE;
             TimeZoneInfo localTimeZone = GlobalConfiguration.GetLocalTimeZoneInfo();
             int utcOffset = localTimeZone.GetUtcOffset(DateTime.UtcNow).Hours;
             string lastUpdated = worldCurrencyResponse.Fecha.ToString(worldCurrencyResponse.Fecha.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            string value = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal valor) ? valor.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
+            string amountField = Format.Bold($"{amountEmoji} {blankSpace} {amount} {worldCurrencyResponse.Code}");
 
+            decimal? valuePrice = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal v) ? v * amount : null;
+            string value = valuePrice.HasValue ? valuePrice.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
-            string shareText = $"*{currencyName} ({worldCurrencyResponse.Code})*{Environment.NewLine}{Environment.NewLine}Valor: \t$ *{value}*{Environment.NewLine}Hora: \t{lastUpdated} (UTC {utcOffset})";
+            string shareText = $"*{currencyName} ({worldCurrencyResponse.Code})*{Environment.NewLine}{Environment.NewLine}*{amount} {worldCurrencyResponse.Code}*{Environment.NewLine}Valor: \t$ *{value}*{Environment.NewLine}Hora: \t{lastUpdated} (UTC {utcOffset})";
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Currency)
                                                    .WithTitle($"{currencyName} ({worldCurrencyResponse.Code})")
                                                    .WithDescription($"Cotización de {Format.Bold($"{currencyName} ({worldCurrencyResponse.Code})")} expresada en {Format.Bold("pesos argentinos")}.".AppendLineBreak())
@@ -116,10 +121,11 @@ namespace DolarBot.Services.Currencies
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"Valor", $"{Format.Bold($"{currencyEmoji} ${GlobalConfiguration.Constants.BLANK_SPACE} {value}")}");
+                                                   .AddInlineField("Monto", amountField)
+                                                   .AddInlineField($"Valor", $"{Format.Bold($"{currencyEmoji} ${blankSpace} {value.AppendLineBreak()}")}");
+            
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            embed = AddPlayStoreLink(embed);
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>

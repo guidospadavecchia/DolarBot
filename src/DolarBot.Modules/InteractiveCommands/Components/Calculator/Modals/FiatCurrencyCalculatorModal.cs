@@ -6,9 +6,9 @@ namespace DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals
     /// <summary>
     /// A calculator modal.
     /// </summary>
-    public class FiatCalculatorModal : IModal
+    public class FiatCurrencyCalculatorModal : IModal
     {
-        public const string Id = "fiat_calculator";
+        public const string Id = "fiat_currency_calculator";
         public const string TITLE = "Modificar monto";
         public const string LABEL = "Monto:";
         public const string PLACEHOLDER = "1.00";

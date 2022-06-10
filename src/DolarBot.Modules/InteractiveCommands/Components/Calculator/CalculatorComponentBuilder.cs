@@ -21,7 +21,11 @@ namespace DolarBot.Modules.InteractiveCommands.Components.Calculator
             ButtonBuilder calculatorButton = type switch
             {
                 CalculatorTypes.Crypto => new CryptoCalculatorButtonBuilder(tag, emote),
-                CalculatorTypes.Fiat => new FiatCalculatorButtonBuilder(tag, emote),
+                CalculatorTypes.Dollar => new DolarCalculatorButtonBuilder(tag, emote),
+                CalculatorTypes.Euro => new EuroCalculatorButtonBuilder(tag, emote),
+                CalculatorTypes.Real => new RealCalculatorButtonBuilder(tag, emote),
+                CalculatorTypes.FiatCurrency => new FiatCurrencyCalculatorButtonBuilder(tag, emote),
+                CalculatorTypes.Venezuela => new VzlaCalculatorButtonBuilder(tag, emote),
                 _ => null,
             };
             if (calculatorButton != null)

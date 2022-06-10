@@ -295,12 +295,10 @@ namespace DolarBot.Services.Crypto
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddField($"{usaEmoji} USD", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"US$ {usdPrice}")}".AppendLineBreak())
                                                    .AddInlineField($"{argentinaEmoji} ARS", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"$ {arsPrice}")} {GlobalConfiguration.Constants.BLANK_SPACE}")
-                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}");
+                                                   .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}".AppendLineBreak());
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            embed = AddPlayStoreLink(embed);
-
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>

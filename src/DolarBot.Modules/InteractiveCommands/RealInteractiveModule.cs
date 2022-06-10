@@ -59,7 +59,7 @@ namespace DolarBot.Modules.InteractiveCommands
         /// </summary>
         /// <param name="choice">The bank choice.</param>
         /// <returns>The choice description.</returns>
-        private static string GetBankChoiceDescription(RealBankChoices choice) => $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(choice.GetDescription())} expresada en {Format.Bold("pesos argentinos")}.";
+        private static string GetBankChoiceDescription(RealBankChoices choice) => $"Cotización del {Format.Bold("Real oficial")} del {Format.Bold(choice.GetAttribute<ChoiceDisplayAttribute>().Name)} expresada en {Format.Bold("pesos argentinos")}.";
 
         /// <summary>
         /// Returns the description for all the bank rates.
@@ -102,14 +102,14 @@ namespace DolarBot.Modules.InteractiveCommands
 
         #region Components
 
-        [ComponentInteraction($"{FiatCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
+        [ComponentInteraction($"{RealCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
         public async Task HandleCalculatorButtonClick(string choice)
         {
-            await RespondWithModalAsync<FiatCalculatorModal>($"{FiatCalculatorModal.Id}:{choice}");
+            await RespondWithModalAsync<RealCalculatorModal>($"{RealCalculatorModal.Id}:{choice}");
         }
 
-        [ModalInteraction($"{FiatCalculatorModal.Id}:*", runMode: RunMode.Async)]
-        public async Task HandleCalculatorModalInput(string choice, FiatCalculatorModal calculatorModal)
+        [ModalInteraction($"{RealCalculatorModal.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorModalInput(string choice, RealCalculatorModal calculatorModal)
         {
             await DeferAsync().ContinueWith(async (task) =>
             {
@@ -163,12 +163,12 @@ namespace DolarBot.Modules.InteractiveCommands
                 {
                     if (realChoice == null)
                     {
-                        await SendAllStandardRates(components: new CalculatorComponentBuilder(ALL_STANDARD_RATES, CalculatorTypes.Fiat, Configuration).Build());
+                        await SendAllStandardRates(components: new CalculatorComponentBuilder(ALL_STANDARD_RATES, CalculatorTypes.Real, Configuration).Build());
                     }
                     else
                     {
                         var result = await GetStandardRate(realChoice.Value);
-                        await SendStandardRate(result.Item1, result.Item2, components: new CalculatorComponentBuilder(realChoice.ToString(), CalculatorTypes.Fiat, Configuration).Build());
+                        await SendStandardRate(result.Item1, result.Item2, components: new CalculatorComponentBuilder(realChoice.ToString(), CalculatorTypes.Real, Configuration).Build());
                     }
                 }
                 catch (Exception ex)
@@ -191,12 +191,12 @@ namespace DolarBot.Modules.InteractiveCommands
                     {
                         string description = GetBankChoiceDescription(bankChoice.Value);
                         Banks bank = Enum.Parse<Banks>(bankChoice.ToString());
-                        await SendBankRate(bank, description, components: new CalculatorComponentBuilder($"bank:{bankChoice}", CalculatorTypes.Fiat, Configuration).Build());
+                        await SendBankRate(bank, description, components: new CalculatorComponentBuilder($"bank:{bankChoice}", CalculatorTypes.Real, Configuration).Build());
                     }
                     else
                     {
                         string description = GetAllBanksDescription();
-                        await SendAllBankRates(description, components: new CalculatorComponentBuilder($"bank:{ALL_BANK_RATES}", CalculatorTypes.Fiat, Configuration).Build());
+                        await SendAllBankRates(description, components: new CalculatorComponentBuilder($"bank:{ALL_BANK_RATES}", CalculatorTypes.Real, Configuration).Build());
                     }
                 }
                 catch (Exception ex)

@@ -2,13 +2,21 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Base;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Buttons;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Enums;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals;
+using DolarBot.Services.Currencies;
 using DolarBot.Services.Venezuela;
 using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DolarBot.Modules.InteractiveCommands
@@ -41,6 +49,53 @@ namespace DolarBot.Modules.InteractiveCommands
         }
         #endregion
 
+        #region Components
+
+        [ComponentInteraction($"{VzlaCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorButtonClick(string currency)
+        {
+            await RespondWithModalAsync<VzlaCalculatorModal>($"{VzlaCalculatorModal.Id}:{currency}");
+        }
+
+        [ModalInteraction($"{VzlaCalculatorModal.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorModalInput(string currencyCode, VzlaCalculatorModal calculatorModal)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                try
+                {
+                    bool isNumeric = decimal.TryParse(calculatorModal.Value.Replace(",", "."), NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal amount);
+                    if (!isNumeric || amount <= 0)
+                    {
+                        amount = 1;
+                    }
+
+                    Currencies currency = Enum.Parse<Currencies>(currencyCode);
+                    VzlaResponse result = currency switch
+                    {
+                        Currencies.Dolar => await VzlaService.GetDollarRates(),
+                        Currencies.Euro => await VzlaService.GetEuroRates(),
+                        _ => throw new NotImplementedException(),
+                    };
+                    if (result != null)
+                    {
+                        EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result, amount);
+                        await SendDeferredEmbedAsync(embed.Build());
+                    }
+                    else
+                    {
+                        await SendDeferredApiErrorResponseAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponseAsync(ex);
+                }
+            });
+        }
+
+        #endregion
+
         [SlashCommand("bolivar-dolar", "Muestra las distintas cotizaciones del dólar para Venezuela.", false, RunMode.Async)]
         public async Task GetDollarRatesAsync()
         {
@@ -52,7 +107,7 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build(), components: new CalculatorComponentBuilder(Currencies.Dolar.ToString(), CalculatorTypes.Venezuela, Configuration).Build());
                     }
                     else
                     {
@@ -77,7 +132,7 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await SendDeferredEmbedAsync(embed.Build(), components: new CalculatorComponentBuilder(Currencies.Euro.ToString(), CalculatorTypes.Venezuela, Configuration).Build());
                     }
                     else
                     {

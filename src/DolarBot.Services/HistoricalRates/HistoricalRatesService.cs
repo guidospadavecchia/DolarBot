@@ -114,9 +114,8 @@ namespace DolarBot.Services.HistoricalRates
                                                    .WithThumbnailUrl(chartImageUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddField(fieldTitle, sbField.AppendLineBreak().ToString());
-            embed = AddPlayStoreLink(embed);
-
-            return embed;
+            
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>

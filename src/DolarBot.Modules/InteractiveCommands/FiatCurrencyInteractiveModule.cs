@@ -2,15 +2,21 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency;
 using DolarBot.Modules.InteractiveCommands.Base;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Buttons;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Enums;
+using DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals;
 using DolarBot.Services.Currencies;
 using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -90,12 +96,50 @@ namespace DolarBot.Modules.InteractiveCommands
 
         #endregion
 
+        #region Components
+
+        [ComponentInteraction($"{FiatCurrencyCalculatorButtonBuilder.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorButtonClick(string currencyCode)
+        {
+            await RespondWithModalAsync<FiatCurrencyCalculatorModal>($"{FiatCurrencyCalculatorModal.Id}:{currencyCode}");
+        }
+
+        [ModalInteraction($"{FiatCurrencyCalculatorModal.Id}:*", runMode: RunMode.Async)]
+        public async Task HandleCalculatorModalInput(string currencyCode, FiatCurrencyCalculatorModal calculatorModal)
+        {
+            await DeferAsync().ContinueWith(async (task) =>
+            {
+                try
+                {
+                    bool isNumeric = decimal.TryParse(calculatorModal.Value.Replace(",", "."), NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal amount);
+                    if (!isNumeric || amount <= 0)
+                    {
+                        amount = 1;
+                    }
+                    List<WorldCurrencyCodeResponse> currenciesList = await FiatCurrencyService.GetWorldCurrenciesList();
+                    WorldCurrencyCodeResponse worldCurrencyCode = currenciesList.FirstOrDefault(x => x.Code.Equals(currencyCode, StringComparison.OrdinalIgnoreCase));
+                    if (worldCurrencyCode != null)
+                    {
+                        WorldCurrencyResponse currencyResponse = await FiatCurrencyService.GetCurrencyValue(currencyCode);
+                        EmbedBuilder embed = await FiatCurrencyService.CreateWorldCurrencyEmbedAsync(currencyResponse, worldCurrencyCode.Name, amount);
+                        await SendDeferredEmbedAsync(embed.Build());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await SendDeferredErrorResponseAsync(ex);
+                }
+            });
+        }
+
+        #endregion
+
         [SlashCommand("cotizacion", "Muestra el valor de una cotización o lista todos los códigos de monedas disponibles.", false, RunMode.Async)]
         public async Task GetCurrenciesAsync(
-            [Summary("moneda", "Código de la moneda. Si no se especifica, mostrará todos los códigos de monedas disponibles.")]
+        [Summary("moneda", "Código de la moneda. Si no se especifica, mostrará todos los códigos de monedas disponibles.")]
             [Autocomplete(typeof(FiatCurrencyCodeAutocompleteHandler))]
             string codigo = null
-        )
+    )
         {
             await DeferAsync().ContinueWith(async (task) =>
             {
@@ -111,7 +155,7 @@ namespace DolarBot.Modules.InteractiveCommands
                         {
                             WorldCurrencyResponse currencyResponse = await FiatCurrencyService.GetCurrencyValue(currencyCode);
                             EmbedBuilder embed = await FiatCurrencyService.CreateWorldCurrencyEmbedAsync(currencyResponse, worldCurrencyCode.Name);
-                            await SendDeferredEmbedAsync(embed.Build());
+                            await SendDeferredEmbedAsync(embed.Build(), components: new CalculatorComponentBuilder(currencyCode, CalculatorTypes.FiatCurrency, Configuration).Build());
                         }
                         else
                         {

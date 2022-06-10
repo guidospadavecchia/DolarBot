@@ -102,10 +102,10 @@ namespace DolarBot.Services.Bcra
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos");
+                                                   .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos".AppendLineBreak());
+            
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            embed = AddPlayStoreLink(embed);
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);            
         }
 
         /// <summary>
@@ -151,9 +151,7 @@ namespace DolarBot.Services.Bcra
                                                    })
                                                    .AddInlineField($"Valor", text);
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            embed = AddPlayStoreLink(embed);
-
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>
@@ -198,10 +196,9 @@ namespace DolarBot.Services.Bcra
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", text);
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            embed = AddPlayStoreLink(embed);
 
-            return embed;
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         #endregion

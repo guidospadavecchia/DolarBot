@@ -1,8 +1,6 @@
-﻿using Discord;
-using DolarBot.API;
+﻿using DolarBot.API;
 using DolarBot.Services.Banking;
 using DolarBot.Util;
-using DolarBot.Util.Extensions;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Globalization;
@@ -86,27 +84,6 @@ namespace DolarBot.Services.Base
 
             date = result;
             return validDate;
-        }
-
-        /// <summary>
-        /// Appends the play store link as a field into <paramref name="embed"/>.
-        /// </summary>
-        /// <param name="embed">The embed to be modified.</param>
-        /// <returns>The modified <see cref="EmbedBuilder"/>.</returns>
-        public EmbedBuilder AddPlayStoreLink(EmbedBuilder embed)
-        {
-            var emojis = Configuration.GetSection("customEmojis");
-            Emoji playStoreEmoji = new(emojis["playStore"]);
-            string playStoreUrl = Configuration["playStoreLink"];
-
-            if (!string.IsNullOrWhiteSpace(playStoreUrl))
-            {
-                return embed.AddFieldLink(playStoreEmoji, "¡Descargá la app para Android!", "Google Play Store", playStoreUrl);
-            }
-            else
-            {
-                return embed;
-            }
         }
 
         /// <summary>

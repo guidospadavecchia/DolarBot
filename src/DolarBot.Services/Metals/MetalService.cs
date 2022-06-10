@@ -96,12 +96,10 @@ namespace DolarBot.Services.Metals
                                                        Text = $"Ultima actualización: {lastUpdated} (UTC {utcOffset})",
                                                        IconUrl = footerImageUrl
                                                    })
-                                                   .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}");
+                                                   .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}".AppendLineBreak());
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            embed = AddPlayStoreLink(embed);
-
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>

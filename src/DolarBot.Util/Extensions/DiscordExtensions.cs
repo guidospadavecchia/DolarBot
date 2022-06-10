@@ -161,18 +161,21 @@ namespace DolarBot.Util.Extensions
         /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>
         /// <param name="shareEmoji">The emoji to use.</param>
         /// <param name="shareText">The text to share.</param>
+        /// <param name="shortenUrlFunction">A function to shorten the URL.</param>
+        /// <param name="inline">Indicates wether the field must be inline or not.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object with an added share field.</returns>
-        public static async Task<EmbedBuilder> AddFieldWhatsAppShare(this EmbedBuilder embedBuilder, Emoji shareEmoji, string shareText, Func<string, Task<string>> shortenUrlFunction = null)
+        public static async Task<EmbedBuilder> AddFieldWhatsAppShare(this EmbedBuilder embedBuilder, Emoji shareEmoji, string shareText, Func<string, Task<string>> shortenUrlFunction = null, bool inline = false)
         {
             string encodedText = HttpUtility.UrlEncode($"{shareText}{Environment.NewLine}{Environment.NewLine}{"_Powered by DolarBot_"}");
             string url = $"https://api.whatsapp.com/send?text={encodedText}";
-
             if (shortenUrlFunction != null)
             {
                 url = await shortenUrlFunction(url);
             }
+            string title = "WhatsApp";
+            string description = $"{shareEmoji} {Format.Url("Compartir", url)}".AppendLineBreak();
 
-            return embedBuilder.AddField(GlobalConfiguration.Constants.BLANK_SPACE, $"{shareEmoji} {Format.Url("Compartir", url)}".AppendLineBreak());
+            return inline ? embedBuilder.AddInlineField(title, description) : embedBuilder.AddField(title, description);
         }
 
         /// <summary>
@@ -201,10 +204,12 @@ namespace DolarBot.Util.Extensions
         /// <param name="title">The title for the embed field.</param>
         /// <param name="linkText">The text to show on the link.</param>
         /// <param name="url">The URL for the link.</param>
+        /// <param name="inline">Indicates wether the field is inline or not.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object with an added link field.</returns>
-        public static EmbedBuilder AddFieldLink(this EmbedBuilder embedBuilder, Emoji emoji, string title, string linkText, string url)
+        public static EmbedBuilder AddFieldLink(this EmbedBuilder embedBuilder, Emoji emoji, string title, string linkText, string url, bool inline)
         {
-            return embedBuilder.AddField(title, $"{emoji} {Format.Url(linkText, url)}".AppendLineBreak());
+            string value = $"{emoji} {Format.Url(linkText, url)}".AppendLineBreak();
+            return inline ? embedBuilder.AddInlineField(title, value) : embedBuilder.AddField(title, value);
         }
 
         /// <summary>
@@ -239,6 +244,29 @@ namespace DolarBot.Util.Extensions
             actions.Add(lastEmoji, PaginatorAction.SkipToEnd);
 
             return builder.WithOptions(actions);
+        }
+
+        /// <summary>
+        /// Appends the play store link as a field into <paramref name="embed"/>.
+        /// </summary>
+        /// <param name="embed">The embed to be modified.</param>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <param name="inline">Indicates wether the field is inline or not.</param>
+        /// <returns>The modified <see cref="EmbedBuilder"/>.</returns>
+        public static EmbedBuilder AddPlayStoreLink(this EmbedBuilder embed, IConfiguration configuration, bool inline = false)
+        {
+            var emojis = configuration.GetSection("customEmojis");
+            Emoji playStoreEmoji = new(emojis["playStore"]);
+            string playStoreUrl = configuration["playStoreLink"];
+
+            if (!string.IsNullOrWhiteSpace(playStoreUrl))
+            {
+                return embed.AddFieldLink(playStoreEmoji, "¡Descargá la app para Android!", "Google Play Store", playStoreUrl, inline);
+            }
+            else
+            {
+                return embed;
+            }
         }
     }
 }

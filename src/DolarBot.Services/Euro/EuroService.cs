@@ -175,7 +175,7 @@ namespace DolarBot.Services.Euro
                                                    .WithTitle("Cotizaciones del Euro")
                                                    .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(thumbnailUrl)
-                                                   .WithFooter($" C = Compra | V = Venta | A = Venta con impuestos | {clockEmoji} = Last updated (UTC {utcOffset})")
+                                                   .WithFooter($" C = Compra | V = Venta | A = Venta + Impuestos | {clockEmoji} = Last updated (UTC {utcOffset})")
                                                    .AddField("Monto", amountField);
 
             for (int i = 0; i < euroResponses.Length; i++)
@@ -206,9 +206,7 @@ namespace DolarBot.Services.Euro
                 }
             }
 
-            embed = AddPlayStoreLink(embed);
-
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <inheritdoc />
@@ -244,23 +242,24 @@ namespace DolarBot.Services.Euro
                                                    .WithThumbnailUrl(euroImageUrl)
                                                    .WithFooter($"Ultima actualización: {lastUpdated} (UTC {utcOffset})", footerImageUrl)
                                                    .AddField("Monto", amountField)
-                                                   .AddInlineField("Compra", buyInlineField)
-                                                   .AddInlineField("Venta", sellInlineField);
+                                                   .AddInlineField("Compra", buyInlineField);
             if (euroResponse.VentaAhorro != null)
             {
                 decimal? sellPriceWithTaxesValue = decimal.TryParse(euroResponse?.VentaAhorro, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal sellWithTaxesValue) ? sellWithTaxesValue * amount : null;
                 string sellPriceWithTaxes = sellPriceWithTaxesValue.HasValue ? sellPriceWithTaxesValue.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
                 string sellWithTaxesInlineField = Format.Bold($"{euroEmoji} {blankSpace} $ {sellPriceWithTaxes}");
-                embed.AddInlineField("Venta con Impuestos", sellWithTaxesInlineField);
+                embed = embed.AddInlineField("Venta", sellInlineField)
+                             .AddInlineField("Venta + Impuestos", sellWithTaxesInlineField.AppendLineBreak());
                 shareText += $"{Environment.NewLine}Venta c/imp: \t$ *{sellPriceWithTaxes}*";
+            }
+            else
+            {
+                embed = embed.AddInlineField("Venta", sellInlineField.AppendLineBreak());
             }
 
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-
-            embed = AddPlayStoreLink(embed);
-
-            return embed;
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>

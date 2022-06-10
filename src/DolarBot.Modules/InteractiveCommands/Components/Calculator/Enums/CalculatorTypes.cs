@@ -10,8 +10,24 @@
         /// </summary>
         Crypto,
         /// <summary>
+        /// A dollar calculator.
+        /// </summary>
+        Dollar,
+        /// <summary>
+        /// An Euro calculator.
+        /// </summary>
+        Euro,
+        /// <summary>
+        /// A Real calculator.
+        /// </summary>
+        Real,
+        /// <summary>
         /// A fiat currency calculator.
         /// </summary>
-        Fiat
+        FiatCurrency,
+        /// <summary>
+        /// A bolivar (Venezuela) calculator.
+        /// </summary>
+        Venezuela,
     }
 }

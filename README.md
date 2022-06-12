@@ -59,8 +59,7 @@ A continuación se listan los comandos disponibles:
 
 ### Criptomonedas
 - \[`/crypto`]: Muestra la lista de todos los códigos de criptomonedas disponibles.  
-- \[`/crypto`] `<codigo>`: Muestra la cotización actual de una criptomoneda determinada según su código.  
-- \[`/crypto`] `<nombre>`: Muestra la cotización actual de una criptomoneda determinada según su nombre.  
+- \[`/crypto`] `<criptomoneda>`: Muestra la cotización actual de una criptomoneda determinada según su código.  
 
 ### Indicadores
 - \[`/riesgopais`]: Muestra el valor del riesgo país.  

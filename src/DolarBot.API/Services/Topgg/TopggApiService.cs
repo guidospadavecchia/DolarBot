@@ -47,7 +47,7 @@ namespace DolarBot.API.Services.Topgg
             RestClientOptions options = new(BASE_URL);
             if (int.TryParse(Configuration["apiRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
             {
-                options.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
+                options.MaxTimeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
             }
             Client = new RestClient(options);
             Client.UseNewtonsoftJson();

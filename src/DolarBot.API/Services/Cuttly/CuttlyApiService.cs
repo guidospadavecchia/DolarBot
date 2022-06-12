@@ -43,7 +43,7 @@ namespace DolarBot.API.Services.Cuttly
             RestClientOptions options = new(Configuration["cuttlyBaseUrl"]);
             if (int.TryParse(Configuration["cuttlyRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
             {
-                options.Timeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
+                options.MaxTimeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
             }
             Client = new RestClient(options).UseNewtonsoftJson();
         }

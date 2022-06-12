@@ -42,7 +42,7 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
                 {
                     currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                List <CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                List<CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
                 currencyCodes = currencyCodesBySymbol.Union(currencyCodesByName).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
             }
             else

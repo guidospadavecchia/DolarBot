@@ -103,9 +103,9 @@ namespace DolarBot.Services.Bcra
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos".AppendLineBreak());
-            
+
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
-            return embed.AddPlayStoreLink(Configuration);            
+            return embed.AddPlayStoreLink(Configuration);
         }
 
         /// <summary>

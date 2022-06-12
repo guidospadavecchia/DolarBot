@@ -1,6 +1,5 @@
 ﻿using Discord;
 using DolarBot.API;
-using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Services.Base;
@@ -90,7 +89,7 @@ namespace DolarBot.Services.Crypto
         public async Task<CryptoResponse> GetCryptoRateByCode(string cryptoCurrencyCode)
         {
             return await Api.DolarBot.GetCryptoCurrencyRate(cryptoCurrencyCode);
-        }        
+        }
 
         #endregion
 
@@ -118,7 +117,7 @@ namespace DolarBot.Services.Crypto
             string footerImageUrl = Configuration.GetSection("images").GetSection("clock")["32"];
             string cryptoCode = cryptoResponse.Code.Length > 10 ? $"{cryptoResponse.Code[..7]}..." : cryptoResponse.Code;
             string lastUpdated = cryptoResponse.Date.ToString(cryptoResponse.Date.Date == TimeZoneInfo.ConvertTime(DateTime.UtcNow, localTimeZone).Date ? "HH:mm" : "dd/MM/yyyy - HH:mm");
-            
+
             decimal? arsPriceValue = decimal.TryParse(cryptoResponse?.ARS, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal ars) ? ars * quantity : null;
             decimal? arsPriceWithTaxesValue = decimal.TryParse(cryptoResponse?.ARSTaxed, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal arsTaxed) ? arsTaxed * quantity : null;
             decimal? usdPriceValue = decimal.TryParse(cryptoResponse?.USD, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal usd) ? usd * quantity : null;

@@ -399,38 +399,6 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
-        public async Task<CryptoResponse> GetCryptoCurrencyRate(CryptoCurrencies cryptoCurrency)
-        {
-            CryptoResponse cachedResponse = Cache.GetObject<CryptoResponse>(cryptoCurrency);
-            if (cachedResponse != null)
-            {
-                return cachedResponse;
-            }
-            else
-            {
-                string endpoint = cryptoCurrency.GetDescription();
-                RestRequest request = new(endpoint);
-                RestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
-                if (response.IsSuccessful)
-                {
-                    CryptoResponse cryptoResponse = response.Data;
-                    cryptoResponse.Currency = cryptoCurrency;
-                    Cache.SaveObject(cryptoCurrency, cryptoResponse, Cache.GetCryptoExpiration());
-
-                    return cryptoResponse;
-                }
-                else
-                {
-                    OnError(response);
-                    return null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Queries the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
-        /// </summary>
-        /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
         public async Task<CryptoResponse> GetCryptoCurrencyRate(string cryptoCurrencyCode)
         {
             string endpoint = $"{CryptoEndpoints.Crypto.GetDescription()}/{cryptoCurrencyCode.ToUpper()}";

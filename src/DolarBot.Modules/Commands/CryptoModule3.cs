@@ -39,8 +39,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetPolkadotRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("polkadot");
+                    await SendCryptoReply(result, "Polkadot");
                 }
             }
             catch (Exception ex)
@@ -60,8 +60,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetRippleRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("ripple");
+                    await SendCryptoReply(result, "Ripple");
                 }
             }
             catch (Exception ex)
@@ -81,8 +81,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetStellarRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("stellar");
+                    await SendCryptoReply(result, "Stellar");
                 }
             }
             catch (Exception ex)
@@ -102,8 +102,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetTetherRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("tether");
+                    await SendCryptoReply(result, "Tether");
                 }
             }
             catch (Exception ex)
@@ -122,8 +122,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetThetaRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("theta-token");
+                    await SendCryptoReply(result, "Theta");
                 }
             }
             catch (Exception ex)
@@ -143,8 +143,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetUniswapRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("uniswap");
+                    await SendCryptoReply(result, "Uniswap");
                 }
             }
             catch (Exception ex)

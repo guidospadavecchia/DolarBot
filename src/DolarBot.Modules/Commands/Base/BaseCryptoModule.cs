@@ -38,11 +38,12 @@ namespace DolarBot.Modules.Commands.Base
         /// Replies with an embed message containing the rate for the current cryptocurrency.
         /// </summary>
         /// <param name="response">The crypto response with the data.</param>
-        protected async Task SendCryptoReply(CryptoResponse response)
+        /// <param name="cryptoCurrencyName">A custom cryptocurrency name.</param>
+        protected async Task SendCryptoReply(CryptoResponse response, string cryptoCurrencyName = null)
         {
             if (response != null)
             {
-                EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(response);
+                EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(response, cryptoCurrencyName);
                 embed.AddCommandDeprecationNotice(Configuration);
                 await ReplyAsync(embed: embed.Build());
             }

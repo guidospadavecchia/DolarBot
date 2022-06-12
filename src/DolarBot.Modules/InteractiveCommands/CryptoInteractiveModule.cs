@@ -1,8 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
 using DolarBot.API;
-using DolarBot.API.Attributes;
-using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
@@ -13,7 +11,6 @@ using DolarBot.Modules.InteractiveCommands.Components.Calculator.Buttons;
 using DolarBot.Modules.InteractiveCommands.Components.Calculator.Enums;
 using DolarBot.Modules.InteractiveCommands.Components.Calculator.Modals;
 using DolarBot.Services.Crypto;
-using DolarBot.Util.Extensions;
 using Fergun.Interactive;
 using log4net;
 using Microsoft.Extensions.Configuration;
@@ -77,24 +74,10 @@ namespace DolarBot.Modules.InteractiveCommands
             CryptoCodeResponse cryptoCurrencyCode = cryptoCurrenciesList.FirstOrDefault(x => x.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
             if (cryptoCurrencyCode != null)
             {
-                CryptoResponse cryptoResponse;
-                string cryptoCurrencyName = null;
-                List<CryptoCurrencies> cryptocurrencies = Enum.GetValues(typeof(CryptoCurrencies)).Cast<CryptoCurrencies>().ToList();
-                bool isEnumerated = cryptocurrencies.Any(x => x.GetAttribute<CryptoCodeAttribute>()?.Code.Equals(cryptoCurrencyCode.Code, StringComparison.OrdinalIgnoreCase) ?? false);
-                if (isEnumerated)
-                {
-                    CryptoCurrencies cryptoCurrency = cryptocurrencies.First(x => x.GetAttribute<CryptoCodeAttribute>().Code.Equals(cryptoCurrencyCode.Code, StringComparison.OrdinalIgnoreCase));
-                    cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrency);
-                }
-                else
-                {
-                    cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrencyCode.Code);
-                    cryptoCurrencyName = cryptoCurrencyCode.Name;
-                }
-
+                CryptoResponse cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrencyCode.Code);
                 if (cryptoResponse != null)
                 {
-                    EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse, cryptoCurrencyName, quantity);
+                    EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse, cryptoCurrencyCode.Name, quantity);
                     await SendDeferredEmbedAsync(embed.Build(), new CalculatorComponentBuilder(cryptoCurrencyCode.Code, CalculatorTypes.Crypto, Configuration).Build());
                 }
                 else
@@ -140,7 +123,7 @@ namespace DolarBot.Modules.InteractiveCommands
         public async Task GetCryptoCurrenciesAsync(
             [Summary("criptomoneda", "Código o nombre de la criptomoneda.")]
             [Autocomplete(typeof(CryptoAutocompleteHandler))]
-            string value
+            string value = null
         )
         {
             await DeferAsync().ContinueWith(async (task) =>

@@ -181,77 +181,9 @@ namespace DolarBot.Util
             /// </summary>
             public static readonly Color Copper = new(172, 124, 2);
             /// <summary>
-            /// The color for Binance Coin.
+            /// The color for Crypto.
             /// </summary>
-            public static readonly Color Crypto = new(231, 165, 46);
-            /// <summary>
-            /// The color for Binance Coin.
-            /// </summary>
-            public static readonly Color BinanceCoin = new(243, 186, 47);
-            /// <summary>
-            /// The color for Bitcoin.
-            /// </summary>
-            public static readonly Color Bitcoin = new(247, 148, 19);
-            /// <summary>
-            /// The color for Bitcoin Cash.
-            /// </summary>
-            public static readonly Color BitcoinCash = new(250, 139, 49);
-            /// <summary>
-            /// The color for Cardano.
-            /// </summary>
-            public static readonly Color Cardano = new(0, 51, 173);
-            /// <summary>
-            /// The color for Chainlink.
-            /// </summary>
-            public static readonly Color Chainlink = new(42, 90, 218);
-            /// <summary>
-            /// The color for DAI.
-            /// </summary>
-            public static readonly Color DAI = new(245, 172, 55);
-            /// <summary>
-            /// The color for Dash.
-            /// </summary>
-            public static readonly Color Dash = new(24, 118, 189);
-            /// <summary>
-            /// The color for Dash.
-            /// </summary>
-            public static readonly Color Dogecoin = new(187, 161, 56);
-            /// <summary>
-            /// The color for Dash.
-            /// </summary>
-            public static readonly Color Ethereum = new(98, 104, 143);
-            /// <summary>
-            /// The color for Litecoin.
-            /// </summary>
-            public static readonly Color Litecoin = new(125, 178, 255);
-            /// <summary>
-            /// The color for Monero.
-            /// </summary>
-            public static readonly Color Monero = new(255, 107, 0);
-            /// <summary>
-            /// The color for Polkadot.
-            /// </summary>
-            public static readonly Color Polkadot = new(230, 0, 122);
-            /// <summary>
-            /// The color for Ripple.
-            /// </summary>
-            public static readonly Color Ripple = new(23, 154, 245);
-            /// <summary>
-            /// The color for Stellar.
-            /// </summary>
-            public static readonly Color Stellar = new(0, 0, 0);
-            /// <summary>
-            /// The color for Tether.
-            /// </summary>
-            public static readonly Color Tether = new(80, 175, 149);
-            /// <summary>
-            /// The color for Theta.
-            /// </summary>
-            public static readonly Color Theta = new(58, 190, 214);
-            /// <summary>
-            /// The color for Uniswap.
-            /// </summary>
-            public static readonly Color Uniswap = new(255, 0, 122);
+            public static readonly Color Crypto = new(131, 131, 131);
             /// <summary>
             /// The color for Venezuela rates.
             /// </summary>

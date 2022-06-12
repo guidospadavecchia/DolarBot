@@ -2,8 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using DolarBot.API;
-using DolarBot.API.Attributes;
-using DolarBot.API.Enums;
 using DolarBot.API.Models;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.Commands.Base;
@@ -55,20 +53,8 @@ namespace DolarBot.Modules.Commands
             else if (cryptoCurrencyCodeResponses.Count == 1)
             {
                 CryptoCodeResponse cryptoCurrencyCodeResponse = cryptoCurrencyCodeResponses.First();
-                List<CryptoCurrencies> cryptocurrencies = Enum.GetValues(typeof(CryptoCurrencies)).Cast<CryptoCurrencies>().ToList();
-                bool isEnumerated = cryptocurrencies.Any(x => x.GetAttribute<CryptoCodeAttribute>()?.Code.Equals(cryptoCurrencyCodeResponse.Code, StringComparison.OrdinalIgnoreCase) ?? false);
-                if (isEnumerated)
-                {
-                    CryptoCurrencies cryptoCurrency = cryptocurrencies.First(x => x.GetAttribute<CryptoCodeAttribute>().Code.Equals(cryptoCurrencyCodeResponse.Code, StringComparison.OrdinalIgnoreCase));
-                    CryptoResponse cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrency);
-                    await SendCryptoReply(cryptoResponse);
-                }
-                else
-                {
-                    CryptoResponse cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrencyCodeResponse.Code);
-                    EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse, cryptoCurrencyCodeResponse.Name);
-                    await ReplyAsync(embed: embed.Build());
-                }
+                CryptoResponse cryptoResponse = await CryptoService.GetCryptoRateByCode(cryptoCurrencyCodeResponse.Code);
+                await SendCryptoReply(cryptoResponse, cryptoCurrencyCodeResponse.Name);
             }
             else
             {
@@ -159,8 +145,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetBinanceCoinRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("binancecoin");
+                    await SendCryptoReply(result, "Binance Coin");
                 }
             }
             catch (Exception ex)
@@ -180,8 +166,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetBitcoinRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("bitcoin");
+                    await SendCryptoReply(result, "Bitcoin");
                 }
             }
             catch (Exception ex)
@@ -201,8 +187,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetBitcoinCashRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("bitcoin-cash");
+                    await SendCryptoReply(result, "Bitcoin Cash");
                 }
             }
             catch (Exception ex)
@@ -222,8 +208,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetCardanoRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("cardano");
+                    await SendCryptoReply(result, "Cardano");
                 }
             }
             catch (Exception ex)
@@ -243,8 +229,8 @@ namespace DolarBot.Modules.Commands
             {
                 using (Context.Channel.EnterTypingState())
                 {
-                    CryptoResponse result = await CryptoService.GetChainlinkRate();
-                    await SendCryptoReply(result);
+                    CryptoResponse result = await CryptoService.GetCryptoRateByCode("chainlink");
+                    await SendCryptoReply(result, "Chainlink");
                 }
             }
             catch (Exception ex)

@@ -61,7 +61,7 @@ namespace DolarBot.Util.Extensions
             }
             else
             {
-                return $"{char.ToUpper(text[0])}{text.Substring(1)}";
+                return $"{char.ToUpper(text[0])}{text[1..]}";
             }
         }
 

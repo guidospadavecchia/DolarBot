@@ -86,7 +86,7 @@ A continuación se listan los comandos disponibles:
 - \[`/bancos`]: Muestra la lista de bancos disponibles para cada una de las monedas principales (Dólar, Euro y Real).  
 - \[`/frase`]: Muestra una frase célebre acerca de la economía argentina.  
 
-## Librerías
+## Librerias
 - [Discord.Net](https://github.com/discord-net/Discord.Net)
 - [Fergun.Interactive](https://github.com/d4n3436/Fergun.Interactive)
 - [DBL-dotnet-Library](https://github.com/top-gg/dotnet-sdk)

@@ -56,8 +56,7 @@ namespace DolarBot
             ApiCalls api = new(Configuration, logger);
             DiscordSocketClient client = new(new DiscordSocketConfig()
             {
-                /* TODO: Remove GuildMessages after it becomes privileged intent and all commands are replaced by slash commands */
-                GatewayIntents = GatewayIntents.GuildMessages | GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.GuildMessageReactions | GatewayIntents.GuildMessageTyping | GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions | GatewayIntents.DirectMessageTyping,
+                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions | GatewayIntents.DirectMessageTyping,
             });
             CommandService commandsService = new();
             InteractionService interactionService = new(client);
@@ -65,7 +64,6 @@ namespace DolarBot
 
             using ServiceProvider services = ConfigureServices(client, commandsService, interactionService, fergunInteractiveService, api);
 
-            string commandPrefix = Configuration["commandPrefix"];
             string token = GlobalConfiguration.GetToken(Configuration);
 
             PrintCurrentVersion();

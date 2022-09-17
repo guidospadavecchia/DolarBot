@@ -87,6 +87,10 @@ namespace DolarBot.Modules.InteractiveCommands
                     description = $"Cotización del {Format.Bold("dólar ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
                     response = await Service.GetDollarAhorro();
                     break;
+                case DollarChoices.Tarjeta:
+                    description = $"Cotización del {Format.Bold("dólar tarjeta")} expresada en {Format.Bold("pesos argentinos")}.";
+                    response = await Service.GetDollarTarjeta();
+                    break;
                 case DollarChoices.Blue:
                     description = $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.";
                     response = await Service.GetDollarBlue();
@@ -169,25 +173,23 @@ namespace DolarBot.Modules.InteractiveCommands
         [Summary("tipo", "Indica el tipo de cotización a mostrar.")]
             DollarChoices? dollarChoice = null)
         {
-            await DeferAsync().ContinueWith(async (task) =>
+            try
             {
-                try
+                await DeferAsync();
+                if (dollarChoice == null)
                 {
-                    if (dollarChoice == null)
-                    {
-                        await SendAllStandardRates(components: new CalculatorComponentBuilder(ALL_STANDARD_RATES, CalculatorTypes.Dollar, Configuration).Build());
-                    }
-                    else
-                    {
-                        var result = await GetStandardRate(dollarChoice.Value);
-                        await SendStandardRate(result.Item1, result.Item2, components: new CalculatorComponentBuilder(dollarChoice.ToString(), CalculatorTypes.Dollar, Configuration).Build());
-                    }
+                    await SendAllStandardRates(components: new CalculatorComponentBuilder(ALL_STANDARD_RATES, CalculatorTypes.Dollar, Configuration).Build());
                 }
-                catch (Exception ex)
+                else
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    var result = await GetStandardRate(dollarChoice.Value);
+                    await SendStandardRate(result.Item1, result.Item2, components: new CalculatorComponentBuilder(dollarChoice.ToString(), CalculatorTypes.Dollar, Configuration).Build());
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                await FollowUpWithErrorResponseAsync(ex);
+            }
         }
 
         [SlashCommand("dolar-bancos", "Muestra las cotizaciones bancarias del dólar.", false, RunMode.Async)]
@@ -213,7 +215,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

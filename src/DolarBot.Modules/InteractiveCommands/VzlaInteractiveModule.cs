@@ -79,16 +79,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result, amount);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -106,16 +106,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build(), components: new CalculatorComponentBuilder(Currencies.Dolar.ToString(), CalculatorTypes.Venezuela, Configuration).Build());
+                        await FollowupAsync(embed: embed.Build(), components: new CalculatorComponentBuilder(Currencies.Dolar.ToString(), CalculatorTypes.Venezuela, Configuration).Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -131,16 +131,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await VzlaService.CreateVzlaEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build(), components: new CalculatorComponentBuilder(Currencies.Euro.ToString(), CalculatorTypes.Venezuela, Configuration).Build());
+                        await FollowupAsync(embed: embed.Build(), components: new CalculatorComponentBuilder(Currencies.Euro.ToString(), CalculatorTypes.Venezuela, Configuration).Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

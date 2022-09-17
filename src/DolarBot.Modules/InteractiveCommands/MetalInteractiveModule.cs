@@ -52,16 +52,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -77,16 +77,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -102,16 +102,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null)
                     {
                         EmbedBuilder embed = await MetalService.CreateMetalEmbedAsync(result);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

@@ -87,6 +87,10 @@ namespace DolarBot.Modules.InteractiveCommands
                     description = $"Cotización del {Format.Bold("Real ahorro")} expresada en {Format.Bold("pesos argentinos")}.";
                     response = await Service.GetRealAhorro();
                     break;
+                case RealChoices.Tarjeta:
+                    description = $"Cotización del {Format.Bold("Real tarjeta")} expresada en {Format.Bold("pesos argentinos")}.";
+                    response = await Service.GetRealTarjeta();
+                    break;
                 case RealChoices.Blue:
                     description = $"Cotización del {Format.Bold("Real blue")} expresada en {Format.Bold("pesos argentinos")}.";
                     response = await Service.GetRealBlue();
@@ -173,7 +177,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -201,7 +205,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

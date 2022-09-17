@@ -11,6 +11,8 @@ namespace DolarBot.API.Enums
         Oficial,
         [Description("/api/euro/ahorro")]
         Ahorro,
+        [Description("/api/euro/tarjeta")]
+        Tarjeta,
         [Description("/api/euro/blue")]
         Blue,
         [Description("/api/euro/bancos/nacion")]

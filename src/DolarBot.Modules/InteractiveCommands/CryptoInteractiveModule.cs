@@ -60,7 +60,7 @@ namespace DolarBot.Modules.InteractiveCommands
         {
             string currencyCommand = GetType().GetMethod(nameof(GetCryptoCurrenciesAsync)).GetCustomAttributes(true).OfType<SlashCommandAttribute>().First().Name;
             EmbedBuilder[] embeds = CryptoService.CreateCryptoListEmbedAsync(cryptoCurrenciesList, currencyCommand).ToArray();
-            await SendDeferredPaginatedEmbedAsync(embeds);
+            await FollowUpWithPaginatedEmbedAsync(embeds);
         }
 
         /// <summary>
@@ -78,16 +78,16 @@ namespace DolarBot.Modules.InteractiveCommands
                 if (cryptoResponse != null)
                 {
                     EmbedBuilder embed = await CryptoService.CreateCryptoEmbedAsync(cryptoResponse, cryptoCurrencyCode.Name, quantity);
-                    await SendDeferredEmbedAsync(embed.Build(), new CalculatorComponentBuilder(cryptoCurrencyCode.Code, CalculatorTypes.Crypto, Configuration).Build());
+                    await FollowupAsync(embed: embed.Build(), components: new CalculatorComponentBuilder(cryptoCurrencyCode.Code, CalculatorTypes.Crypto, Configuration).Build());
                 }
                 else
                 {
-                    await SendDeferredApiErrorResponseAsync();
+                    await FollowUpWithApiErrorResponseAsync();
                 }
             }
             else
             {
-                await SendDeferredMessageAsync($"No hay resultados para la búsqueda. Asegurate de utilizar los resultados autocompletados.");
+                await FollowupAsync($"No hay resultados para la búsqueda. Asegurate de utilizar los resultados autocompletados.");
             }
         }
 
@@ -143,7 +143,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

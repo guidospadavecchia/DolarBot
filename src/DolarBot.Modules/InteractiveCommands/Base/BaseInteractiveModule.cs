@@ -37,6 +37,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         #endregion
 
         #region Constructor
+
         /// <summary>
         /// Initializes the object using the <see cref="IConfiguration"/> object.
         /// </summary>
@@ -49,6 +50,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             Logger = logger;
             InteractiveService = interactiveService;
         }
+
         #endregion
 
         #region Methods
@@ -57,16 +59,13 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// Sends a deferred paginated message from an <see cref="IEnumerable{T}"/> of <see cref="EmbedBuilder"/> objects.
         /// </summary>
         /// <param name="embedBuilders">The embed builders.</param>
-        protected Task SendDeferredPaginatedEmbedAsync(IEnumerable<EmbedBuilder> embedBuilders)
-        {
-            return SendDeferredPaginatedEmbedAsync(embedBuilders.Select(x => x.Build()).ToArray());
-        }
+        protected Task FollowUpWithPaginatedEmbedAsync(IEnumerable<EmbedBuilder> embedBuilders) => FollowUpWithPaginatedEmbedAsync(embedBuilders.Select(x => x.Build()).ToArray());
 
         /// <summary>
-        /// Sends a deferred paginated message.
+        /// Follows up an interaction with a deferred paginated message.
         /// </summary>
         /// <param name="embeds">The embed pages.</param>
-        protected async Task SendDeferredPaginatedEmbedAsync(Embed[] embeds)
+        protected async Task FollowUpWithPaginatedEmbedAsync(Embed[] embeds)
         {
             List<PageBuilder> pages = new();
             foreach (Embed embed in embeds)
@@ -115,59 +114,23 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         }
 
         /// <summary>
-        /// Modifies the original deferred response by sending an embed message.
-        /// </summary>
-        /// <param name="embed">The embed to be sent.</param>
-        /// <param name="components">Optional components.</param>
-        protected async Task SendDeferredEmbedAsync(Embed embed, Optional<MessageComponent> components = default)
-        {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) =>
-            {
-                messageProperties.Embed = embed;
-                messageProperties.Components = components;
-            });
-        }
-
-        /// <summary>
-        /// Modifies the original deferred response by sending multiple embed messages.
-        /// </summary>
-        /// <param name="embeds">The embed messages to be sent.</param>
-        protected async Task SendDeferredEmbedAsync(Embed[] embeds)
-        {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Embeds = embeds);
-        }
-
-        /// <summary>
-        /// Modifies the original deferred response by sending a message.
-        /// </summary>
-        /// <param name="message">The message to be sent.</param>
-        protected async Task SendDeferredMessageAsync(string message, Optional<MessageComponent> components = default)
-        {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) =>
-            {
-                messageProperties.Content = message;
-                messageProperties.Components = components;
-            });
-        }
-
-        /// <summary>
-        /// Modifies the original deferred response by sending a message indicating an error has ocurred with the API.
+        /// Follows up to the original deferred response by sending a message indicating an error has ocurred with the API.
         /// </summary>
         /// <returns></returns>
-        protected async Task SendDeferredApiErrorResponseAsync()
+        protected async Task FollowUpWithApiErrorResponseAsync()
         {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = RequestErrorMessage);
+            await Context.Interaction.FollowupAsync(RequestErrorMessage);
         }
 
         /// <summary>
-        /// Sends a reply indicating an error has occurred, by modifying the original deferred response.
+        /// Sends a reply indicating an error has occurred, by following up the original deferred response.
         /// </summary>
         /// <param name="ex">The exception to log.</param>
-        protected async Task SendDeferredErrorResponseAsync(Exception ex)
+        protected async Task FollowUpWithErrorResponseAsync(Exception ex)
         {
             string errorMessage = GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]);
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = errorMessage);
-            Logger.Error("Error al ejecutar comando.", ex);
+            await Context.Interaction.FollowupAsync(errorMessage);
+            Logger.Error("Error executing command", ex);
         }
 
         #endregion

@@ -176,17 +176,17 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (SlashCommandExists(comando))
                     {
                         EmbedBuilder embed = GenerateEmbeddedSlashCommandHelp(comando);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                     else
                     {
                         EmbedBuilder[] embedbuilders = GenerateEmbeddedSlashCommandsHelp().ToArray();
-                        await SendDeferredPaginatedEmbedAsync(embedbuilders);
+                        await FollowUpWithPaginatedEmbedAsync(embedbuilders);
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

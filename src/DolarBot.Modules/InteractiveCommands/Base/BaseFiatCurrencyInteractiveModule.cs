@@ -64,7 +64,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// </summary>
         protected async Task SendPartialResponseWarning()
         {
-            await Context.Interaction.ModifyOriginalResponseAsync((MessageProperties messageProperties) => messageProperties.Content = PARTIAL_RESPONSE_MESSAGE);
+            await Context.Interaction.FollowupAsync(PARTIAL_RESPONSE_MESSAGE);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// </summary>
         /// <param name="amount">The amount to calculate against.</param>
         /// <param name="components">Optional components.</param>
-        protected async Task SendAllStandardRates(decimal amount = 1, Optional<MessageComponent> components = default)
+        protected async Task SendAllStandardRates(decimal amount = 1, MessageComponent components = default)
         {
             TypeResponse[] responses = await Service.GetAllStandardRates();
             if (responses.Any(r => r != null))
@@ -83,11 +83,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 {
                     await SendPartialResponseWarning();
                 }
-                await SendDeferredEmbedAsync(embed.Build(), components);
+                await FollowupAsync(embed: embed.Build(), components: components);
             }
             else
             {
-                await SendDeferredApiErrorResponseAsync();
+                await FollowUpWithApiErrorResponseAsync();
             }
         }
 
@@ -97,7 +97,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// <param name="description">The message to show as a description.</param>
         /// <param name="amount">The amount to calculate against.</param>
         /// <param name="components">Optional components.</param>
-        protected async Task SendAllBankRates(string description, decimal amount = 1, Optional<MessageComponent> components = default)
+        protected async Task SendAllBankRates(string description, decimal amount = 1, MessageComponent components = default)
         {
             TypeResponse[] responses = await Service.GetAllBankRates();
             if (responses.Any(r => r != null))
@@ -109,11 +109,11 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                 {
                     await SendPartialResponseWarning();
                 }
-                await SendDeferredEmbedAsync(embed.Build(), components);
+                await FollowupAsync(embed: embed.Build(), components: components);
             }
             else
             {
-                await SendDeferredApiErrorResponseAsync();
+                await FollowUpWithApiErrorResponseAsync();
             }
         }
 
@@ -124,18 +124,18 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// <param name="description">The embed message description.</param>
         /// <param name="amount">The amount to calculate against.</param>
         /// <param name="components">Optional components.</param>
-        protected async Task SendBankRate(Banks bank, string description, decimal amount = 1, Optional<MessageComponent> components = default)
+        protected async Task SendBankRate(Banks bank, string description, decimal amount = 1, MessageComponent components = default)
         {
             string thumbnailUrl = Service.GetBankThumbnailUrl(bank);
             TypeResponse result = await Service.GetByBank(bank);
             if (result != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(result, description, amount, thumbnailUrl: thumbnailUrl);
-                await SendDeferredEmbedAsync(embed.Build(), components);
+                await FollowupAsync(embed: embed.Build(), components: components);
             }
             else
             {
-                await SendDeferredApiErrorResponseAsync();
+                await FollowUpWithApiErrorResponseAsync();
             }
         }
 
@@ -146,16 +146,16 @@ namespace DolarBot.Modules.InteractiveCommands.Base
         /// <param name="description">The embed message description.</param>
         /// <param name="amount">The amount to calculate against.</param>
         /// <param name="components">Optional components.</param>
-        protected async Task SendStandardRate(TypeResponse response, string description, decimal amount = 1, Optional<MessageComponent> components = default)
+        protected async Task SendStandardRate(TypeResponse response, string description, decimal amount = 1, MessageComponent components = default)
         {
             if (response != null)
             {
                 EmbedBuilder embed = await Service.CreateEmbedAsync(response, description, amount);
-                await SendDeferredEmbedAsync(embed.Build(), components);
+                await FollowupAsync(embed: embed.Build(), components: components);
             }
             else
             {
-                await SendDeferredApiErrorResponseAsync();
+                await FollowUpWithApiErrorResponseAsync();
             }
         }
 

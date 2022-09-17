@@ -25,6 +25,7 @@ namespace DolarBot.Services.Dolar
         #region Constants
         private const string DOLAR_OFICIAL_TITLE = "Dólar Oficial";
         private const string DOLAR_AHORRO_TITLE = "Dólar Ahorro";
+        private const string DOLAR_TARJETA_TITLE = "Dólar Tarjeta";
         private const string DOLAR_BLUE_TITLE = "Dólar Blue";
         private const string DOLAR_BOLSA_TITLE = "Dólar Bolsa (MEP)";
         private const string DOLAR_PROMEDIO_TITLE = "Dólar Promedio";
@@ -85,6 +86,7 @@ namespace DolarBot.Services.Dolar
         {
             return await Task.WhenAll(GetDollarOficial(),
                                       GetDollarAhorro(),
+                                      GetDollarTarjeta(),
                                       GetDollarBlue(),
                                       GetDollarBolsa(),
                                       GetDollarPromedio(),
@@ -128,6 +130,15 @@ namespace DolarBot.Services.Dolar
         public async Task<DollarResponse> GetDollarAhorro()
         {
             return await Api.DolarBot.GetDollarRate(DollarEndpoints.Ahorro);
+        }
+
+        /// <summary>
+        /// Fetches the price for dollar Tarjeta.
+        /// </summary>
+        /// <returns>A single <see cref="DollarResponse"/>.</returns>
+        public async Task<DollarResponse> GetDollarTarjeta()
+        {
+            return await Api.DolarBot.GetDollarRate(DollarEndpoints.Tarjeta);
         }
 
         /// <summary>
@@ -296,6 +307,7 @@ namespace DolarBot.Services.Dolar
             {
                 DollarEndpoints.Oficial => DOLAR_OFICIAL_TITLE,
                 DollarEndpoints.Ahorro => DOLAR_AHORRO_TITLE,
+                DollarEndpoints.Tarjeta => DOLAR_TARJETA_TITLE,
                 DollarEndpoints.Blue => DOLAR_BLUE_TITLE,
                 DollarEndpoints.Bolsa => DOLAR_BOLSA_TITLE,
                 DollarEndpoints.Promedio => DOLAR_PROMEDIO_TITLE,

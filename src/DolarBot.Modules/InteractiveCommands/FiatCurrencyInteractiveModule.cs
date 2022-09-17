@@ -60,7 +60,7 @@ namespace DolarBot.Modules.InteractiveCommands
         {
             string commandPrefix = Configuration["commandPrefix"];
             string currencyCommand = GetType().GetMethod(nameof(GetCurrenciesAsync)).GetCustomAttributes(true).OfType<SlashCommandAttribute>().First().Name;
-            await SendDeferredMessageAsync($"El código {Format.Code(userInput)} no corresponde con ningún código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
+            await FollowupAsync($"El código {Format.Code(userInput)} no corresponde con ningún código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="endDate">The end date.</param>
         private async Task SendInvalidDateRangeParametersAsync(DateTime startDate, DateTime endDate)
         {
-            await SendDeferredMessageAsync($"La {Format.Bold("fecha desde")} ({Format.Code(startDate.ToString("dd/MM/yyyy"))}) debe ser {Format.Bold("menor o igual")} a la {Format.Bold("fecha hasta")} ({Format.Code(endDate.ToString("dd/MM/yyyy"))}) y el rango debe ser {Format.Bold("menor")} a {Format.Code("1 año")}.");
+            await FollowupAsync($"La {Format.Bold("fecha desde")} ({Format.Code(startDate.ToString("dd/MM/yyyy"))}) debe ser {Format.Bold("menor o igual")} a la {Format.Bold("fecha hasta")} ({Format.Code(endDate.ToString("dd/MM/yyyy"))}) y el rango debe ser {Format.Bold("menor")} a {Format.Code("1 año")}.");
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="endDate">The end date.</param>
         private async Task SendNoDataForRangeAsync(DateTime startDate, DateTime endDate)
         {
-            await SendDeferredMessageAsync($"No hay datos históricos para el rango de fechas {Format.Code(startDate.ToString("dd/MM/yyyy"))} - {Format.Code(endDate.ToString("dd/MM/yyyy"))}.");
+            await FollowupAsync($"No hay datos históricos para el rango de fechas {Format.Code(startDate.ToString("dd/MM/yyyy"))} - {Format.Code(endDate.ToString("dd/MM/yyyy"))}.");
         }
 
         /// <summary>
@@ -122,12 +122,12 @@ namespace DolarBot.Modules.InteractiveCommands
                     {
                         WorldCurrencyResponse currencyResponse = await FiatCurrencyService.GetCurrencyValue(currencyCode);
                         EmbedBuilder embed = await FiatCurrencyService.CreateWorldCurrencyEmbedAsync(currencyResponse, worldCurrencyCode.Name, amount);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -155,7 +155,7 @@ namespace DolarBot.Modules.InteractiveCommands
                         {
                             WorldCurrencyResponse currencyResponse = await FiatCurrencyService.GetCurrencyValue(currencyCode);
                             EmbedBuilder embed = await FiatCurrencyService.CreateWorldCurrencyEmbedAsync(currencyResponse, worldCurrencyCode.Name);
-                            await SendDeferredEmbedAsync(embed.Build(), components: new CalculatorComponentBuilder(currencyCode, CalculatorTypes.FiatCurrency, Configuration).Build());
+                            await FollowupAsync(embed: embed.Build(), components: new CalculatorComponentBuilder(currencyCode, CalculatorTypes.FiatCurrency, Configuration).Build());
                         }
                         else
                         {
@@ -169,12 +169,12 @@ namespace DolarBot.Modules.InteractiveCommands
                         string currencyCommand = GetType().GetMethod(nameof(GetCurrenciesAsync)).GetCustomAttributes(true).OfType<SlashCommandAttribute>().First().Name;
 
                         EmbedBuilder[] embeds = FiatCurrencyService.CreateWorldCurrencyListEmbedAsync(currenciesList, currencyCommand, Context.User.Username).ToArray();
-                        await SendDeferredPaginatedEmbedAsync(embeds);
+                        await FollowUpWithPaginatedEmbedAsync(embeds);
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }
@@ -212,7 +212,7 @@ namespace DolarBot.Modules.InteractiveCommands
                                 if (historicalCurrencyValues != null && historicalCurrencyValues.Count > 0)
                                 {
                                     List<EmbedBuilder> embeds = FiatCurrencyService.CreateHistoricalValuesEmbedsAsync(historicalCurrencyValues, worldCurrencyCodeResponse.Name, dateFrom, dateTo);
-                                    await SendDeferredPaginatedEmbedAsync(embeds);
+                                    await FollowUpWithPaginatedEmbedAsync(embeds);
                                 }
                                 else
                                 {
@@ -237,7 +237,7 @@ namespace DolarBot.Modules.InteractiveCommands
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

@@ -58,16 +58,16 @@ namespace DolarBot.Modules.InteractiveCommands
                     if (result != null && result.Meses != null && result.Meses.Count > 0)
                     {
                         EmbedBuilder embed = HistoricalRatesService.CreateHistoricalRatesEmbed(result, historicalRatesParam);
-                        await SendDeferredEmbedAsync(embed.Build());
+                        await FollowupAsync(embed: embed.Build());
                     }
                     else
                     {
-                        await SendDeferredApiErrorResponseAsync();
+                        await FollowUpWithApiErrorResponseAsync();
                     }
                 }
                 catch (Exception ex)
                 {
-                    await SendDeferredErrorResponseAsync(ex);
+                    await FollowUpWithErrorResponseAsync(ex);
                 }
             });
         }

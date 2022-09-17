@@ -11,6 +11,8 @@ namespace DolarBot.Modules.InteractiveCommands.Choices
         Oficial,
         [ChoiceDisplay("Ahorro")]
         Ahorro,
+        [ChoiceDisplay("Tarjeta")]
+        Tarjeta,
         [ChoiceDisplay("Blue")]
         Blue,
     }

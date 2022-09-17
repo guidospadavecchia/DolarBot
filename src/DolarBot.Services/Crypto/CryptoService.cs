@@ -209,7 +209,6 @@ namespace DolarBot.Services.Crypto
         /// <returns>A list of embeds ready to be built.</returns>
         public List<EmbedBuilder> CreateCryptoListEmbedAsync(List<CryptoCodeResponse> currenciesList, string currencyCommand)
         {
-            string commandPrefix = Configuration["commandPrefix"];
             int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
 
             var emojis = Configuration.GetSection("customEmojis");

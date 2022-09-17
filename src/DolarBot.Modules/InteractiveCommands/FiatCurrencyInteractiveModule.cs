@@ -58,9 +58,8 @@ namespace DolarBot.Modules.InteractiveCommands
         /// <param name="userInput">The user input.</param>
         private async Task SendInvalidCurrencyCodeAsync(string userInput)
         {
-            string commandPrefix = Configuration["commandPrefix"];
             string currencyCommand = GetType().GetMethod(nameof(GetCurrenciesAsync)).GetCustomAttributes(true).OfType<SlashCommandAttribute>().First().Name;
-            await FollowupAsync($"El código {Format.Code(userInput)} no corresponde con ningún código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
+            await FollowupAsync($"El código {Format.Code(userInput)} no corresponde con ningún código de moneda válido. Para ver la lista de códigos de monedas disponibles, ejecutá {Format.Code($"/{currencyCommand}")}.");
         }
 
         /// <summary>
@@ -164,7 +163,6 @@ namespace DolarBot.Modules.InteractiveCommands
                     }
                     else
                     {
-                        string commandPrefix = Configuration["commandPrefix"];
                         int replyTimeout = Convert.ToInt32(Configuration["interactiveMessageReplyTimeout"]);
                         string currencyCommand = GetType().GetMethod(nameof(GetCurrenciesAsync)).GetCustomAttributes(true).OfType<SlashCommandAttribute>().First().Name;
 

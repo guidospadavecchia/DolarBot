@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "DolarBot": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "environmentVariables": {
+        "DOLARBOT_APIKEY": "",
+        "DOLARBOT_DBL_TOKEN": "",
+        "DOLARBOT_INVITE": "https:/discord.com/api/oauth2/authorize?client_id=752669185053818941&permissions=321600&scope=bot",
+        "DOLARBOT_TOKEN": "",
+        "CUTTLY_API_KEY": ""
+      }
+    }
+  }
+}

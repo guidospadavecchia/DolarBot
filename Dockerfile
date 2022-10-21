@@ -12,10 +12,10 @@ COPY ["src/DolarBot.Services/DolarBot.Services.csproj", "DolarBot.Services/"]
 RUN dotnet restore "DolarBot/DolarBot.csproj"
 COPY . .
 WORKDIR "/src/DolarBot"
-RUN dotnet build "src/DolarBot/DolarBot.csproj" -c Release -o /app/build
+RUN dotnet build "DolarBot.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "src/DolarBot/DolarBot.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "DolarBot.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

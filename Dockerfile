@@ -3,15 +3,9 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/DolarBot/DolarBot.csproj", "DolarBot/"]
-COPY ["src/DolarBot.Addons/DolarBot.Addons.csproj", "DolarBot.Addons/"]
-COPY ["src/DolarBot.API/DolarBot.API.csproj", "DolarBot.API/"]
-COPY ["src/DolarBot.Util/DolarBot.Util.csproj", "DolarBot.Util/"]
-COPY ["src/DolarBot.Modules/DolarBot.Modules.csproj", "DolarBot.Modules/"]
-COPY ["src/DolarBot.Services/DolarBot.Services.csproj", "DolarBot.Services/"]
+COPY . .
 RUN dotnet restore "DolarBot/DolarBot.csproj"
 WORKDIR "/src/DolarBot"
-COPY . .
 RUN dotnet build "DolarBot.csproj" -c Release -o /app/build
 
 FROM build AS publish

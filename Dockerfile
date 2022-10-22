@@ -6,6 +6,7 @@ WORKDIR /src
 COPY . .
 RUN dotnet restore "DolarBot/DolarBot.csproj"
 WORKDIR "/src/DolarBot"
+COPY . .
 RUN dotnet build "DolarBot.csproj" -c Release -o /app/build
 
 FROM build AS publish

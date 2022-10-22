@@ -10,8 +10,8 @@ COPY ["src/DolarBot.Util/DolarBot.Util.csproj", "DolarBot.Util/"]
 COPY ["src/DolarBot.Modules/DolarBot.Modules.csproj", "DolarBot.Modules/"]
 COPY ["src/DolarBot.Services/DolarBot.Services.csproj", "DolarBot.Services/"]
 RUN dotnet restore "DolarBot/DolarBot.csproj"
-COPY . .
 WORKDIR "/src/DolarBot"
+COPY . .
 RUN dotnet build "DolarBot.csproj" -c Release -o /app/build
 
 FROM build AS publish

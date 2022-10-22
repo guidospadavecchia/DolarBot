@@ -3,6 +3,7 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
+COPY ["src/DolarBot/", "DolarBot/"]
 COPY ["src/DolarBot/DolarBot.csproj", "DolarBot/"]
 COPY ["src/DolarBot.Addons/DolarBot.Addons.csproj", "DolarBot.Addons/"]
 COPY ["src/DolarBot.API/DolarBot.API.csproj", "DolarBot.API/"]

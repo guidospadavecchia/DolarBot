@@ -6,7 +6,6 @@
 		<Authors>Guido Spadavecchia</Authors>
 
 		<PackageId>DolarBot.Addons</PackageId>
-		<PackageLicenseUrl>https://opensource.org/licenses/isc</PackageLicenseUrl>
 		<PackageProjectUrl>https://github.com/PassiveModding/Discord.Addons.Interactive</PackageProjectUrl>
 		<PackageTags>discord;discord.net;discord.addons;discord.addons.interactive</PackageTags>
 		<AssemblyName>DolarBot.Addons</AssemblyName>

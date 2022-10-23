@@ -109,7 +109,11 @@ namespace DolarBot
         /// </summary>
         private void ConfigureAppSettings()
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(GlobalConfiguration.GetAppSettingsFileName());
+            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
+            if (Debugger.IsAttached)
+            {
+                builder.AddJsonFile("appsettings.Local.json");
+            }
             Configuration = builder.Build();
         }
 

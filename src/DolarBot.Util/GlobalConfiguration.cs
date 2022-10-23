@@ -23,11 +23,6 @@ namespace DolarBot.Util
         /// <returns></returns>
         public static string GetStatusText() => $"/ayuda";
         /// <summary>
-        /// Gets the application settings file name.
-        /// </summary>
-        /// <returns></returns>
-        public static string GetAppSettingsFileName() => "appsettings.json";
-        /// <summary>
         /// Gets the log4net configuration file name.
         /// </summary>
         /// <returns></returns>

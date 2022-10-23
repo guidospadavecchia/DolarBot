@@ -131,6 +131,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
             string errorMessage = GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]);
             await Context.Interaction.FollowupAsync(errorMessage);
             Logger.Error("Error executing command", ex);
+            Console.WriteLine($"Error executing command: {ex}");
         }
 
         #endregion

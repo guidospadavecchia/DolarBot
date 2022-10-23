@@ -55,7 +55,14 @@ namespace DolarBot.Modules.Commands.Base
         protected async Task SendErrorReply(Exception ex)
         {
             await ReplyAsync(GlobalConfiguration.GetGenericErrorMessage(Configuration["supportServerUrl"]));
-            Logger.Error("Error al ejecutar comando.", ex);
+            Console.WriteLine($"Error executing command: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                Console.WriteLine(ex.InnerException.StackTrace);
+            }
+            Logger.Error("Error executing command.", ex);
         }
 
         /// <summary>

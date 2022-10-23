@@ -33,25 +33,39 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
 
         public override async Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
         {
-            string filter = autocompleteInteraction.Data.Current.Value.ToString();
-            List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
-            if (!string.IsNullOrWhiteSpace(filter))
+            try
             {
-                List<CryptoCodeResponse> currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-                if (!currencyCodesBySymbol.Any())
+                string filter = autocompleteInteraction.Data.Current.Value.ToString();
+                List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
+                if (!string.IsNullOrWhiteSpace(filter))
                 {
-                    currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    List<CryptoCodeResponse> currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    if (!currencyCodesBySymbol.Any())
+                    {
+                        currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+                    List<CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                    currencyCodes = currencyCodesBySymbol.Union(currencyCodesByName).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
                 }
-                List<CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-                currencyCodes = currencyCodesBySymbol.Union(currencyCodesByName).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-            }
-            else
-            {
-                currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-            }
+                else
+                {
+                    currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                }
 
-            IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
-            return AutocompletionResult.FromSuccess(autocompletionCollection);
+                IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
+                return AutocompletionResult.FromSuccess(autocompletionCollection);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error generation suggestions: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    Console.WriteLine(ex.InnerException.StackTrace);
+                }
+                return AutocompletionResult.FromSuccess();
+            }
         }
     }
 }

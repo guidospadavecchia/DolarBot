@@ -27,19 +27,33 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Help
 
         public override Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter, IServiceProvider services)
         {
-            string filter = autocompleteInteraction.Data.Current.Value.ToString();
-            List<SlashCommandInfo> slashCommands = InteractionService.SlashCommands.Where(x => !x.Name.Equals(HELP_COMMAND, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x.Name).ToList();
-            if (!string.IsNullOrWhiteSpace(filter))
+            try
             {
-                slashCommands = slashCommands.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).OrderBy(x => x.Name).ToList();
-            }
-            else
-            {
-                slashCommands = slashCommands.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-            }
+                string filter = autocompleteInteraction.Data.Current.Value.ToString();
+                List<SlashCommandInfo> slashCommands = InteractionService.SlashCommands.Where(x => !x.Name.Equals(HELP_COMMAND, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x.Name).ToList();
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    slashCommands = slashCommands.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).Take(MAX_AUTOCOMPLETE_RESULTS).OrderBy(x => x.Name).ToList();
+                }
+                else
+                {
+                    slashCommands = slashCommands.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                }
 
-            IEnumerable<AutocompleteResult> autocompletionCollection = slashCommands.Select(x => new AutocompleteResult(x.Name, x.Name));
-            return Task.FromResult(AutocompletionResult.FromSuccess(autocompletionCollection));
+                IEnumerable<AutocompleteResult> autocompletionCollection = slashCommands.Select(x => new AutocompleteResult(x.Name, x.Name));
+                return Task.FromResult(AutocompletionResult.FromSuccess(autocompletionCollection));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error generation suggestions: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    Console.WriteLine(ex.InnerException.StackTrace);
+                }
+                return Task.FromResult(AutocompletionResult.FromSuccess());
+            }
         }
     }
 }

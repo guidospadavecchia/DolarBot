@@ -85,6 +85,7 @@ namespace DolarBot.Modules.Handlers
             catch (Exception ex)
             {
                 Logger.Error("Error initializing", ex);
+                Console.WriteLine($"Error initializing: {ex}");
             }
         }
 
@@ -148,6 +149,7 @@ namespace DolarBot.Modules.Handlers
             catch (Exception ex)
             {
                 Logger.Error("Error updating server log", ex);
+                Console.WriteLine($"Error updating server log: {ex}");
                 return Task.FromException(ex);
             }
         }
@@ -172,6 +174,7 @@ namespace DolarBot.Modules.Handlers
             catch (Exception ex)
             {
                 Logger.Error("Error updating DBL stats.", ex);
+                Console.WriteLine($"Error updating DBL stats: {ex}");
                 return Task.FromException(ex);
             }
         }

@@ -49,8 +49,7 @@ namespace DolarBot.API.Services.Topgg
             {
                 options.MaxTimeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
             }
-            Client = new RestClient(options);
-            Client.UseNewtonsoftJson();
+            Client = new RestClient(options, configureSerialization: x => x.UseNewtonsoftJson());
             Client.AddDefaultHeader(AUTH_HEADER, GlobalConfiguration.GetDblToken(Configuration));
         }
 

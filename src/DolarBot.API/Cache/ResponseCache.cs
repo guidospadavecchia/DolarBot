@@ -40,7 +40,7 @@ namespace DolarBot.API.Cache
         /// <typeparam name="T">The object to retrieve.</typeparam>
         /// <param name="key">The key of the object to retrieve.</param>
         /// <returns>An object of type <typeparamref name="T"/> if found, otherwise null.</returns>
-        public T GetObject<T>(object key) where T : class
+        public T? GetObject<T>(object key) where T : class
         {
             return cache.Get<T>(key);
         }

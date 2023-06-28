@@ -7,8 +7,8 @@ namespace DolarBot.API.Models.Cuttly
         [JsonProperty("status")]
         public int Status { get; set; }
         [JsonProperty("fullLink")]
-        public string FullLink { get; set; }
+        public string? FullLink { get; set; }
         [JsonProperty("shortLink")]
-        public string ShortLink { get; set; }
+        public string? ShortLink { get; set; }
     }
 }

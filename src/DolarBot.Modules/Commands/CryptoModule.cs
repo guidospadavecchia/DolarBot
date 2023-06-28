@@ -63,10 +63,7 @@ namespace DolarBot.Modules.Commands
                 await ReplyAsync($"El código {Format.Code(searchText)} no corresponde con ningún identificador válido. Para ver la lista de identificadores de criptomonedas disponibles, ejecutá {Format.Code($"{commandPrefix}{currencyCommand}")}.");
             }
 
-            if (typingState != null)
-            {
-                typingState.Dispose();
-            }
+            typingState?.Dispose();
         }
 
         /// <summary>
@@ -83,10 +80,7 @@ namespace DolarBot.Modules.Commands
 
             List<EmbedBuilder> embeds = CryptoService.CreateCryptoListEmbedAsync(currenciesList, currencyCommand, isSubSearch, Context.User.Username, title, description);
             await SendPagedReplyAsync(embeds, true);
-            if (typingState != null)
-            {
-                typingState.Dispose();
-            }
+            typingState?.Dispose();
 
             SocketMessage userResponse = await NextMessageAsync(timeout: TimeSpan.FromSeconds(replyTimeout));
             if (userResponse != null)

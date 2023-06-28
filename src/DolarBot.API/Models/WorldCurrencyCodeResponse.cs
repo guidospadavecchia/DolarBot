@@ -5,7 +5,7 @@ namespace DolarBot.API.Models
     [Serializable]
     public class WorldCurrencyCodeResponse
     {
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public string? Code { get; set; }
+        public string? Name { get; set; }
     }
 }

@@ -10,7 +10,7 @@
 		<PackageTags>discord;discord.net;discord.addons;discord.addons.interactive</PackageTags>
 		<AssemblyName>DolarBot.Addons</AssemblyName>
 		<RootNamespace>Discord.Addons</RootNamespace>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<PackageReleaseNotes>Push to Stable</PackageReleaseNotes>
 		<Description>A fork of Discord.Addons.Interactive, Adding more functionality including, inline Reactions and full paginator customization</Description>
 		<LangVersion>10.0</LangVersion>
@@ -20,8 +20,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Discord.Net.Commands" Version="3.8.1" />
-		<PackageReference Include="Discord.Net.WebSocket" Version="3.8.1" />
+		<PackageReference Include="Discord.Net.Commands" Version="3.11.0" />
+		<PackageReference Include="Discord.Net.WebSocket" Version="3.11.0" />
 	</ItemGroup>
 
 </Project>

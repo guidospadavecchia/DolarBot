@@ -58,14 +58,13 @@ namespace DolarBot.API.Services.DolarBotApi
             Cache = cache;
             OnError = onError;
 
-            RestClientOptions options = new(Configuration["apiUrl"]);
+            RestClientOptions options = new(Configuration["apiUrl"]!);
             if (int.TryParse(Configuration["apiRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
             {
                 options.MaxTimeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
             }
-            Client = new RestClient(options);
-            Client.UseNewtonsoftJson();
-            Client.AddDefaultHeader(API_KEY_NAME, !string.IsNullOrEmpty(Configuration["apiKey"]) ? Configuration["apiKey"] : Environment.GetEnvironmentVariable(API_KEY_NAME));
+            Client = new RestClient(options, configureSerialization: x => x.UseNewtonsoftJson());
+            Client.AddDefaultHeader(API_KEY_NAME, !string.IsNullOrEmpty(Configuration["apiKey"]) ? Configuration["apiKey"]! : Environment.GetEnvironmentVariable(API_KEY_NAME)!);
         }
 
         /// <summary>
@@ -89,9 +88,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API and returns the list of world currency codes.
         /// </summary>
         /// <returns>A task that contains a collection of <see cref="WorldCurrencyCodeResponse"/> objects.</returns>
-        public async Task<List<WorldCurrencyCodeResponse>> GetWorldCurrenciesList()
+        public async Task<List<WorldCurrencyCodeResponse>?> GetWorldCurrenciesList()
         {
-            List<WorldCurrencyCodeResponse> cachedResponse = Cache.GetObject<List<WorldCurrencyCodeResponse>>(WORLD_CURRENCIES_LIST_KEY);
+            List<WorldCurrencyCodeResponse>? cachedResponse = Cache.GetObject<List<WorldCurrencyCodeResponse>>(WORLD_CURRENCIES_LIST_KEY);
 
             if (cachedResponse != null)
             {
@@ -101,7 +100,7 @@ namespace DolarBot.API.Services.DolarBotApi
             {
                 RestRequest request = new(WorldCurrencyEndpoints.List.GetDescription());
                 RestResponse<List<WorldCurrencyCodeResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyCodeResponse>>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null && response.Data.Count > 0)
                 {
                     Cache.SaveObject(WORLD_CURRENCIES_LIST_KEY, response.Data, Cache.GetCurrencyListExpiration());
                     return response.Data;
@@ -119,10 +118,10 @@ namespace DolarBot.API.Services.DolarBotApi
         /// </summary>
         /// <param name="currencyCode">The currency 3-digit code.</param>
         /// <returns>A task that contains a normalized <see cref="WorldCurrencyResponse"/> object.</returns>
-        public async Task<WorldCurrencyResponse> GetWorldCurrencyValue(string currencyCode)
+        public async Task<WorldCurrencyResponse?> GetWorldCurrencyValue(string currencyCode)
         {
             string endpoint = $"{WorldCurrencyEndpoints.Base.GetDescription()}/{currencyCode.ToUpper()}";
-            WorldCurrencyResponse cachedResponse = Cache.GetObject<WorldCurrencyResponse>(endpoint);
+            WorldCurrencyResponse? cachedResponse = Cache.GetObject<WorldCurrencyResponse>(endpoint);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -133,7 +132,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 RestResponse<WorldCurrencyResponse> response = await Client.ExecuteGetAsync<WorldCurrencyResponse>(request);
                 if (response.IsSuccessful)
                 {
-                    WorldCurrencyResponse data = response.Data;
+                    WorldCurrencyResponse data = response.Data!;
                     data.Code = currencyCode.ToUpper().Trim();
                     Cache.SaveObject(endpoint, data);
                     return data;
@@ -151,10 +150,10 @@ namespace DolarBot.API.Services.DolarBotApi
         /// </summary>
         /// <param name="currencyCode">The currency 3-digit code.</param>
         /// <returns>A task that contains a collection of normalized <see cref="WorldCurrencyResponse"/> objects.</returns>
-        public async Task<List<WorldCurrencyResponse>> GetWorldCurrencyHistoricalValues(string currencyCode)
+        public async Task<List<WorldCurrencyResponse>?> GetWorldCurrencyHistoricalValues(string currencyCode)
         {
             string endpoint = $"{WorldCurrencyEndpoints.Historical.GetDescription()}/{currencyCode.ToUpper()}";
-            List<WorldCurrencyResponse> cachedResponse = Cache.GetObject<List<WorldCurrencyResponse>>(endpoint);
+            List<WorldCurrencyResponse>? cachedResponse = Cache.GetObject<List<WorldCurrencyResponse>>(endpoint);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -163,7 +162,7 @@ namespace DolarBot.API.Services.DolarBotApi
             {
                 RestRequest request = new(endpoint);
                 RestResponse<List<WorldCurrencyResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyResponse>>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null && response.Data.Count > 0)
                 {
                     List<WorldCurrencyResponse> data = response.Data;
                     data.ForEach(x => x.Code = currencyCode.ToUpper().Trim());
@@ -183,9 +182,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// </summary>
         /// <param name="type">The type of dollar (endpoint) to query.</param>
         /// <returns>A task that contains a normalized <see cref="DollarResponse"/> object.</returns>
-        public async Task<DollarResponse> GetDollarRate(DollarEndpoints type)
+        public async Task<DollarResponse?> GetDollarRate(DollarEndpoints type)
         {
-            DollarResponse cachedResponse = Cache.GetObject<DollarResponse>(type);
+            DollarResponse? cachedResponse = Cache.GetObject<DollarResponse>(type);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -195,7 +194,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = type.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<DollarResponse> response = await Client.ExecuteGetAsync<DollarResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     DollarResponse dolarResponse = response.Data;
                     dolarResponse.Type = type;
@@ -216,9 +215,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// </summary>
         /// <param name="type">The type of euro (endpoint) to query.</param>
         /// <returns>A task that contains a normalized <see cref="EuroResponse"/> object.</returns>
-        public async Task<EuroResponse> GetEuroRate(EuroEndpoints type)
+        public async Task<EuroResponse?> GetEuroRate(EuroEndpoints type)
         {
-            EuroResponse cachedResponse = Cache.GetObject<EuroResponse>(type);
+            EuroResponse? cachedResponse = Cache.GetObject<EuroResponse>(type);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -228,7 +227,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = type.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<EuroResponse> response = await Client.ExecuteGetAsync<EuroResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     EuroResponse euroResponse = response.Data;
                     euroResponse.Type = type;
@@ -249,9 +248,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// </summary>
         /// <param name="type">The type of Real (endpoint) to query.</param>
         /// <returns>A task that contains a normalized <see cref="RealResponse"/> object.</returns>
-        public async Task<RealResponse> GetRealRate(RealEndpoints type)
+        public async Task<RealResponse?> GetRealRate(RealEndpoints type)
         {
-            RealResponse cachedResponse = Cache.GetObject<RealResponse>(type);
+            RealResponse? cachedResponse = Cache.GetObject<RealResponse>(type);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -261,7 +260,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = type.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<RealResponse> response = await Client.ExecuteGetAsync<RealResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     RealResponse realResponse = response.Data;
                     realResponse.Type = type;
@@ -281,9 +280,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="CountryRiskResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="CountryRiskResponse"/> object.</returns>
-        public async Task<CountryRiskResponse> GetCountryRiskValue()
+        public async Task<CountryRiskResponse?> GetCountryRiskValue()
         {
-            CountryRiskResponse cachedResponse = Cache.GetObject<CountryRiskResponse>(RIESGO_PAIS_CACHE_KEY);
+            CountryRiskResponse? cachedResponse = Cache.GetObject<CountryRiskResponse>(RIESGO_PAIS_CACHE_KEY);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -292,7 +291,7 @@ namespace DolarBot.API.Services.DolarBotApi
             {
                 RestRequest request = new(BcraIndicatorsEndpoints.RiesgoPais.GetDescription());
                 RestResponse<CountryRiskResponse> response = await Client.ExecuteGetAsync<CountryRiskResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     Cache.SaveObject(RIESGO_PAIS_CACHE_KEY, response.Data);
                     return response.Data;
@@ -309,9 +308,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="BcraResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="BcraResponse"/> object.</returns>
-        public async Task<BcraResponse> GetBcraValue(BcraIndicatorsEndpoints bcraValue)
+        public async Task<BcraResponse?> GetBcraValue(BcraIndicatorsEndpoints bcraValue)
         {
-            BcraResponse cachedResponse = Cache.GetObject<BcraResponse>(bcraValue);
+            BcraResponse? cachedResponse = Cache.GetObject<BcraResponse>(bcraValue);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -321,7 +320,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = bcraValue.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<BcraResponse> response = await Client.ExecuteGetAsync<BcraResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     Cache.SaveObject(bcraValue, response.Data);
                     return response.Data;
@@ -338,9 +337,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="MetalResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="MetalResponse"/> object.</returns>
-        public async Task<MetalResponse> GetMetalRate(MetalEndpoints metal)
+        public async Task<MetalResponse?> GetMetalRate(MetalEndpoints metal)
         {
-            MetalResponse cachedResponse = Cache.GetObject<MetalResponse>(metal);
+            MetalResponse? cachedResponse = Cache.GetObject<MetalResponse>(metal);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -350,7 +349,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = metal.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<MetalResponse> response = await Client.ExecuteGetAsync<MetalResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     MetalResponse metalResponse = response.Data;
                     metalResponse.Type = metal;
@@ -370,9 +369,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API and returns the list of crypto currency codes.
         /// </summary>
         /// <returns>A task that contains a collection of <see cref="CryptoCodeResponse"/> objects.</returns>
-        public async Task<List<CryptoCodeResponse>> GetCryptoCurrenciesList()
+        public async Task<List<CryptoCodeResponse>?> GetCryptoCurrenciesList()
         {
-            List<CryptoCodeResponse> cachedResponse = Cache.GetObject<List<CryptoCodeResponse>>(CRYPTO_CURRENCIES_LIST_KEY);
+            List<CryptoCodeResponse>? cachedResponse = Cache.GetObject<List<CryptoCodeResponse>>(CRYPTO_CURRENCIES_LIST_KEY);
 
             if (cachedResponse != null)
             {
@@ -382,7 +381,7 @@ namespace DolarBot.API.Services.DolarBotApi
             {
                 RestRequest request = new(CryptoEndpoints.List.GetDescription());
                 RestResponse<List<CryptoCodeResponse>> response = await Client.ExecuteGetAsync<List<CryptoCodeResponse>>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null && response.Data.Count > 0)
                 {
                     Cache.SaveObject(CRYPTO_CURRENCIES_LIST_KEY, response.Data, Cache.GetCryptoListExpiration());
                     return response.Data;
@@ -399,10 +398,10 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="CryptoResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="CryptoResponse"/> object.</returns>
-        public async Task<CryptoResponse> GetCryptoCurrencyRate(string cryptoCurrencyCode)
+        public async Task<CryptoResponse?> GetCryptoCurrencyRate(string cryptoCurrencyCode)
         {
             string endpoint = $"{CryptoEndpoints.Crypto.GetDescription()}/{cryptoCurrencyCode.ToUpper()}";
-            CryptoResponse cachedResponse = Cache.GetObject<CryptoResponse>(endpoint);
+            CryptoResponse? cachedResponse = Cache.GetObject<CryptoResponse>(endpoint);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -411,7 +410,7 @@ namespace DolarBot.API.Services.DolarBotApi
             {
                 RestRequest request = new(endpoint);
                 RestResponse<CryptoResponse> response = await Client.ExecuteGetAsync<CryptoResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     CryptoResponse cryptoResponse = response.Data;
                     Cache.SaveObject(endpoint, cryptoResponse, Cache.GetCryptoExpiration());
@@ -429,9 +428,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="VzlaResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="VzlaResponse"/> object.</returns>
-        public async Task<VzlaResponse> GetVzlaRates(VenezuelaEndpoints type)
+        public async Task<VzlaResponse?> GetVzlaRates(VenezuelaEndpoints type)
         {
-            VzlaResponse cachedResponse = Cache.GetObject<VzlaResponse>(type);
+            VzlaResponse? cachedResponse = Cache.GetObject<VzlaResponse>(type);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -441,7 +440,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = type.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<VzlaResponse> response = await Client.ExecuteGetAsync<VzlaResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     VzlaResponse vzlaResponse = response.Data;
                     vzlaResponse.Type = type;
@@ -461,9 +460,9 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API endpoint asynchronously and returns a <see cref="HistoricalRatesResponse"/> object.
         /// </summary>
         /// <returns>A task that contains a normalized <see cref="HistoricalRatesResponse"/> object.</returns>
-        public async Task<HistoricalRatesResponse> GetHistoricalRates(HistoricalRatesParamEndpoints historicalRatesParam)
+        public async Task<HistoricalRatesResponse?> GetHistoricalRates(HistoricalRatesParamEndpoints historicalRatesParam)
         {
-            HistoricalRatesResponse cachedResponse = Cache.GetObject<HistoricalRatesResponse>(historicalRatesParam);
+            HistoricalRatesResponse? cachedResponse = Cache.GetObject<HistoricalRatesResponse>(historicalRatesParam);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -473,7 +472,7 @@ namespace DolarBot.API.Services.DolarBotApi
                 string endpoint = historicalRatesParam.GetDescription();
                 RestRequest request = new(endpoint);
                 RestResponse<HistoricalRatesResponse> response = await Client.ExecuteGetAsync<HistoricalRatesResponse>(request);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Data != null)
                 {
                     Cache.SaveObject(historicalRatesParam, response.Data);
                     return response.Data;

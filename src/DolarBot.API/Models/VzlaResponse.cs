@@ -8,9 +8,9 @@ namespace DolarBot.API.Models
     public class VzlaResponse
     {
         public DateTime Fecha { get; set; }
-        public string Paralelo { get; set; }
-        public string Bancos { get; set; }
-        public string Cucuta { get; set; }
+        public string? Paralelo { get; set; }
+        public string? Bancos { get; set; }
+        public string? Cucuta { get; set; }
 
         [JsonIgnore]
         public VenezuelaEndpoints Type;

@@ -7,8 +7,8 @@ namespace DolarBot.API.Models
     public class WorldCurrencyResponse
     {
         public DateTime Fecha { get; set; }
-        public string Valor { get; set; }
+        public string? Valor { get; set; }
         [JsonIgnore]
-        public string Code { get; set; }
+        public string? Code { get; set; }
     }
 }

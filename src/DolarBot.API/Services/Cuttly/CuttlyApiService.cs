@@ -28,7 +28,7 @@ namespace DolarBot.API.Services.Cuttly
         /// <summary>
         /// Allows access to application settings.
         /// </summary>
-        private readonly string ApiKey;
+        private readonly string? ApiKey;
         #endregion
 
         /// <summary>
@@ -40,12 +40,12 @@ namespace DolarBot.API.Services.Cuttly
             Configuration = configuration;
             ApiKey = Configuration["cuttlyApiKey"];
 
-            RestClientOptions options = new(Configuration["cuttlyBaseUrl"]);
+            RestClientOptions options = new(Configuration["cuttlyBaseUrl"]!);
             if (int.TryParse(Configuration["cuttlyRequestTimeout"], out int timeoutSeconds) && timeoutSeconds > 0)
             {
                 options.MaxTimeout = Convert.ToInt32(TimeSpan.FromSeconds(timeoutSeconds).TotalMilliseconds);
             }
-            Client = new RestClient(options).UseNewtonsoftJson();
+            Client = new RestClient(options, configureSerialization: x => x.UseNewtonsoftJson());
         }
 
         /// <summary>
@@ -55,8 +55,7 @@ namespace DolarBot.API.Services.Cuttly
         /// <returns>A shortened URL if successful, otherwise returns <paramref name="url"/>.</returns>
         public async Task<string> ShortenUrl(string url)
         {
-            string apiKey = !string.IsNullOrWhiteSpace(ApiKey) ? ApiKey : Environment.GetEnvironmentVariable(ENV_API_KEY_NAME);
-
+            string? apiKey = !string.IsNullOrWhiteSpace(ApiKey) ? ApiKey : Environment.GetEnvironmentVariable(ENV_API_KEY_NAME);
             if (!string.IsNullOrWhiteSpace(apiKey))
             {
                 RestRequest request = new()
@@ -66,14 +65,12 @@ namespace DolarBot.API.Services.Cuttly
                 request.AddQueryParameter("key", apiKey).AddQueryParameter("short", url);
                 RestResponse<CuttlyResponse> response = await Client.ExecuteGetAsync<CuttlyResponse>(request);
 
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && 
+                    response.Data?.Url != null && 
+                    response.Data.Url!.Status == CUTTLY_STATUS_OK && 
+                    response.Data.Url.ShortLink != null)
                 {
-                    CuttlyResponse cuttlyResponse = response.Data;
-                    return cuttlyResponse.Url.Status == CUTTLY_STATUS_OK ? cuttlyResponse.Url.ShortLink : url;
-                }
-                else
-                {
-                    return url;
+                    return response.Data.Url.ShortLink;
                 }
             }
 

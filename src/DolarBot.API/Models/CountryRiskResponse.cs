@@ -6,6 +6,6 @@ namespace DolarBot.API.Models
     public class CountryRiskResponse
     {
         public DateTime Fecha { get; set; }
-        public string Valor { get; set; }
+        public string? Valor { get; set; }
     }
 }

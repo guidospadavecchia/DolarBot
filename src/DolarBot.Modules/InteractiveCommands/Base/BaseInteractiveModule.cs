@@ -110,7 +110,7 @@ namespace DolarBot.Modules.InteractiveCommands.Base
                                             .WithInvalidJumpInputMessage($"La página a ingresar debe ser un número entre {Format.Bold("1")} y {Format.Bold(pages.Count.ToString())}.")
                                             .WithJumpInputInUseMessage("La función para saltar de página se encuentra actualmente en uso por otro usuario")
                                             .Build();
-            await InteractiveService.SendPaginatorAsync(paginator, Context.Interaction as SocketInteraction, responseType: InteractionResponseType.DeferredChannelMessageWithSource, resetTimeoutOnInput: true, timeout: TimeSpan.FromSeconds(paginatorTimeout));
+            await InteractiveService.SendPaginatorAsync(paginator, Context.Interaction, responseType: InteractionResponseType.DeferredChannelMessageWithSource, resetTimeoutOnInput: true, timeout: TimeSpan.FromSeconds(paginatorTimeout));
         }
 
         /// <summary>

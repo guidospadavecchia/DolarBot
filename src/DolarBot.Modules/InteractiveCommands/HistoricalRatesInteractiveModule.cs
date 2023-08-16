@@ -43,7 +43,7 @@ namespace DolarBot.Modules.InteractiveCommands
         }
         #endregion
 
-        [SlashCommand("evolucion", "Muestra las distintas cotizaciones del dólar para Venezuela.", false, RunMode.Async)]
+        [SlashCommand("evolucion", "Muestra la evolución histórica de una cotización en el tiempo.", false, RunMode.Async)]
         public async Task GetEvolutionAsync(
             [Summary("cotización", "Indica el tipo de cotización a obtener")]
             HistoricalRatesChoices historicalRatesChoice

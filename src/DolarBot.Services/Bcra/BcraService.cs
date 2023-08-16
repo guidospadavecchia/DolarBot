@@ -104,7 +104,7 @@ namespace DolarBot.Services.Bcra
                                                    })
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{chartEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {value}")} puntos".AppendLineBreak());
 
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed.AddPlayStoreLink(Configuration);
         }
 
@@ -150,7 +150,7 @@ namespace DolarBot.Services.Bcra
                                                        IconUrl = footerImageUrl
                                                    })
                                                    .AddInlineField($"Valor", text);
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed.AddPlayStoreLink(Configuration);
         }
 
@@ -197,7 +197,7 @@ namespace DolarBot.Services.Bcra
                                                    })
                                                    .AddInlineField($"Valor", text);
 
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed.AddPlayStoreLink(Configuration);
         }
 

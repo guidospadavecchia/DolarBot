@@ -1,5 +1,4 @@
 ﻿using DolarBot.API.Cache;
-using DolarBot.API.Services.Cuttly;
 using DolarBot.API.Services.DolarBotApi;
 using DolarBot.API.Services.Topgg;
 using log4net;
@@ -25,7 +24,6 @@ namespace DolarBot.API
 
         #region Apis        
         public DolarBotApiService DolarBot { get; private set; }
-        public CuttlyApiService Cuttly { get; private set; }
         public TopggApiService Topgg { get; private set; }
         #endregion
 
@@ -39,7 +37,6 @@ namespace DolarBot.API
             Logger = logger;
             Cache = new ResponseCache(configuration);
             DolarBot = new DolarBotApiService(configuration, Cache, LogError);
-            Cuttly = new CuttlyApiService(configuration);
             Topgg = new TopggApiService(configuration, logger);
         }
 

@@ -114,7 +114,7 @@ namespace DolarBot.Services.Venezuela
                                                    .AddInlineField($"{bankEmoji} Bancos", $"{currencyEmoji} {blankSpace} {bancosValueText} {blankSpace}")
                                                    .AddInlineField($"{moneyEmoji} Paralelo", $"{currencyEmoji} {blankSpace} {paraleloValueText} {blankSpace}".AppendLineBreak());
 
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed.AddPlayStoreLink(Configuration);
         }
 

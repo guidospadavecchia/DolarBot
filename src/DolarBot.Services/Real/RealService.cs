@@ -255,7 +255,7 @@ namespace DolarBot.Services.Real
             }
 
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed.AddPlayStoreLink(Configuration);
         }
 

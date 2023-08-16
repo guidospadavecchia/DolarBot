@@ -124,7 +124,7 @@ namespace DolarBot.Services.Currencies
                                                    .AddInlineField("Monto", amountField)
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{currencyEmoji} ${blankSpace} {value.AppendLineBreak()}")}");
 
-            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText, Api.Cuttly.ShortenUrl);
+            await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
             return embed.AddPlayStoreLink(Configuration);
         }
 

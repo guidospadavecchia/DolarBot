@@ -120,7 +120,7 @@ namespace DolarBot.Modules.InteractiveCommands
             });
         }
 
-        [SlashCommand("bolivar-euro", "Muestra las distintas cotizaciones del Euro para Venezuela.", false, RunMode.Async)]
+        //[SlashCommand("bolivar-euro", "Muestra las distintas cotizaciones del Euro para Venezuela.", false, RunMode.Async)]
         public async Task GetEuroRatesAsync()
         {
             await DeferAsync().ContinueWith(async (task) =>

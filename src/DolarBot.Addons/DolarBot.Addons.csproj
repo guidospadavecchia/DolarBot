@@ -2,9 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<Version>3.2.2</Version>
+		<Version>3.2.3</Version>
+		<AssemblyVersion>3.2.3.0</AssemblyVersion>
+		<FileVersion>3.2.3.0</FileVersion>
 		<Authors>Guido Spadavecchia</Authors>
-
 		<PackageId>DolarBot.Addons</PackageId>
 		<PackageProjectUrl>https://github.com/PassiveModding/Discord.Addons.Interactive</PackageProjectUrl>
 		<PackageTags>discord;discord.net;discord.addons;discord.addons.interactive</PackageTags>
@@ -14,8 +15,6 @@
 		<PackageReleaseNotes>Push to Stable</PackageReleaseNotes>
 		<Description>A fork of Discord.Addons.Interactive, Adding more functionality including, inline Reactions and full paginator customization</Description>
 		<LangVersion>10.0</LangVersion>
-		<AssemblyVersion>3.2.2.0</AssemblyVersion>
-		<FileVersion>3.2.2.0</FileVersion>
 
 	</PropertyGroup>
 

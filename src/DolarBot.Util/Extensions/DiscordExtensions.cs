@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.Interactions;
 using Fergun.Interactive.Pagination;
 using Microsoft.Extensions.Configuration;
@@ -19,31 +18,9 @@ namespace DolarBot.Util.Extensions
         /// <typeparam name="T">The attribute's type.</typeparam>
         /// <param name="module">The current module.</param>
         /// <returns>True if the module has the attribute, otherwise false.</returns>
-        public static bool HasAttribute<T>(this Discord.Commands.ModuleInfo module) where T : Attribute
+        public static bool HasAttribute<T>(this ModuleInfo module) where T : Attribute
         {
             return module.Attributes.Any(a => (a as T) != null);
-        }
-
-        /// <summary>
-        /// Returns true if the current module contains the <typeparamref name="T"/> typed attribute, otherwise false.
-        /// </summary>
-        /// <typeparam name="T">The attribute's type.</typeparam>
-        /// <param name="module">The current module.</param>
-        /// <returns>True if the module has the attribute, otherwise false.</returns>
-        public static bool HasAttribute<T>(this Discord.Interactions.ModuleInfo module) where T : Attribute
-        {
-            return module.Attributes.Any(a => (a as T) != null);
-        }
-
-        /// <summary>
-        /// Returns true if the current command contains the <typeparamref name="T"/> typed attribute, otherwise false.
-        /// </summary>
-        /// <typeparam name="T">The attribute's type.</typeparam>
-        /// <param name="command">The current command.</param>
-        /// <returns>True if the module has the attribute, otherwise false.</returns>
-        public static bool HasAttribute<T>(this CommandInfo command) where T : Attribute
-        {
-            return command.Attributes.Any(a => (a as T) != null);
         }
 
         /// <summary>
@@ -63,31 +40,9 @@ namespace DolarBot.Util.Extensions
         /// <typeparam name="T">The attribute's type.</typeparam>
         /// <param name="module">The current module.</param>
         /// <returns>The attribute if found, otherwise null.</returns>
-        public static T GetAttribute<T>(this Discord.Commands.ModuleInfo module) where T : Attribute
+        public static T GetAttribute<T>(this ModuleInfo module) where T : Attribute
         {
             return module.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Gets the attribute, if found, from the current module.
-        /// </summary>
-        /// <typeparam name="T">The attribute's type.</typeparam>
-        /// <param name="module">The current module.</param>
-        /// <returns>The attribute if found, otherwise null.</returns>
-        public static T GetAttribute<T>(this Discord.Interactions.ModuleInfo module) where T : Attribute
-        {
-            return module.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Gets the attribute, if found, from the current command.
-        /// </summary>
-        /// <typeparam name="T">The attribute's type.</typeparam>
-        /// <param name="command">>The current command.</param>
-        /// <returns>The attribute if found, otherwise null.</returns>
-        public static T GetAttribute<T>(this CommandInfo command) where T : Attribute
-        {
-            return command.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
         }
 
         /// <summary>
@@ -99,17 +54,6 @@ namespace DolarBot.Util.Extensions
         public static T GetAttribute<T, TParameter>(this CommandInfo<TParameter> command) where T : Attribute where TParameter : class, IParameterInfo
         {
             return command.Attributes.Where(a => (a as T) != null).Select(a => a as T).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Finds and returns a particular command from an <see cref="IEnumerable"/> commands collection.
-        /// </summary>
-        /// <param name="commands">The current collection of commands.</param>
-        /// <param name="command">The command's name to find.</param>
-        /// <returns>The <see cref="CommandInfo"/> object if found, otherwise null.</returns>
-        public static CommandInfo GetCommand(this IEnumerable<CommandInfo> commands, string command)
-        {
-            return commands.FirstOrDefault(c => c.Aliases.Select(a => a.ToUpper().Trim()).Contains(command.ToUpper().Trim()));
         }
 
         /// <summary>
@@ -176,24 +120,6 @@ namespace DolarBot.Util.Extensions
             string description = $"{shareEmoji} {Format.Url("Compartir", url)}".AppendLineBreak();
 
             return inline ? embedBuilder.AddInlineField(title, description) : embedBuilder.AddField(title, description);
-        }
-
-        /// <summary>
-        /// Adds a new field with a message that warns about Message Content becoming a privileged intent, and as a result, regular commands being deprecated.
-        /// </summary>
-        /// <param name="embedBuilder">The current <see cref="EmbedBuilder"/> object.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> object.</param>
-        /// <returns>An <see cref="EmbedBuilder"/> object with an added deprecation notice.</returns>
-        public static EmbedBuilder AddCommandDeprecationNotice(this EmbedBuilder embedBuilder, IConfiguration configuration)
-        {
-            const string DEPRECATION_NOTICE_URL = "https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ";
-            string commandPrefix = configuration["commandPrefix"];
-            DateTime? deprecationDate = DateTime.TryParse(configuration["messageContentPrivilegedIntentDate"], out DateTime maxDate) ? maxDate : null;
-            if (deprecationDate.HasValue && DateTime.Now < deprecationDate.Value)
-            {
-                embedBuilder.AddField("Atención", $"Por decisión de {Format.Bold("Discord")}, desde el {Format.Bold(deprecationDate.Value.ToString("dd/MM/yyyy"))}, sólo se podrán utilizar los comandos interactivos con prefijo {Format.Code("/")} (los comandos con prefijo {Format.Code(commandPrefix)} dejarán de funcionar). Para ver los nuevos comandos, ejecutá {Format.Code("/ayuda")}. Más información en el siguiente {Format.Url("enlace", DEPRECATION_NOTICE_URL)}.");
-            }
-            return embedBuilder;
         }
 
         /// <summary>

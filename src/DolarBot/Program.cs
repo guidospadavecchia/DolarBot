@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
-using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DolarBot.API;
@@ -58,16 +57,15 @@ namespace DolarBot
             {
                 GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.DirectMessageReactions | GatewayIntents.DirectMessageTyping,
             });
-            CommandService commandsService = new();
             InteractionService interactionService = new(client);
             FergunInteractiveService fergunInteractiveService = new(client);
 
-            using ServiceProvider services = ConfigureServices(client, commandsService, interactionService, fergunInteractiveService, api);
+            using ServiceProvider services = ConfigureServices(client, interactionService, fergunInteractiveService, api);
 
             string token = GlobalConfiguration.GetToken(Configuration);
 
             PrintCurrentVersion();
-            await RegisterEventsAsync(client, api, commandsService, interactionService, fergunInteractiveService, services);
+            await RegisterEventsAsync(client, api, interactionService, fergunInteractiveService, services);
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
             await client.SetGameAsync(GlobalConfiguration.GetStatusText(), type: ActivityType.Listening);
@@ -130,15 +128,13 @@ namespace DolarBot
         /// Configures all the required services and returns a built service provider.
         /// </summary>
         /// <param name="discordClient">The <see cref="DiscordSocketClient"/> instance.</param>
-        /// <param name="commandsService">The <see cref="CommandService"/> instance.</param>
         /// <param name="interactionService">The <see cref="InteractionService"/> instance.</param>
         /// <param name="fergunInteractiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="api">The <see cref="ApiCalls"/> instance.</param>
         /// <returns>A built service provider.</returns>
-        private ServiceProvider ConfigureServices(DiscordSocketClient discordClient, CommandService commandsService, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, ApiCalls api)
+        private ServiceProvider ConfigureServices(DiscordSocketClient discordClient, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, ApiCalls api)
         {
             return new ServiceCollection().AddSingleton(discordClient)
-                                          .AddSingleton(commandsService)
                                           .AddSingleton(interactionService)
                                           .AddSingleton(fergunInteractiveService)
                                           .AddSingleton(Configuration)
@@ -157,26 +153,21 @@ namespace DolarBot
         /// <param name="fergunInteractiveService">The interactive service to handle pagination and selections.</param>
         /// <param name="services">A collection of services to use throughout the application.</param>
         /// <returns>A task with the result of the asynchronous operation.</returns>
-        private async Task RegisterEventsAsync(DiscordSocketClient client, ApiCalls api, CommandService commandsService, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, IServiceProvider services)
+        private async Task RegisterEventsAsync(DiscordSocketClient client, ApiCalls api, InteractionService interactionService, FergunInteractiveService fergunInteractiveService, IServiceProvider services)
         {
             ClientHandler clientHandler = new(client, api, interactionService, Configuration, logger: logger);
-            CommandHandler commandHandler = new(client, commandsService, services, Configuration, logger);
             InteractionHandler interactionHandler = new(client, interactionService, fergunInteractiveService, services, logger);
 
             client.Log += LogClientEvent;
             client.Ready += clientHandler.OnReady;
             client.JoinedGuild += clientHandler.OnGuildCountChanged;
             client.LeftGuild += clientHandler.OnGuildCountChanged;
-            client.MessageReceived += commandHandler.HandleCommandAsync;
             client.InteractionCreated += interactionHandler.HandleInteractionAsync;
             interactionService.SlashCommandExecuted += interactionHandler.HandleSlashCommandAsync;
             interactionService.ContextCommandExecuted += interactionHandler.HandleContextCommandAsync;
             interactionService.ComponentCommandExecuted += interactionHandler.HandleComponentCommandAsync;
 
-            Task addCommandModules = commandsService.AddModulesAsync(Assembly.GetAssembly(typeof(CommandHandler)), services);
-            Task addInteractionCommmandModules = interactionService.AddModulesAsync(Assembly.GetAssembly(typeof(InteractionHandler)), services);
-
-            await Task.WhenAll(addCommandModules, addInteractionCommmandModules);
+            await interactionService.AddModulesAsync(Assembly.GetAssembly(typeof(InteractionHandler)), services);
         }
 
         #endregion

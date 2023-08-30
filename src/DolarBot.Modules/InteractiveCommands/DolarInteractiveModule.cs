@@ -91,6 +91,10 @@ namespace DolarBot.Modules.InteractiveCommands
                     description = $"Cotización del {Format.Bold("dólar tarjeta")} expresada en {Format.Bold("pesos argentinos")}.";
                     response = await Service.GetDollarTarjeta();
                     break;
+                case DollarChoices.Qatar:
+                    description = $"Cotización del {Format.Bold("dólar Qatar")} expresada en {Format.Bold("pesos argentinos")}.";
+                    response = await Service.GetDollarQatar();
+                    break;
                 case DollarChoices.Blue:
                     description = $"Cotización del {Format.Bold("dólar blue")} expresada en {Format.Bold("pesos argentinos")}.";
                     response = await Service.GetDollarBlue();

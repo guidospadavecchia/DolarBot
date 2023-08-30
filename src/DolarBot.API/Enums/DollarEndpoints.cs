@@ -13,6 +13,8 @@ namespace DolarBot.API.Enums
         Ahorro,
         [Description("/api/dolar/tarjeta")]
         Tarjeta,
+        [Description("/api/dolar/qatar")]
+        Qatar,
         [Description("/api/dolar/blue")]
         Blue,
         [Description("/api/dolar/contadoliqui")]

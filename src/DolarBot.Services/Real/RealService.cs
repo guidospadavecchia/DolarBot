@@ -26,6 +26,7 @@ namespace DolarBot.Services.Real
         private const string REAL_OFICIAL_TITLE = "Real Oficial";
         private const string REAL_AHORRO_TITLE = "Real Ahorro";
         private const string REAL_TARJETA_TITLE = "Real Tarjeta";
+        private const string REAL_QATAR_TITLE = "Real Qatar";
         private const string REAL_BLUE_TITLE = "Real Blue";
         #endregion
 
@@ -102,7 +103,13 @@ namespace DolarBot.Services.Real
         /// <inheritdoc />
         public override async Task<RealResponse[]> GetAllStandardRates()
         {
-            return await Task.WhenAll(GetRealOficial(), GetRealAhorro(), GetRealTarjeta(), GetRealBlue());
+            return await Task.WhenAll(
+                GetRealOficial(),
+                GetRealAhorro(),
+                GetRealTarjeta(),
+                GetRealQatar(),
+                GetRealBlue()
+            );
         }
 
         /// <summary>
@@ -130,6 +137,15 @@ namespace DolarBot.Services.Real
         public async Task<RealResponse> GetRealTarjeta()
         {
             return await Api.DolarBot.GetRealRate(RealEndpoints.Tarjeta);
+        }
+
+        /// <summary>
+        /// Fetches the price for Real Qatar.
+        /// </summary>
+        /// <returns>A single <see cref="RealResponse"/>.</returns>
+        public async Task<RealResponse> GetRealQatar()
+        {
+            return await Api.DolarBot.GetRealRate(RealEndpoints.Qatar);
         }
 
         /// <summary>
@@ -271,6 +287,7 @@ namespace DolarBot.Services.Real
                 RealEndpoints.Oficial => REAL_OFICIAL_TITLE,
                 RealEndpoints.Ahorro => REAL_AHORRO_TITLE,
                 RealEndpoints.Tarjeta => REAL_TARJETA_TITLE,
+                RealEndpoints.Qatar => REAL_QATAR_TITLE,
                 RealEndpoints.Blue => REAL_BLUE_TITLE,
                 _ => Enum.TryParse(realType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{realType}'."),
             };

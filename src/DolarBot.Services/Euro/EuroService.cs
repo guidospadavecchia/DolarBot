@@ -26,6 +26,7 @@ namespace DolarBot.Services.Euro
         private const string EURO_OFICIAL_TITLE = "Euro Oficial";
         private const string EURO_AHORRO_TITLE = "Euro Ahorro";
         private const string EURO_TARJETA_TITLE = "Euro Tarjeta";
+        private const string EURO_QATAR_TITLE = "Euro Qatar";
         private const string EURO_BLUE_TITLE = "Euro Blue";
         #endregion
 
@@ -102,7 +103,13 @@ namespace DolarBot.Services.Euro
         /// <inheritdoc />
         public override async Task<EuroResponse[]> GetAllStandardRates()
         {
-            return await Task.WhenAll(GetEuroOficial(), GetEuroAhorro(), GetEuroTarjeta(), GetEuroBlue());
+            return await Task.WhenAll(
+                GetEuroOficial(),
+                GetEuroAhorro(),
+                GetEuroTarjeta(),
+                GetEuroQatar(),
+                GetEuroBlue()
+            );
         }
 
         /// <inheritdoc />
@@ -144,6 +151,15 @@ namespace DolarBot.Services.Euro
         public async Task<EuroResponse> GetEuroTarjeta()
         {
             return await Api.DolarBot.GetEuroRate(EuroEndpoints.Tarjeta);
+        }
+
+        /// <summary>
+        /// Fetches the price for Euro Qatar.
+        /// </summary>
+        /// <returns>A single <see cref="EuroResponse"/>.</returns>
+        public async Task<EuroResponse> GetEuroQatar()
+        {
+            return await Api.DolarBot.GetEuroRate(EuroEndpoints.Qatar);
         }
 
         /// <summary>
@@ -284,6 +300,7 @@ namespace DolarBot.Services.Euro
                 EuroEndpoints.Oficial => EURO_OFICIAL_TITLE,
                 EuroEndpoints.Ahorro => EURO_AHORRO_TITLE,
                 EuroEndpoints.Tarjeta => EURO_TARJETA_TITLE,
+                EuroEndpoints.Qatar => EURO_QATAR_TITLE,
                 EuroEndpoints.Blue => EURO_BLUE_TITLE,
                 _ => Enum.TryParse(euroType.ToString(), out Banks bank) ? bank.GetDescription() : throw new ArgumentException($"Unable to get title from '{euroType}'."),
             };

@@ -13,6 +13,8 @@ namespace DolarBot.Modules.InteractiveCommands.Choices
         Ahorro,
         [ChoiceDisplay("Tarjeta")]
         Tarjeta,
+        [ChoiceDisplay("Qatar")]
+        Qatar,
         [ChoiceDisplay("Blue")]
         Blue,
         [ChoiceDisplay("Promedio")]

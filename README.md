@@ -110,7 +110,14 @@ También podes impulsar su avance y mantenimiento con una [pequeña contribució
 ## Renuncia de responsabilidad
 **DolarBot** recopila y muestra información de distintas fuentes, quienes son responsables de mantenerla actualizada. Por este motivo, no es posible garantizar la disponibilidad, relevancia y fidelidad de la información provista por terceros y ofrecida a través de **DolarBot**.
 
-## 
+## Contribuciones
+[![Invitame un café en cafecito.app](https://cdn.cafecito.app/imgs/buttons/button_3.svg)](https://cafecito.app/gspadavecchia)  
+
+##   
+
 <p align="center">
-  <img src="http://ForTheBadge.com/images/badges/built-with-love.svg">
+  Hecho con 💜 en
+</p>
+<p align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Microsoft_.NET_logo.svg/456px-Microsoft_.NET_logo.svg.png" width="64px">
 </p>

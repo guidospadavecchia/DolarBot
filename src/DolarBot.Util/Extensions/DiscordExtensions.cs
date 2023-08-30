@@ -189,7 +189,29 @@ namespace DolarBot.Util.Extensions
 
             if (!string.IsNullOrWhiteSpace(playStoreUrl))
             {
-                return embed.AddFieldLink(playStoreEmoji, "¡Descargá la app para Android!", "Google Play Store", playStoreUrl, inline);
+                return embed.AddFieldLink(playStoreEmoji, "¡Descargá la app!", "Google Play Store", playStoreUrl, inline);
+            }
+            else
+            {
+                return embed;
+            }
+        }
+
+        /// <summary>
+        /// Appends the donation link as a field into <paramref name="embed"/>.
+        /// </summary>
+        /// <param name="embed">The embed to be modified.</param>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <param name="inline">Indicates wether the field is inline or not.</param>
+        /// <returns>The modified <see cref="EmbedBuilder"/>.</returns>
+        public static EmbedBuilder AddDonationLink(this EmbedBuilder embed, IConfiguration configuration, bool inline = false)
+        {
+            Emoji donationEmoji = new("\u2615");
+            string donationsUrl = configuration["donationsLink"];
+
+            if (!string.IsNullOrWhiteSpace(donationsUrl))
+            {
+                return embed.AddFieldLink(donationEmoji, "Contribuciones", "Invitame un café", donationsUrl, inline);
             }
             else
             {

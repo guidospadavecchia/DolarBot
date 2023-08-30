@@ -115,7 +115,8 @@ namespace DolarBot.Services.Venezuela
                                                    .AddInlineField($"{moneyEmoji} Paralelo", $"{currencyEmoji} {blankSpace} {paraleloValueText} {blankSpace}".AppendLineBreak());
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
-            return embed.AddPlayStoreLink(Configuration);
+            return embed.AddPlayStoreLink(Configuration, true)
+                        .AddDonationLink(Configuration, true);
         }
 
         /// <summary>

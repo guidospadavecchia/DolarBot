@@ -125,7 +125,8 @@ namespace DolarBot.Services.Currencies
                                                    .AddInlineField($"Valor", $"{Format.Bold($"{currencyEmoji} ${blankSpace} {value.AppendLineBreak()}")}");
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
-            return embed.AddPlayStoreLink(Configuration);
+            return embed.AddPlayStoreLink(Configuration, true)
+                        .AddDonationLink(Configuration, true);
         }
 
         /// <summary>
@@ -243,7 +244,10 @@ namespace DolarBot.Services.Currencies
                                                        .WithThumbnailUrl(chartImageUrl)
                                                        .WithFooter($"Página {++pageCount} de {totalPages}")
                                                        .AddField(embedTitle, sbField.AppendLineBreak().ToString());
-                embeds.Add(embed);
+                embeds.Add(embed
+                    .AddPlayStoreLink(Configuration, true)
+                    .AddDonationLink(Configuration, true)
+                );
             }
 
             return embeds;

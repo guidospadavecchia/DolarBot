@@ -222,6 +222,7 @@ namespace DolarBot.Services.Dolar
                                                    .WithFooter($" C = Compra | V = Venta | A = Venta + Impuestos | {clockEmoji} = Last updated (UTC {utcOffset})")
                                                    .AddField("Monto", amountField);
 
+            int validRatesCount = 0;
             for (int i = 0; i < dollarResponses.Length; i++)
             {
                 DollarResponse response = dollarResponses[i];
@@ -247,10 +248,12 @@ namespace DolarBot.Services.Dolar
                     sbField.AppendLine($"{clockEmoji} {blankSpace} {lastUpdated}");
 
                     embed.AddInlineField(title, sbField.AppendLineBreak().ToString());
+                    validRatesCount++;
                 }
             }
 
-            return embed.AddPlayStoreLink(Configuration);
+            return embed.AddPlayStoreLink(Configuration, validRatesCount % 3 == 0)
+                        .AddDonationLink(Configuration, true);
         }
 
         /// <inheritdoc />
@@ -304,7 +307,8 @@ namespace DolarBot.Services.Dolar
             shareText += $"{Environment.NewLine}Hora: \t\t{lastUpdated} (UTC {utcOffset})";
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
 
-            return embed.AddPlayStoreLink(Configuration);
+            return embed.AddPlayStoreLink(Configuration, true)
+                        .AddDonationLink(Configuration, true);
         }
 
         /// <summary>

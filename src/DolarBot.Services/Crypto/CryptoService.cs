@@ -148,7 +148,8 @@ namespace DolarBot.Services.Crypto
                                                    .AddInlineField($"{argentinaEmoji} ARS con Impuestos", $"{cryptoEmoji} {Format.Bold($"{quantity} {cryptoCode}")} = {Format.Bold($"$ {arsPriceWithTaxes}")} {GlobalConfiguration.Constants.BLANK_SPACE}".AppendLineBreak());
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
-            return embed.AddPlayStoreLink(Configuration);
+            return embed.AddPlayStoreLink(Configuration, true)
+                        .AddDonationLink(Configuration, true);
         }
 
         /// <summary>

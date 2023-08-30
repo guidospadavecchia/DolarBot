@@ -99,7 +99,8 @@ namespace DolarBot.Services.Metals
                                                    .AddField($"Valor", $"{metalEmoji} {GlobalConfiguration.Constants.BLANK_SPACE} {valueText}".AppendLineBreak());
 
             await embed.AddFieldWhatsAppShare(whatsappEmoji, shareText);
-            return embed.AddPlayStoreLink(Configuration);
+            return embed.AddPlayStoreLink(Configuration, true)
+                        .AddDonationLink(Configuration, true);
         }
 
         /// <summary>

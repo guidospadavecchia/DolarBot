@@ -84,7 +84,7 @@ namespace DolarBot.Util
             }
             else
             {
-                return $"{Format.Bold("Oops!")} Ocurrió un error inesperado. Si el problema persiste, reportalo en el servidor de soporte (<{supportServerUrl}>) o contactate con {Format.Bold("Svenjörn#9806")}.";
+                return $"{Format.Bold("Oops!")} Ocurrió un error inesperado. Si el problema persiste, reportalo en el servidor de soporte (<{supportServerUrl}>) o contactate con {Format.Bold("svenjorn")}.";
             }
         }
 

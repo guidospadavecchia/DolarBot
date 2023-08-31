@@ -207,17 +207,11 @@ namespace DolarBot.Modules.InteractiveCommands
                     Emoji versionEmoji = new(emojis["dolarbot"]);
                     Emoji supportServerEmoji = new("\uD83D\uDCAC");
                     Emoji checkEmoji = new("\u2705");
-                    Emoji voteEmoji = new(emojis["arrowUpRed"]);
                     Emoji hourglassEmoji = new("\u23F3");
 
                     Version version = Assembly.GetEntryAssembly().GetName().Version;
                     string infoImageUrl = Configuration.GetSection("images")?.GetSection("info")?["64"];
-                    string dolarBotImageUrl = Configuration.GetSection("images")?.GetSection("dolarbot")?["32"];
-                    string websiteUrl = Configuration["websiteUrl"];
-                    string githubUrl = Configuration["githubUrl"];
-                    string playStoreUrl = Configuration["playStoreLink"];
                     string supportServerUrl = Configuration["supportServerUrl"];
-                    string voteUrl = Configuration["voteUrl"];
                     string versionDescription = Format.Bold(version.ToString(3));
                     int serverCount = Context.Client is DiscordSocketClient socketClient ? socketClient.Guilds.Count : -1;
                     TimeSpan uptime = GlobalConfiguration.GetUptime();
@@ -235,7 +229,7 @@ namespace DolarBot.Modules.InteractiveCommands
                     embed.AddField("Uptime (Desde último reinicio)", $"{hourglassEmoji} {Format.Bold(uptime.Days.ToString())}d {Format.Bold(uptime.Hours.ToString())}h {Format.Bold(uptime.Minutes.ToString())}m {Format.Bold(uptime.Seconds.ToString())}s".AppendLineBreak())
                          .AddField("¿Dudas o sugerencias?", $"{supportServerEmoji} Unite al {Format.Url("servidor oficial de DolarBot", supportServerUrl)}".AppendLineBreak())
                          .AddField("Web", InfoService.GetWebsiteEmbedDescription().AppendLineBreak())
-                         .AddField("¿Te gusta DolarBot?", new StringBuilder().AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}").AppendLineBreak())
+                         .AddField("¿Te gusta DolarBot?", InfoService.GetPromotionEmbedDescription().AppendLineBreak())
                          .WithFooter($"Hecho con {blueHeartEmoji} en {RuntimeInformation.FrameworkDescription}");
 
                     await FollowupAsync(embed: embed.Build());

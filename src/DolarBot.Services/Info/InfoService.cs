@@ -124,6 +124,28 @@ namespace DolarBot.Services.Info
             return websiteDescription;
         }
 
+        /// <summary>
+        /// Builds the embed's description for 'bot' command.
+        /// </summary>
+        /// <returns>A formatted promotion description.</returns>
+        public StringBuilder GetPromotionEmbedDescription()
+        {
+            var emojis = Configuration.GetSection("customEmojis");
+            Emoji voteEmoji = new(emojis["arrowUpRed"]);
+            Emoji donationEmoji = new("\u2615");
+
+            string voteUrl = Configuration["voteUrl"];
+            string donationsUrl = Configuration["donationsLink"];
+
+            StringBuilder promotionDescription = new();
+            promotionDescription.AppendLine($"{voteEmoji} {Format.Url("Votalo en top.gg", voteUrl)}");
+            if (!string.IsNullOrWhiteSpace(donationsUrl))
+            {
+                promotionDescription.AppendLine($"{donationEmoji} {Format.Url("Invitame un café", donationsUrl)}");
+            }
+            return promotionDescription;
+        }
+
         #endregion
 
         #endregion

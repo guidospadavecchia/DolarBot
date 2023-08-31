@@ -109,10 +109,13 @@ namespace DolarBot.Services.Base
                 Banks.Bancor => banksSection["bancor"],
                 Banks.Chaco => banksSection["chaco"],
                 Banks.Pampa => banksSection["pampa"],
+                Banks.HSBC => banksSection["hsbc"],
                 Banks.ICBC => banksSection["icbc"],
                 Banks.Provincia => banksSection["provincia"],
                 Banks.Reba => banksSection["reba"],
                 Banks.Roela => banksSection["roela"],
+                Banks.Macro => banksSection["macro"],
+                Banks.Brubank => banksSection["brubank"],
                 _ => string.Empty,
             };
         }

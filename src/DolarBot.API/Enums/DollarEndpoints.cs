@@ -51,8 +51,14 @@ namespace DolarBot.API.Enums
         Pampa,
         [Description("/api/dolar/bancos/provincia")]
         Provincia,
+        [Description("/api/dolar/bancos/hsbc")]
+        HSBC,
         [Description("/api/dolar/bancos/icbc")]
         ICBC,
+        [Description("/api/dolar/bancos/macro")]
+        Macro,
+        [Description("/api/dolar/bancos/brubank")]
+        Brubank,
         [Description("/api/dolar/bancos/reba")]
         Reba,
         [Description("/api/dolar/bancos/roela")]

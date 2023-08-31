@@ -8,7 +8,7 @@ namespace DolarBot.Services.Banking
     public enum Banks
     {
         [Description("Todos los bancos")]
-        Bancos,
+        Todos,
         [Description("Banco Nación")]
         Nacion,
         [Description("Banco BBVA")]
@@ -35,10 +35,16 @@ namespace DolarBot.Services.Banking
         Chaco,
         [Description("Banco de La Pampa")]
         Pampa,
+        [Description("Banco HSBC")]
+        HSBC,
         [Description("Banco ICBC")]
         ICBC,
+        [Description("Banco Macro")]
+        Macro,
         [Description("Banco Provincia")]
         Provincia,
+        [Description("Brubank")]
+        Brubank,
         [Description("Rebanking")]
         Reba,
         [Description("Banco Roela")]

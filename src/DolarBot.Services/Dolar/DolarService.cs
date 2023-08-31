@@ -73,7 +73,10 @@ namespace DolarBot.Services.Dolar
                 Banks.Chaco => DollarEndpoints.Chaco,
                 Banks.Pampa => DollarEndpoints.Pampa,
                 Banks.Provincia => DollarEndpoints.Provincia,
+                Banks.HSBC => DollarEndpoints.HSBC,
                 Banks.ICBC => DollarEndpoints.ICBC,
+                Banks.Macro => DollarEndpoints.Macro,
+                Banks.Brubank => DollarEndpoints.Brubank,
                 Banks.Reba => DollarEndpoints.Reba,
                 Banks.Roela => DollarEndpoints.Roela,
                 _ => throw new ArgumentException("Unsupported Dollar type")
@@ -98,7 +101,7 @@ namespace DolarBot.Services.Dolar
         /// <inheritdoc />
         public override async Task<DollarResponse[]> GetAllBankRates()
         {
-            List<Banks> banks = GetValidBanks().Where(b => b != Banks.Bancos).ToList();
+            List<Banks> banks = GetValidBanks().Where(b => b != Banks.Todos).OrderBy(x => x.GetDescription()).ToList();
             Task<DollarResponse>[] tasks = new Task<DollarResponse>[banks.Count];
             for (int i = 0; i < banks.Count; i++)
             {

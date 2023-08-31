@@ -33,10 +33,16 @@ namespace DolarBot.Modules.InteractiveCommands.Choices
         Chaco,
         [ChoiceDisplay("Banco de La Pampa")]
         Pampa,
+        [ChoiceDisplay("Banco HSBC")]
+        HSBC,
         [ChoiceDisplay("Banco ICBC")]
         ICBC,
         [ChoiceDisplay("Banco Provincia")]
         Provincia,
+        [ChoiceDisplay("Banco Macro")]
+        Macro,
+        [ChoiceDisplay("Brubank")]
+        Brubank,
         [ChoiceDisplay("Rebanking")]
         Reba,
         [ChoiceDisplay("Banco Roela")]

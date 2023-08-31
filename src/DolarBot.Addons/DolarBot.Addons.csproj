@@ -2,9 +2,9 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<Version>3.2.3</Version>
-		<AssemblyVersion>3.2.3.0</AssemblyVersion>
-		<FileVersion>3.2.3.0</FileVersion>
+		<Version>3.2.4</Version>
+		<AssemblyVersion>3.2.4.0</AssemblyVersion>
+		<FileVersion>3.2.4.0</FileVersion>
 		<Authors>Guido Spadavecchia</Authors>
 		<PackageId>DolarBot.Addons</PackageId>
 		<PackageProjectUrl>https://github.com/PassiveModding/Discord.Addons.Interactive</PackageProjectUrl>

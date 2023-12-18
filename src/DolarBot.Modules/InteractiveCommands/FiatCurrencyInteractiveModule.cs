@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using DolarBot.API;
 using DolarBot.API.Models;
+using DolarBot.API.Models.Base;
 using DolarBot.API.Services.DolarBotApi;
 using DolarBot.Modules.Attributes;
 using DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency;
@@ -63,23 +64,13 @@ namespace DolarBot.Modules.InteractiveCommands
         }
 
         /// <summary>
-        /// Replies with a message indicating one of the date parameters was not correcly specified.
+        /// Replies with a message indicating that the date parameter was not correcly specified.
         /// </summary>
         /// <param name="startDate">The start date.</param>
         /// <param name="endDate">The end date.</param>
-        private async Task SendInvalidDateRangeParametersAsync(DateTime startDate, DateTime endDate)
+        private async Task SendNoDataForDateAsync(DateTime date)
         {
-            await FollowupAsync($"La {Format.Bold("fecha desde")} ({Format.Code(startDate.ToString("dd/MM/yyyy"))}) debe ser {Format.Bold("menor o igual")} a la {Format.Bold("fecha hasta")} ({Format.Code(endDate.ToString("dd/MM/yyyy"))}) y el rango debe ser {Format.Bold("menor")} a {Format.Code("1 año")}.");
-        }
-
-        /// <summary>
-        /// Replies with a message indicating one of the date parameters was not correcly specified.
-        /// </summary>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
-        private async Task SendNoDataForRangeAsync(DateTime startDate, DateTime endDate)
-        {
-            await FollowupAsync($"No hay datos históricos para el rango de fechas {Format.Code(startDate.ToString("dd/MM/yyyy"))} - {Format.Code(endDate.ToString("dd/MM/yyyy"))}.");
+            await FollowupAsync($"No hay datos históricos para la fecha {Format.Code(date.ToString("dd/MM/yyyy"))}.");
         }
 
         /// <summary>
@@ -182,10 +173,8 @@ namespace DolarBot.Modules.InteractiveCommands
             [Summary("moneda", "Código de la moneda.")]
             [Autocomplete(typeof(FiatCurrencyCodeAutocompleteHandler))]
             string codigo,
-            [Summary("desde", "Fecha desde.")]
-            string startDate,
-            [Summary("hasta", "Fecha hasta.")]
-            string endDate
+            [Summary("fecha", "Fecha de la cotización.")]
+            string date
         )
         {
             await DeferAsync().ContinueWith(async (task) =>
@@ -197,30 +186,20 @@ namespace DolarBot.Modules.InteractiveCommands
                     WorldCurrencyCodeResponse worldCurrencyCodeResponse = historicalCurrencyCodeList.FirstOrDefault(x => x.Code.Equals(currencyCode, StringComparison.OrdinalIgnoreCase));
                     if (worldCurrencyCodeResponse != null)
                     {
-                        TimeSpan oneYear = TimeSpan.FromDays(366);
-                        bool validStartDate = FiatCurrencyService.ParseDate(startDate, out DateTime? startDateResult) && startDateResult.HasValue;
-                        bool validEndDate = FiatCurrencyService.ParseDate(endDate, out DateTime? endDateResult) && endDateResult.HasValue;
-                        if (validStartDate && validEndDate)
+                        if (FiatCurrencyService.ParseDate(date, out DateTime? dateResult) && dateResult.HasValue)
                         {
-                            DateTime dateFrom = startDateResult.Value;
-                            DateTime dateTo = endDateResult.Value;
-                            if (dateFrom <= dateTo && (dateTo.Subtract(dateFrom) <= oneYear))
+                            DateTime date = dateResult.Value;
+                            WorldCurrencyResponse historicalValue = await FiatCurrencyService.GetHistoricalCurrencyValue(currencyCode, date);
+                            if (historicalValue != null)
                             {
-                                List<WorldCurrencyResponse> historicalCurrencyValues = await FiatCurrencyService.GetHistoricalCurrencyValues(currencyCode, dateFrom, dateTo);
-                                if (historicalCurrencyValues != null && historicalCurrencyValues.Count > 0)
-                                {
-                                    List<EmbedBuilder> embeds = FiatCurrencyService.CreateHistoricalValuesEmbedsAsync(historicalCurrencyValues, worldCurrencyCodeResponse.Name, dateFrom, dateTo);
-                                    await FollowUpWithPaginatedEmbedAsync(embeds);
-                                }
-                                else
-                                {
-                                    await SendNoDataForRangeAsync(dateFrom, dateTo);
-                                }
+                                EmbedBuilder embed = await FiatCurrencyService.CreateWorldCurrencyEmbedAsync(historicalValue, worldCurrencyCodeResponse.Name, date: date);
+                                await FollowupAsync(embed: embed.Build(), components: new CalculatorComponentBuilder(currencyCode, CalculatorTypes.FiatCurrency, Configuration).Build());
                             }
                             else
                             {
-                                await SendInvalidDateRangeParametersAsync(dateFrom, dateTo);
+                                await SendNoDataForDateAsync(date);
                             }
+
                         }
                         else
                         {

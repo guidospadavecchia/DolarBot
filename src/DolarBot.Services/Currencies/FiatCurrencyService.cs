@@ -69,17 +69,11 @@ namespace DolarBot.Services.Currencies
         /// Fetches a collection of historical currency values between two dates.
         /// </summary>
         /// <param name="currencyCode">The currency 3-digit code.</param>
-        /// <param name="startDate">The start date.</param>
-        /// <param name="endDate">The end date.</param>
+        /// <param name="date">The rate date.</param>
         /// <returns>A collection of <see cref="WorldCurrencyResponse"/> objects.</returns>
-        public async Task<List<WorldCurrencyResponse>> GetHistoricalCurrencyValues(string currencyCode, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<WorldCurrencyResponse> GetHistoricalCurrencyValue(string currencyCode, DateTime date)
         {
-            List<WorldCurrencyResponse> historicalCurrencyValues = await Api.DolarBot.GetWorldCurrencyHistoricalValues(currencyCode);
-            if ((startDate != null && startDate.Value.Date <= DateTime.Now.Date) || (endDate != null && endDate.Value.Date <= DateTime.Now.Date))
-            {
-                historicalCurrencyValues = historicalCurrencyValues.Where(x => (!startDate.HasValue || x.Fecha.Date >= startDate.Value.Date) && (!endDate.HasValue || x.Fecha.Date <= endDate.Value.Date)).ToList();
-            }
-            return historicalCurrencyValues;
+            return await Api.DolarBot.GetWorldCurrencyHistoricalValue(currencyCode, date);
         }
 
         #endregion
@@ -93,7 +87,7 @@ namespace DolarBot.Services.Currencies
         /// <param name="currencyName">The currency name.</param>
         /// <param name="amount">The amount to rate against.</param>
         /// <returns>An <see cref="EmbedBuilder"/> object ready to be built.</returns>
-        public async Task<EmbedBuilder> CreateWorldCurrencyEmbedAsync(WorldCurrencyResponse worldCurrencyResponse, string currencyName, decimal amount = 1)
+        public async Task<EmbedBuilder> CreateWorldCurrencyEmbedAsync(WorldCurrencyResponse worldCurrencyResponse, string currencyName, decimal amount = 1, DateTime? date = null)
         {
             var emojis = Configuration.GetSection("customEmojis");
             Emoji currencyEmoji = Emoji.Parse(":flag_ar:");
@@ -111,10 +105,11 @@ namespace DolarBot.Services.Currencies
             decimal? valuePrice = decimal.TryParse(worldCurrencyResponse?.Valor, NumberStyles.Any, DolarBotApiService.GetApiCulture(), out decimal v) ? v * amount : null;
             string value = valuePrice.HasValue ? valuePrice.Value.ToString("N2", GlobalConfiguration.GetLocalCultureInfo()) : "?";
 
+            string description = date.HasValue ? $"Cotización de {Format.Bold($"{currencyName} ({worldCurrencyResponse.Code})")} para el día {Format.Code(date.Value.Date.ToString("dd/MM/yyyy"))} expresada en {Format.Bold("pesos argentinos")}." : $"Cotización de {Format.Bold($"{currencyName} ({worldCurrencyResponse.Code})")} expresada en {Format.Bold("pesos argentinos")}.";
             string shareText = $"*{currencyName} ({worldCurrencyResponse.Code})*{Environment.NewLine}{Environment.NewLine}*{amount} {worldCurrencyResponse.Code}*{Environment.NewLine}Valor: \t$ *{value}*{Environment.NewLine}Hora: \t{lastUpdated} (UTC {utcOffset})";
             EmbedBuilder embed = new EmbedBuilder().WithColor(GlobalConfiguration.Colors.Currency)
                                                    .WithTitle($"{currencyName} ({worldCurrencyResponse.Code})")
-                                                   .WithDescription($"Cotización de {Format.Bold($"{currencyName} ({worldCurrencyResponse.Code})")} expresada en {Format.Bold("pesos argentinos")}.".AppendLineBreak())
+                                                   .WithDescription(description.AppendLineBreak())
                                                    .WithThumbnailUrl(currencyImageUrl)
                                                    .WithFooter(new EmbedFooterBuilder()
                                                    {

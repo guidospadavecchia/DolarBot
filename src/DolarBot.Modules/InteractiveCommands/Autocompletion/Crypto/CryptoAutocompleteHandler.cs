@@ -56,7 +56,7 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
                         currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
                     }
 
-                    IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
+                    IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol?.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
                     return AutocompletionResult.FromSuccess(autocompletionCollection);
                 }
             }

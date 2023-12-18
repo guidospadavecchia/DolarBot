@@ -149,11 +149,12 @@ namespace DolarBot.API.Services.DolarBotApi
         /// Queries the API and returns the historical values for a particular <paramref name="currencyCode"/>.
         /// </summary>
         /// <param name="currencyCode">The currency 3-digit code.</param>
+        /// <param name="date">The historical rate date.</param>
         /// <returns>A task that contains a collection of normalized <see cref="WorldCurrencyResponse"/> objects.</returns>
-        public async Task<List<WorldCurrencyResponse>?> GetWorldCurrencyHistoricalValues(string currencyCode)
+        public async Task<WorldCurrencyResponse?> GetWorldCurrencyHistoricalValue(string currencyCode, DateTime date)
         {
-            string endpoint = $"{WorldCurrencyEndpoints.Historical.GetDescription()}/{currencyCode.ToUpper()}";
-            List<WorldCurrencyResponse>? cachedResponse = Cache.GetObject<List<WorldCurrencyResponse>>(endpoint);
+            string endpoint = $"{WorldCurrencyEndpoints.Historical.GetDescription()}/{currencyCode.ToUpper()}/{date:yyyy-MM-dd}";
+            WorldCurrencyResponse? cachedResponse = Cache.GetObject<WorldCurrencyResponse>(endpoint);
             if (cachedResponse != null)
             {
                 return cachedResponse;
@@ -161,11 +162,11 @@ namespace DolarBot.API.Services.DolarBotApi
             else
             {
                 RestRequest request = new(endpoint);
-                RestResponse<List<WorldCurrencyResponse>> response = await Client.ExecuteGetAsync<List<WorldCurrencyResponse>>(request);
-                if (response.IsSuccessful && response.Data != null && response.Data.Count > 0)
+                RestResponse<WorldCurrencyResponse> response = await Client.ExecuteGetAsync<WorldCurrencyResponse>(request);
+                if (response.IsSuccessful && response.Data != null)
                 {
-                    List<WorldCurrencyResponse> data = response.Data;
-                    data.ForEach(x => x.Code = currencyCode.ToUpper().Trim());
+                    WorldCurrencyResponse data = response.Data;
+                    data.Code = currencyCode.ToUpper().Trim();
                     Cache.SaveObject(endpoint, data, Cache.GetCurrencyListExpiration());
                     return data;
                 }

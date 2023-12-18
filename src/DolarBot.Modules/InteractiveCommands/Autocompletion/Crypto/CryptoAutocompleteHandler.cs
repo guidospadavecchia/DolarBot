@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
 {
     public class CryptoAutocompleteHandler : InteractiveAutocompleteHandler
@@ -35,25 +37,28 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
         {
             try
             {
-                string filter = autocompleteInteraction.Data.Current.Value.ToString();
-                List<CryptoCodeResponse> currencyCodes = await CryptoService.GetCryptoCodeList();
-                if (!string.IsNullOrWhiteSpace(filter))
+                string? filter = autocompleteInteraction.Data.Current.Value.ToString();
+                List<CryptoCodeResponse>? currencyCodes = await CryptoService.GetCryptoCodeList();
+                if (currencyCodes?.Any() ?? false)
                 {
-                    List<CryptoCodeResponse> currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Equals(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-                    if (!currencyCodesBySymbol.Any())
+                    if (!string.IsNullOrWhiteSpace(filter))
                     {
-                        currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+                        List<CryptoCodeResponse> currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol?.Equals(filter, StringComparison.OrdinalIgnoreCase) ?? false).ToList();
+                        if (!currencyCodesBySymbol.Any())
+                        {
+                            currencyCodesBySymbol = currencyCodes.Where(x => x.Symbol?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false).ToList();
+                        }
+                        List<CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false).ToList();
+                        currencyCodes = currencyCodesBySymbol.Union(currencyCodesByName).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
                     }
-                    List<CryptoCodeResponse> currencyCodesByName = currencyCodes.Where(x => x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-                    currencyCodes = currencyCodesBySymbol.Union(currencyCodesByName).Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-                }
-                else
-                {
-                    currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-                }
+                    else
+                    {
+                        currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                    }
 
-                IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
-                return AutocompletionResult.FromSuccess(autocompletionCollection);
+                    IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"[{x.Symbol.ToUpper()}] {x.Name}", x.Code)).OrderBy(x => x.Name);
+                    return AutocompletionResult.FromSuccess(autocompletionCollection);
+                }
             }
             catch (Exception ex)
             {
@@ -64,8 +69,9 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.Crypto
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     Console.WriteLine(ex.InnerException.StackTrace);
                 }
-                return AutocompletionResult.FromSuccess();
             }
+
+            return AutocompletionResult.FromSuccess();
         }
     }
 }

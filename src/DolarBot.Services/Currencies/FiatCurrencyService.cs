@@ -50,7 +50,7 @@ namespace DolarBot.Services.Currencies
         /// Fetches all the available world currency codes.
         /// </summary>
         /// <returns>A collection of <see cref="WorldCurrencyCodeResponse"/> objects.</returns>
-        public async Task<List<WorldCurrencyCodeResponse>> GetWorldCurrenciesList()
+        public async Task<List<WorldCurrencyCodeResponse>?> GetWorldCurrenciesList()
         {
             return await Api.DolarBot.GetWorldCurrenciesList();
         }

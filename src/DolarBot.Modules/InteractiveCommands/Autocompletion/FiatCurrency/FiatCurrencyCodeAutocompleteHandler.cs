@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency
 {
     public class FiatCurrencyCodeAutocompleteHandler : InteractiveAutocompleteHandler
@@ -35,21 +37,24 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency
         {
             try
             {
-                string filter = autocompleteInteraction.Data.Current.Value.ToString();
-                List<WorldCurrencyCodeResponse> currencyCodes = await FiatCurrencyService.GetWorldCurrenciesList();
-                if (!string.IsNullOrWhiteSpace(filter))
+                string? filter = autocompleteInteraction.Data.Current.Value.ToString();
+                List<WorldCurrencyCodeResponse>? currencyCodes = await FiatCurrencyService.GetWorldCurrenciesList();
+                if (currencyCodes?.Any() ?? false)
                 {
-                    currencyCodes = currencyCodes.Where(x => x.Code.Contains(filter, StringComparison.OrdinalIgnoreCase) || x.Name.Contains(filter, StringComparison.OrdinalIgnoreCase))
-                                                 .Take(MAX_AUTOCOMPLETE_RESULTS)
-                                                 .ToList();
-                }
-                else
-                {
-                    currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
-                }
+                    if (!string.IsNullOrWhiteSpace(filter))
+                    {
+                        currencyCodes = currencyCodes.Where(x => (x.Code?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) || (x.Name?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false))
+                                                     .Take(MAX_AUTOCOMPLETE_RESULTS)
+                                                     .ToList();
+                    }
+                    else
+                    {
+                        currencyCodes = currencyCodes.Take(MAX_AUTOCOMPLETE_RESULTS).ToList();
+                    }
 
-                IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"{x.Code} ({x.Name})", x.Code)).OrderBy(x => x.Name).ToList();
-                return AutocompletionResult.FromSuccess(autocompletionCollection);
+                    IEnumerable<AutocompleteResult> autocompletionCollection = currencyCodes.Select(x => new AutocompleteResult($"{x.Code} ({x.Name})", x.Code)).OrderBy(x => x.Name).ToList();
+                    return AutocompletionResult.FromSuccess(autocompletionCollection);
+                }
             }
             catch (Exception ex)
             {
@@ -60,8 +65,9 @@ namespace DolarBot.Modules.InteractiveCommands.Autocompletion.FiatCurrency
                     Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                     Console.WriteLine(ex.InnerException.StackTrace);
                 }
-                return AutocompletionResult.FromSuccess();
             }
+
+            return AutocompletionResult.FromSuccess();
         }
     }
 }
